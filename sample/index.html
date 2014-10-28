@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title></title>
+<meta charset="utf-8">
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="">
+<!--[if lt IE 9]>
+<script src="//cdn.jsdelivr.net/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<link rel="shortcut icon" href="">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="../src/agent_smith.js"></script>
+<script src="../src/matrix.js"></script>
+</head>
+<body>
+<script>
+$(function() {
+	var M = AgentSmith.Matrix;
+	
+	var a = new M(2,3);
+	a.map(function(datum, row, col) { return row + col / 10; } );
+	console.log(a.toString());
+	
+	var b = new M(2,3);
+	b.map(function(datum, row, col) { return row*10 + col; } );
+	console.log(b.toString());
+	
+	console.log(M.add(a, b).toString());
+	
+	console.log(b.t().toString());
+	
+	console.log(M.mul(b.t(), b).toString());
+});
+</script>
+</body>
+</html>
