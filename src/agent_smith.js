@@ -13,10 +13,16 @@ AgentSmith.Matrix = function(rows, cols) {
 	var P = M.prototype;
 	
 	P.get = function(row, col) {
+		if (row >= this.rows || col >= this.cols) {
+			console.error('out of range');
+		}
 		return this.data[row * this.cols + col];
 	};
 	
 	P.set = function(row, col, datum) {
+		if (row >= this.rows || col >= this.cols) {
+			console.error('out of range');
+		}
 		this.data[row * this.cols + col] = datum;
 	};
 	
@@ -31,11 +37,14 @@ AgentSmith.Matrix = function(rows, cols) {
 			}
 			return str;
 		};
+		var isInt = function(x) {
+			return x % 1 === 0;
+		}
 		var write_buf = '-- Matrix (' + this.rows + ' x ' + this.cols + ') --';
 		write_buf += '\r\n';
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
-				write_buf += formatWidth(String(this.get(row, col)), 10);
+				write_buf += formatWidth(isInt(this.get(row, col)) ? String(this.get(row, col)) : this.get(row, col).toFixed(6), 10);
 			}
 			if (row != this.rows - 1) { write_buf += '\r\n'; }
 		}
@@ -70,6 +79,24 @@ AgentSmith.Matrix = function(rows, cols) {
 		}
 		this.rows = rows;
 		this.cols = cols;
+		return this;
+	};
+	
+	P.alias = function() {
+		var newM = new M(this.rows, this.cols);
+		newM.data = this.data;
+		return newM;
+	};
+	
+	P.random = function(min, max) {
+		if (typeof min === 'undefined') {
+			var min = 0.0;
+		}
+		if (typeof max === 'undefined') {
+			var max = 1.0;
+		}
+		this.map(function(datum, row, col) { return min + (max - min) * Math.random(); });
+		return this;
 	};
 	
 	M.add = function(mat1, mat2) {
