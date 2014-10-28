@@ -14,7 +14,6 @@
 <link rel="shortcut icon" href="">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="../src/agent_smith.js"></script>
-<script src="../src/matrix.js"></script>
 </head>
 <body>
 <script>
@@ -34,6 +33,14 @@ $(function() {
 	console.log(b.t().toString());
 	
 	console.log(M.mul(b.t(), b).toString());
+	
+	var a_dash = a.clone()
+	a_dash.set(0, 0, 100);
+	console.log(a_dash.toString());
+	console.log(a.toString());
+	
+	a_dash.reshape(1,6)
+	console.log(a_dash.toString());
 });
 </script>
 </body>
