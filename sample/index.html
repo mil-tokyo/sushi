@@ -24,6 +24,12 @@ $(function() {
 	a.map(function(datum, row, col) { return row + col / 10; } );
 	console.log(a.toString());
 	
+	console.log(M.mul(5, a).toString());
+	console.log(M.mul(a, 5).toString());
+	console.log(M.mul(2, 3));
+	
+	console.log(M.dot(a, a));
+	
 	var b = new M(2,3);
 	b.map(function(datum, row, col) { return row*10 + col; } );
 	console.log(b.toString());
@@ -41,6 +47,16 @@ $(function() {
 	
 	a_dash.reshape(1,6)
 	console.log(a_dash.toString());
+	
+	var v = new M(4, 1);
+	var w = new M(4, 1);
+	v.map(function(datum, row, col) {
+		return row;
+	});
+	w.map(function(datum, row, col) {
+		return row + 5;
+	});
+	console.log(M.mul(v, w.t()).toString());
 });
 </script>
 </body>

@@ -12,18 +12,23 @@ AgentSmith.Matrix = function(rows, cols) {
 	var M = AgentSmith.Matrix;
 	var P = M.prototype;
 	
+	P.getShape = function() {
+		return { rows : this.rows, cols : this.cols };
+	};
+	
 	P.get = function(row, col) {
 		if (row >= this.rows || col >= this.cols) {
-			console.error('out of range');
+			throw new Error('out of range');
 		}
 		return this.data[row * this.cols + col];
 	};
 	
 	P.set = function(row, col, datum) {
 		if (row >= this.rows || col >= this.cols) {
-			console.error('out of range');
+			throw new Error('out of range');
 		}
 		this.data[row * this.cols + col] = datum;
+		return this;
 	};
 	
 	P.print = function() {
@@ -57,6 +62,16 @@ AgentSmith.Matrix = function(rows, cols) {
 				this.set(row, col, func(this.get(row, col), row, col));
 			}
 		}
+		return this;
+	};
+	
+	P.setEach = function(func) {
+		for (var row = 0; row < this.rows; row++) {
+			for (var col = 0; col < this.cols; col++) {
+				this.set(row, col, func(row, col));
+			}
+		}
+		return this;
 	};
 	
 	P.t = function() {
@@ -99,9 +114,24 @@ AgentSmith.Matrix = function(rows, cols) {
 		return this;
 	};
 	
+	P.argmax = function() {
+		var max_val = this.data[0];
+		var arg = { row : 0, col : 0 };
+		for (var row = 0; row < this.rows; row++) {
+			for (var col = 0; col < this.cols; col++) {
+				if (this.get(row, col) > max_val) {
+					max_val = this.get(row, col);
+					arg.row = row;
+					arg.col = col;
+				}		
+			}
+		}
+		return arg;
+	};
+	
 	M.add = function(mat1, mat2) {
 		var newM = new M(mat1.rows, mat1.cols);
-		newM.map(function(datum, row, col) {
+		newM.setEach(function(row, col) {
 			return mat1.get(row, col) + mat2.get(row, col);
 		});
 		return newM;
@@ -109,13 +139,25 @@ AgentSmith.Matrix = function(rows, cols) {
 	
 	M.sub = function(mat1, mat2) {
 		var newM = new M(mat1.rows, mat1.cols);
-		newM.map(function(datum, row, col) {
+		newM.setEach(function(row, col) {
 			return mat1.get(row, col) - mat2.get(row, col);
 		});
 		return newM;
 	};
 	
 	M.mul = function(mat1, mat2) {
+		if (typeof mat1 === 'number' && typeof mat2 !== 'number') {
+			return mat2.clone().map(function(datum) { return datum * mat1; });
+		}
+		if (typeof mat2 === 'number' && typeof mat1 !== 'number') {
+			return M.mul(mat2, mat1);
+		}
+		if (typeof mat1 === 'number' && typeof mat2 === 'number') {
+			return mat1 * mat2;
+		}
+		if (mat1.cols !== mat2.rows) {
+			throw new Error('shape does not match');
+		}
 		var newM = new M(mat1.rows, mat2.cols);
 		newM.map(function(datum, row, col) {
 			var tmp = 0;
@@ -125,7 +167,29 @@ AgentSmith.Matrix = function(rows, cols) {
 			return tmp;
 		});
 		return newM;
+	};
+	
+	M.mulEach = function(mat1, mat2) {
+		if (mat1.rows !== mat2.rows || mat1.cols !== mat2.cols) {
+			throw new Error('shape does not match');
+		}
+		var newM = new M(mat1.rows, mat1.cols);
+		newM.map(function(datum, row, col) {
+			return mat1.get(row, col) * mat2.get(row, col);
+		});
+		return newM;
 	}
+	
+	M.dot = function(mat1, mat2) {
+		if (mat1.rows !== mat2.rows || mat1.cols !== mat2.cols) {
+			throw new Error('shape does not match');
+		}
+		var sum = 0.0;
+		for (var i = 0; i < mat1.length; i++) {
+			sum += mat1.data[i] * mat2.data[i];
+		}
+		return sum;
+	};
 })();
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
