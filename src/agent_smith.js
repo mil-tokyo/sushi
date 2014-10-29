@@ -110,7 +110,7 @@ AgentSmith.Matrix = function(rows, cols) {
 		if (typeof max === 'undefined') {
 			var max = 1.0;
 		}
-		this.map(function(datum, row, col) { return min + (max - min) * Math.random(); });
+		this.setEach(function(row, col) { return min + (max - min) * Math.random(); });
 		return this;
 	};
 	
@@ -159,7 +159,7 @@ AgentSmith.Matrix = function(rows, cols) {
 			throw new Error('shape does not match');
 		}
 		var newM = new M(mat1.rows, mat2.cols);
-		newM.map(function(datum, row, col) {
+		newM.setEach(function(row, col) {
 			var tmp = 0;
 			for (var i = 0; i < mat1.cols; i++) {
 				tmp += mat1.get(row, i) * mat2.get(i, col);
@@ -174,7 +174,7 @@ AgentSmith.Matrix = function(rows, cols) {
 			throw new Error('shape does not match');
 		}
 		var newM = new M(mat1.rows, mat1.cols);
-		newM.map(function(datum, row, col) {
+		newM.setEach(function(row, col) {
 			return mat1.get(row, col) * mat2.get(row, col);
 		});
 		return newM;
