@@ -26,42 +26,15 @@ $(function() {
 		[6, 5, 4]
 	]);
 	console.log(a.toString());
-	a.setArray([1, 2, 3, 6, 5, 4]);
-	console.log(a.toString());
-	
-	console.log($M.mul(5, a).toString());
-	console.log($M.mul(a, 5).toString());
-	console.log($M.mul(2, 3));
-	
-	console.log($M.dot(a, a));
-	
-	var b = new $M(2,3);
-	b.setEach(function(row, col) { return row*10 + col; } );
-	console.log(b.toString());
-	
-	console.log($M.add(a, b).toString());
-	
-	console.log(b.t().toString());
-	
-	console.log($M.mul(b.t(), b).toString());
-	
-	var a_dash = a.clone()
-	a_dash.set(0, 0, 100);
-	console.log(a_dash.toString());
-	console.log(a.toString());
-	
-	a_dash.reshape(1,6)
-	console.log(a_dash.toString());
-	
-	var v = new $M(4, 1);
-	var w = new $M(4, 1);
-	v.setEach(function(row, col) {
-		return row;
-	});
-	w.setEach(function(row, col) {
-		return row + 5;
-	});
-	console.log($M.mul(v, w.t()).toString());
+	console.log(a.getShape());
+	console.log(a.t().toString());
+	console.log(a.t());
+	console.log(a.t().get(0, 0));
+	console.log(a.t().get(1, 0));
+	console.log(a.t().get(2, 0));
+	console.log(a.t().get(0, 1));
+	console.log(a.t().get(1, 1));
+	console.log(a.t().get(2, 1));
 });
 </script>
 </body>

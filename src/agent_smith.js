@@ -4,8 +4,9 @@ AgentSmith.Matrix = function(rows, cols) {
 	this.rows = rows;
 	this.cols = cols;
 	this.length = rows * cols;
-	this.datum_type = Float64Array
+	this.datum_type = Float64Array;
 	this.data = new this.datum_type(this.length);
+	this.row_wise = true;
 };
 
 (function() {
@@ -18,15 +19,23 @@ AgentSmith.Matrix = function(rows, cols) {
 		return this;
 	};
 	
+	P.copy_property_from = function(original) {
+		this.rows = original.rows;
+		this.cols = original.cols;
+		this.length = original.length;
+		this.datum_type = original.datum_type;
+		this.row_wise = original.row_wise;
+	};
+	
 	P.equals = function(mat) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			return false;
 		}
-		for (var i = 0; i < this.length; i++) {
-			if (this.data[i] !== mat.data[i]) {
+		P.foreach(function(row, col) {
+			if (mat.get(row, col) !== this.get(row, col)) {
 				return false;
 			}
-		}
+		});
 		return true;
 	};
 	
@@ -38,14 +47,22 @@ AgentSmith.Matrix = function(rows, cols) {
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
 		}
-		return this.data[row * this.cols + col];
+		if (this.row_wise) {
+			return this.data[row * this.cols + col];
+		} else {
+			return this.data[col * this.rows + row];
+		}
 	};
 	
 	P.set = function(row, col, datum) {
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
 		}
-		this.data[row * this.cols + col] = datum;
+		if (this.row_wise) {
+			this.data[row * this.cols + col] = datum;
+		} else {
+			this.data[col * this.rows + row] = datum;
+		}
 		return this;
 	};
 	
@@ -67,7 +84,8 @@ AgentSmith.Matrix = function(rows, cols) {
 		write_buf += '\r\n';
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
-				write_buf += formatWidth(isInt(this.get(row, col)) ? String(this.get(row, col)) : this.get(row, col).toFixed(6), 10);
+				var tmp = this.get(row, col);
+				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10);
 			}
 			if (row != this.rows - 1) { write_buf += '\r\n'; }
 		}
@@ -75,9 +93,9 @@ AgentSmith.Matrix = function(rows, cols) {
 	};
 	
 	P.map = function(func) {
-		for (var i = 0; i < this.length; i++) {
-			this.data[i] = func(this.data[i]);
-		}
+		this.forEach(function(row, col) {
+			this.set(row, col, func(this.get(row, col)));
+		}.bind(this));
 		return this;
 	};
 	
@@ -90,16 +108,27 @@ AgentSmith.Matrix = function(rows, cols) {
 		return this;
 	};
 	
+	P.forEach = function(func) {
+		for (var row = 0; row < this.rows; row++) {
+			for (var col = 0; col < this.cols; col++) {
+				func(row, col);
+			}
+		}
+		return this;
+	}
+	
 	P.t = function() {
-		var newM = new M(this.cols, this.rows);
-		newM.setEach(function(row, col) {
-			return this.get(col, row);
-		}.bind(this));
-		return newM;
+		var alias = this.alias();
+		alias.row_wise = !alias.row_wise;
+		var tmp = alias.rows;
+		alias.rows = alias.cols;
+		alias.cols = tmp;
+		return alias;
 	};
 	
 	P.clone = function() {
 		var newM = new M(this.rows, this.cols);
+		newM.copy_property_from(this);
 		newM.data = new this.datum_type(this.data);
 		return newM;
 	};
@@ -115,6 +144,7 @@ AgentSmith.Matrix = function(rows, cols) {
 	
 	P.alias = function() {
 		var newM = new M(this.rows, this.cols);
+		newM.copy_property_from(this);
 		newM.data = this.data;
 		return newM;
 	};
@@ -145,6 +175,42 @@ AgentSmith.Matrix = function(rows, cols) {
 		return arg;
 	};
 	
+	P.sum = function() {
+		var sum = 0.0;
+		for (var i = 0; i < this.length; i++) {
+			sum += this.data[i];
+		}
+		return sum;
+	};
+	
+	P.times = function(times) {
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] *= times;
+		}
+		return this;
+	};
+	
+	P.add = function(mat) {
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] += mat.data[i];
+		}
+		return this;
+	};
+	
+	P.sub = function(mat) {
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] -= mat.data[i];
+		}
+		return this;
+	};
+	
+	P.mulEach = function(mat) {
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] *= mat.data[i];
+		}
+		return this;
+	};
+	
 	M.add = function(mat1, mat2) {
 		var newM = new M(mat1.rows, mat1.cols);
 		newM.setEach(function(row, col) {
@@ -162,15 +228,6 @@ AgentSmith.Matrix = function(rows, cols) {
 	};
 	
 	M.mul = function(mat1, mat2) {
-		if (typeof mat1 === 'number' && typeof mat2 !== 'number') {
-			return mat2.clone().map(function(datum) { return datum * mat1; });
-		}
-		if (typeof mat2 === 'number' && typeof mat1 !== 'number') {
-			return M.mul(mat2, mat1);
-		}
-		if (typeof mat1 === 'number' && typeof mat2 === 'number') {
-			return mat1 * mat2;
-		}
 		if (mat1.cols !== mat2.rows) {
 			throw new Error('shape does not match');
 		}
