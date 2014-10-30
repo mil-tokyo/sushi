@@ -66,6 +66,13 @@ AgentSmith.Matrix = function(rows, cols) {
 		return this;
 	};
 	
+	P.zeros = function() {
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] = 0;
+		}
+		return this;
+	};
+	
 	P.print = function() {
 		console.log(this.toString());
 	};
