@@ -12,6 +12,24 @@ AgentSmith.Matrix = function(rows, cols) {
 	var M = AgentSmith.Matrix;
 	var P = M.prototype;
 	
+	P.setArray = function(original_array) {
+		var flatten = Array.prototype.concat.apply([], original_array);
+		this.data = new this.datum_type(flatten);
+		return this;
+	};
+	
+	P.equals = function(mat) {
+		if (this.rows !== mat.rows || this.cols !== mat.cols) {
+			return false;
+		}
+		for (var i = 0; i < this.length; i++) {
+			if (this.data[i] !== mat.data[i]) {
+				return false;
+			}
+		}
+		return true;
+	};
+	
 	P.getShape = function() {
 		return { rows : this.rows, cols : this.cols };
 	};
@@ -57,10 +75,8 @@ AgentSmith.Matrix = function(rows, cols) {
 	};
 	
 	P.map = function(func) {
-		for (var row = 0; row < this.rows; row++) {
-			for (var col = 0; col < this.cols; col++) {
-				this.set(row, col, func(this.get(row, col), row, col));
-			}
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] = func(this.data[i]);
 		}
 		return this;
 	};
@@ -76,7 +92,7 @@ AgentSmith.Matrix = function(rows, cols) {
 	
 	P.t = function() {
 		var newM = new M(this.cols, this.rows);
-		newM.map(function(datum, row, col) {
+		newM.setEach(function(row, col) {
 			return this.get(col, row);
 		}.bind(this));
 		return newM;
