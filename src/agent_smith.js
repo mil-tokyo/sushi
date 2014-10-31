@@ -1,17 +1,31 @@
 var AgentSmith = {};
 
-AgentSmith.Matrix = function(rows, cols) {
+AgentSmith.Matrix = function(rows, cols, data) {
 	this.rows = rows;
 	this.cols = cols;
 	this.length = rows * cols;
-	this.datum_type = Float64Array;
-	this.data = new this.datum_type(this.length);
+	if (data === void 0) {
+		this.data = new this.datum_type(this.length);
+	} else {
+		this.data = data;
+	}
 	this.row_wise = true;
 };
 
+// utilities
 (function() {
 	var M = AgentSmith.Matrix;
 	var P = M.prototype;
+	
+	P.datum_type = Float64Array;
+	
+	M.fromArray = function(original_array) {
+		return new M(
+			original_array.length,
+			original_array[0].length,
+			new P.datum_type(Array.prototype.concat.apply([], original_array))
+		);
+	};
 	
 	P.setArray = function(original_array) {
 		var flatten = Array.prototype.concat.apply([], original_array);
@@ -19,7 +33,7 @@ AgentSmith.Matrix = function(rows, cols) {
 		return this;
 	};
 	
-	P.copy_property_from = function(original) {
+	P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
 		this.cols = original.cols;
 		this.length = original.length;
@@ -31,17 +45,65 @@ AgentSmith.Matrix = function(rows, cols) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			return false;
 		}
-		P.foreach(function(row, col) {
-			if (mat.get(row, col) !== this.get(row, col)) {
-				return false;
+		for (var row = 0; row < this.rows; row++) {
+			for (var col = 0; col < this.cols; col++) {
+				if (this.get(row, col) !== mat.get(row, col)) {
+					return false;
+				}				
 			}
-		});
+		};
 		return true;
 	};
 	
 	P.getShape = function() {
 		return { rows : this.rows, cols : this.cols };
 	};
+	
+	P.print = function() {
+		console.log(this.toString());
+	};
+	
+	P.toString = function() {
+		var formatWidth = function(str, width) {
+			while(str.length < width) {
+				str = ' ' + str;
+			}
+			return str;
+		};
+		var isInt = function(x) {
+			return x % 1 === 0;
+		}
+		var write_buf = '-- Matrix (' + this.rows + ' x ' + this.cols + ') --';
+		write_buf += '\r\n';
+		for (var row = 0; row < this.rows; row++) {
+			for (var col = 0; col < this.cols; col++) {
+				var tmp = this.get(row, col);
+				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10);
+			}
+			if (row != this.rows - 1) { write_buf += '\r\n'; }
+		}
+		return write_buf;
+	};
+	
+	P.clone = function() {
+		var newM = new M(this.rows, this.cols);
+		newM.copyPropertyFrom(this);
+		newM.data = new this.datum_type(this.data);
+		return newM;
+	};
+	
+	P.alias = function() {
+		var newM = new M(this.rows, this.cols);
+		newM.copyPropertyFrom(this);
+		newM.data = this.data;
+		return newM;
+	};
+})();
+
+// matrix manipulation
+(function() {
+	var M = AgentSmith.Matrix;
+	var P = M.prototype;
 	
 	P.get = function(row, col) {
 		if (row >= this.rows || col >= this.cols) {
@@ -71,32 +133,6 @@ AgentSmith.Matrix = function(rows, cols) {
 			this.data[i] = 0;
 		}
 		return this;
-	};
-	
-	P.print = function() {
-		console.log(this.toString());
-	};
-	
-	P.toString = function() {
-		var formatWidth = function(str, width) {
-			while(str.length < width) {
-				str = ' ' + str;
-			}
-			return str;
-		};
-		var isInt = function(x) {
-			return x % 1 === 0;
-		}
-		var write_buf = '-- Matrix (' + this.rows + ' x ' + this.cols + ') --';
-		write_buf += '\r\n';
-		for (var row = 0; row < this.rows; row++) {
-			for (var col = 0; col < this.cols; col++) {
-				var tmp = this.get(row, col);
-				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10);
-			}
-			if (row != this.rows - 1) { write_buf += '\r\n'; }
-		}
-		return write_buf;
 	};
 	
 	P.map = function(func) {
@@ -133,13 +169,6 @@ AgentSmith.Matrix = function(rows, cols) {
 		return alias;
 	};
 	
-	P.clone = function() {
-		var newM = new M(this.rows, this.cols);
-		newM.copy_property_from(this);
-		newM.data = new this.datum_type(this.data);
-		return newM;
-	};
-	
 	P.reshape = function(rows, cols) {
 		if (rows * cols !== this.rows * this.cols) {
 			console.error('shape does not match');
@@ -147,13 +176,6 @@ AgentSmith.Matrix = function(rows, cols) {
 		this.rows = rows;
 		this.cols = cols;
 		return this;
-	};
-	
-	P.alias = function() {
-		var newM = new M(this.rows, this.cols);
-		newM.copy_property_from(this);
-		newM.data = this.data;
-		return newM;
 	};
 	
 	P.random = function(min, max) {
@@ -189,6 +211,12 @@ AgentSmith.Matrix = function(rows, cols) {
 		}
 		return sum;
 	};
+})();
+
+// basic calculation
+(function() {
+	var M = AgentSmith.Matrix;
+	var P = M.prototype;
 	
 	P.times = function(times) {
 		for (var i = 0; i < this.length; i++) {
@@ -198,77 +226,82 @@ AgentSmith.Matrix = function(rows, cols) {
 	};
 	
 	P.add = function(mat) {
-		for (var i = 0; i < this.length; i++) {
-			this.data[i] += mat.data[i];
+		if (this.rows !== mat.rows || this.cols !== mat.cols) {
+			throw new Error('shape does not match');
 		}
-		return this;
-	};
-	
-	P.sub = function(mat) {
-		for (var i = 0; i < this.length; i++) {
-			this.data[i] -= mat.data[i];
-		}
-		return this;
-	};
-	
-	P.mulEach = function(mat) {
-		for (var i = 0; i < this.length; i++) {
-			this.data[i] *= mat.data[i];
-		}
+		this.forEach(function(row, col) {
+			this.set(row, col, this.get(row, col) + mat.get(row, col));
+		}.bind(this));
 		return this;
 	};
 	
 	M.add = function(mat1, mat2) {
-		var newM = new M(mat1.rows, mat1.cols);
-		newM.setEach(function(row, col) {
-			return mat1.get(row, col) + mat2.get(row, col);
-		});
-		return newM;
+		var newM = mat1.clone();
+		return newM.add(mat2);
+	};
+	
+	P.sub = function(mat) {
+		if (this.rows !== mat.rows || this.cols !== mat.cols) {
+			throw new Error('shape does not match');
+		}
+		this.forEach(function(row, col) {
+			this.set(row, col, this.get(row, col) - mat.get(row, col));
+		}.bind(this));
+		return this;
 	};
 	
 	M.sub = function(mat1, mat2) {
-		var newM = new M(mat1.rows, mat1.cols);
+		var newM = mat1.clone();
+		return newM.sub(mat2);
+	};
+	
+	P.mulEach = function(mat) {
+		if (this.rows !== mat.rows || this.cols !== mat.cols) {
+			throw new Error('shape does not match');
+		}
+		this.forEach(function(row, col) {
+			this.set(row, col, this.get(row, col) * mat.get(row, col));
+		}.bind(this));
+		return this;
+	};
+	
+	M.mulEach = function(mat1, mat2) {
+		var newM = mat1.clone();
+		return newM.mulEach(mat2);
+	}
+	
+	P.dot = function(mat) {
+		if (this.rows !== mat.rows || this.cols !== mat.cols) {
+			throw new Error('shape does not match');
+		}
+		var sum = 0.0;
+		this.forEach(function(row, col) {
+			sum += this.get(row, col) * mat.get(row, col);
+		}.bind(this));
+		return sum;
+	};
+	
+	M.dot = function(mat1, mat2) {
+		return mat1.dot(mat2);
+	};
+	
+	P.mul = function(mat) {
+		if (this.cols !== mat.rows) {
+			throw new Error('shape does not match');
+		}
+		var newM = new M(this.rows, mat.cols);
 		newM.setEach(function(row, col) {
-			return mat1.get(row, col) - mat2.get(row, col);
-		});
+			var tmp = 0;
+			for (var i = 0; i < this.cols; i++) {
+				tmp += this.get(row, i) * mat.get(i, col);
+			}
+			return tmp;
+		}.bind(this));
 		return newM;
 	};
 	
 	M.mul = function(mat1, mat2) {
-		if (mat1.cols !== mat2.rows) {
-			throw new Error('shape does not match');
-		}
-		var newM = new M(mat1.rows, mat2.cols);
-		newM.setEach(function(row, col) {
-			var tmp = 0;
-			for (var i = 0; i < mat1.cols; i++) {
-				tmp += mat1.get(row, i) * mat2.get(i, col);
-			}
-			return tmp;
-		});
-		return newM;
-	};
-	
-	M.mulEach = function(mat1, mat2) {
-		if (mat1.rows !== mat2.rows || mat1.cols !== mat2.cols) {
-			throw new Error('shape does not match');
-		}
-		var newM = new M(mat1.rows, mat1.cols);
-		newM.setEach(function(row, col) {
-			return mat1.get(row, col) * mat2.get(row, col);
-		});
-		return newM;
-	}
-	
-	M.dot = function(mat1, mat2) {
-		if (mat1.rows !== mat2.rows || mat1.cols !== mat2.cols) {
-			throw new Error('shape does not match');
-		}
-		var sum = 0.0;
-		for (var i = 0; i < mat1.length; i++) {
-			sum += mat1.data[i] * mat2.data[i];
-		}
-		return sum;
+		return mat1.mul(mat2);
 	};
 })();
 

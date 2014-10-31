@@ -24,42 +24,136 @@ var tests = {
 		var b = new $M(3, 7);
 		a.random();
 		b.random();
-		var c = $M.add(a, b);
+		var c1 = $M.add(a, b);
 		for (var i = 0; i < a.length; i++) {
-			if (c.data[i] !== a.data[i] + b.data[i]) {
+			if (c1.data[i] !== a.data[i] + b.data[i]) {
+				return false;
+			}
+		}
+		var c2 = a.clone().add(b);
+		for (var i = 0; i < a.length; i++) {
+			if (c2.data[i] !== a.data[i] + b.data[i]) {
 				return false;
 			}
 		}
 		return true;
 	},
+	checkSub : function() {
+		var a = new $M(3, 7);
+		var b = new $M(3, 7);
+		a.random();
+		b.random();
+		var c1 = $M.sub(a, b);
+		for (var i = 0; i < a.length; i++) {
+			if (c1.data[i] !== a.data[i] - b.data[i]) {
+				return false;
+			}
+		}
+		var c2 = a.clone().sub(b);
+		for (var i = 0; i < a.length; i++) {
+			if (c2.data[i] !== a.data[i] - b.data[i]) {
+				return false;
+			}
+		}
+		return true;
+	},
+	checkMulEach : function() {
+		var a = new $M(3, 7);
+		var b = new $M(3, 7);
+		a.random();
+		b.random();
+		var c1 = $M.mulEach(a, b);
+		for (var i = 0; i < a.length; i++) {
+			if (c1.data[i] !== a.data[i] * b.data[i]) {
+				return false;
+			}
+		}
+		var c2 = a.clone().mulEach(b);
+		for (var i = 0; i < a.length; i++) {
+			if (c2.data[i] !== a.data[i] * b.data[i]) {
+				return false;
+			}
+		}
+		return true;
+	},
+	checkDot : function() {
+		var a = new $M(3, 7);
+		var b = new $M(3, 7);
+		a.random();
+		b.random();
+		var c1 = $M.dot(a, b);
+		var sum1 = 0.0;
+		for (var i = 0; i < a.length; i++) {
+			sum1 += a.data[i] * b.data[i];
+		}
+		if (sum1 !== c1) { return false; }
+		var c2 = a.clone().dot(b);
+		var sum2 = 0.0;
+		for (var i = 0; i < a.length; i++) {
+			sum2 += a.data[i] * b.data[i];
+		}
+		if (sum2 !== c2) { return false; }
+		return true;
+	},
 	checkMul : function() {
-		var a = new $M(2, 3);
-		var b = new $M(3, 2);
-		a.setArray([
+		var a = $M.fromArray([
 			[1, 2, 3],
 			[4, 5, 6]
 		]);
-		b.setArray([
+		var b = $M.fromArray([
 			[1, 2],
 			[3, 4],
 			[5, 6]
 		]);
-		return $M.mul(a, b).equals((new $M(2,2)).setArray([
-			[22, 28],
-			[49, 64]
-		]));
+		return 	$M.mul(a, b).equals(
+			$M.fromArray([
+				[22, 28],
+				[49, 64]
+			])
+		)
+		&&
+		a.mul(b).equals(
+			$M.fromArray([
+				[22, 28],
+				[49, 64]
+			])
+		);
+	},
+	checkTimes : function() {
+		var a = $M.fromArray([
+			[1, 2, 3],
+			[4, 5, 6]
+		]);
+		return a.times(2).equals(
+			$M.fromArray([
+				[2, 4, 6],
+				[8, 10, 12]
+			])
+		);
 	},
 };
+var start_test = function(tests) {
+	var success = 0;
+	Object.keys(tests).forEach(function (test_name) {
+		var start_time = (new Date()).getTime();
+		var result = false;
+		console.log('######## test ' + test_name + ' ########');
+		try {
+			var result = tests[test_name]();
+		} catch (exception) {
+			console.log('exception catched');
+			console.log(exception);
+			throw exception;
+		} finally {
+			console.log(result);
+			console.log('elapsed time : ' + ((new Date()).getTime() - start_time) + ' ms');
+			if (result) {
+				success++;
+			}
+		};
+	});
+	console.log();
+	console.log(success + ' / ' + Object.keys(tests).length + ' test cases succeeded.');
+};
 
-Object.keys(tests).forEach(function (test_name) {
-	var result = false;
-	console.log('### test ' + test_name + ' : ');
-	try {
-		var result = tests[test_name]();
-	} catch (exception) {
-		console.log('exception catched');
-		console.log(exception);
-	} finally {
-		console.log(result);
-	};
-});
+start_test(tests);
