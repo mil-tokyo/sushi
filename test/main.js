@@ -19,6 +19,18 @@ var tests = {
 		}
 		return true;
 	},
+	checkMap : function() {
+		var a = $M.fromArray([
+  			[1, 2, 3],
+  			[4, 5, 6]
+  		]);
+  		return a.map(function(datum) { return datum *2; }).equals(
+  			$M.fromArray([
+  				[2, 4, 6],
+  				[8, 10, 12]
+  			])
+  		);
+	},
 	checkAdd : function() {
 		var a = new $M(3, 7);
 		var b = new $M(3, 7);
@@ -101,21 +113,21 @@ var tests = {
 			[4, 5, 6]
 		]);
 		var b = $M.fromArray([
-			[1, 2],
-			[3, 4],
-			[5, 6]
+			[1, 2, 1],
+			[3, 4, 0],
+			[5, 6, 0]
 		]);
 		return 	$M.mul(a, b).equals(
 			$M.fromArray([
-				[22, 28],
-				[49, 64]
+				[22, 28, 1],
+				[49, 64, 4]
 			])
 		)
 		&&
 		a.mul(b).equals(
 			$M.fromArray([
-				[22, 28],
-				[49, 64]
+				[22, 28, 1],
+				[49, 64, 4]
 			])
 		);
 	},

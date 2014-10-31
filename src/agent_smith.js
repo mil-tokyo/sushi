@@ -18,7 +18,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	var M = AgentSmith.Matrix;
 	var P = M.prototype;
 	
-	P.copytPropertyFrom = function(original) {
+	P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
 		this.cols = original.cols;
 		this.length = original.length;
@@ -76,14 +76,14 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	P.clone = function() {
 		var newM = new M(this.rows, this.cols);
-		newM.copytPropertyFrom(this);
+		newM.copyPropertyFrom(this);
 		newM.data = new this.datum_type(this.data);
 		return newM;
 	};
 	
 	P.alias = function() {
 		var newM = new M(this.rows, this.cols);
-		newM.copytPropertyFrom(this);
+		newM.copyPropertyFrom(this);
 		newM.data = this.data;
 		return newM;
 	};
@@ -154,9 +154,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	P.map = function(func) {
-		this.forEach(function(row, col) {
-			this.set(row, col, func(this.get(row, col)));
-		}.bind(this));
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] = func(this.data[i]);
+		};
 		return this;
 	};
 	
@@ -338,13 +338,16 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			throw new Error('shape does not match');
 		}
 		var newM = new M(mat1.rows, mat2.cols);
-		newM.setEach(function(row, col) {
-			var tmp = 0;
-			for (var i = 0; i < mat1.cols; i++) {
-				tmp += mat1.get(row, i) * mat2.get(i, col);
+		var tmp = 0;
+		for (var row = 0; row < newM.rows; row++) {
+			for (var col = 0; col < newM.cols; col++) {
+				var tmp = 0.0;
+				for (var i = 0; i < mat1.cols; i++) {
+					tmp += mat1.get(row, i) * mat2.get(i, col);
+				}
+				newM.data[row * newM.cols + col] = tmp;
 			}
-			return tmp;
-		});
+		}
 		return newM;
 	};
 })();
