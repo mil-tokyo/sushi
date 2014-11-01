@@ -187,10 +187,10 @@ var cl_tests = {
 		b2.random();
 		
 		return (
-			$M.CL.add(a, b).nearlyEquals($M.add(a, b)) &&
-			$M.CL.add(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
-			$M.CL.add(a, b2.t()).nearlyEquals($M.add(a, b2.t())) &&
-			$M.CL.add(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t()))
+			$M.largeAdd(a, b).nearlyEquals($M.add(a, b)) &&
+			$M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
+			$M.largeAdd(a, b2.t()).nearlyEquals($M.add(a, b2.t())) &&
+			$M.largeAdd(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t()))
 			);
 	},
 	checkSubCL : function() {
@@ -202,10 +202,10 @@ var cl_tests = {
 		b2.random();
 		
 		return (
-			$M.CL.sub(a, b).nearlyEquals($M.sub(a, b)) &&
-			$M.CL.sub(a.t(), b2).nearlyEquals($M.sub(a.t(), b2)) &&
-			$M.CL.sub(a, b2.t()).nearlyEquals($M.sub(a, b2.t())) &&
-			$M.CL.sub(a.t(), b.t()).nearlyEquals($M.sub(a.t(), b.t()))
+			$M.largeSub(a, b).nearlyEquals($M.sub(a, b)) &&
+			$M.largeSub(a.t(), b2).nearlyEquals($M.sub(a.t(), b2)) &&
+			$M.largeSub(a, b2.t()).nearlyEquals($M.sub(a, b2.t())) &&
+			$M.largeSub(a.t(), b.t()).nearlyEquals($M.sub(a.t(), b.t()))
 			);
 	},
 	checkMulEachCL : function() {
@@ -216,10 +216,10 @@ var cl_tests = {
 		var b2 = new $M(9, 7);
 		b2.random();
 		return (
-			$M.CL.mulEach(a, b).nearlyEquals($M.mulEach(a, b)) &&
-			$M.CL.mulEach(a.t(), b2).nearlyEquals($M.mulEach(a.t(), b2)) &&
-			$M.CL.mulEach(a, b2.t()).nearlyEquals($M.mulEach(a, b2.t())) &&
-			$M.CL.mulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
+			$M.largeMulEach(a, b).nearlyEquals($M.mulEach(a, b)) &&
+			$M.largeMulEach(a.t(), b2).nearlyEquals($M.mulEach(a.t(), b2)) &&
+			$M.largeMulEach(a, b2.t()).nearlyEquals($M.mulEach(a, b2.t())) &&
+			$M.largeMulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
 			);
 	},
 	benchNomalAdd : function() {
@@ -230,8 +230,8 @@ var cl_tests = {
 		var b2 = new $M(100, 1000).t();
 		b2.random();
 		for (var i = 0; i < 100; i++) {
-			var c = $M.add(a, b);
-			var c2 = $M.add(a, b2);
+			a.add(b)
+			a.add(b2);
 		}
 		return true;
 	},
@@ -243,8 +243,8 @@ var cl_tests = {
 		var b2 = new $M(100, 1000).t();
 		b2.random();
 		for (var i = 0; i < 100; i++) {
-			var c = $M.CL.add(a, b);
-			var c2 = $M.CL.add(a, b2);
+			a.largeAdd(b);
+			a.largeAdd(b2);
 		}
 		return true;
 	},

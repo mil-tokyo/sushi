@@ -45,33 +45,33 @@ if (nodejs) {
 		// if the wises are same
 		var kernel = createKernel(
 			"kernel" + id + "1",
-			"__kernel void kernel" + id + "1(__global float *a, __global float *b, __global float *c, uint iNumElements) " +
+			"__kernel void kernel" + id + "1(__global float *a, __global float *b, uint iNumElements) " +
 			"{                                                                           " +
 			"    size_t i =  get_global_id(0);                                           " +
 			"    if(i >= iNumElements) return;                                           " +
-			"    c[i] = a[i] " + operator + " b[i];                                      " +
+			"    a[i] = a[i] " + operator + " b[i];                                      " +
 			"}                                                                           "
 		);
 		// different wises
 		var kernel2 = createKernel(
 			"kernel" + id + "2",
-			"__kernel void kernel" + id + "2(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols) " +
+			"__kernel void kernel" + id + "2(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) " +
 			"{                                                                           " +
 			"    size_t i =  get_global_id(0);                                           " +
 			"    if(i >= iNumElements) return;                                           " +
-			"    c[i] = a[i] " + operator + " b[(i % cols) * rows + i / cols];           " +
+			"    a[i] = a[i] " + operator + " b[(i % cols) * rows + i / cols];           " +
 			"}                                                                           "
 		);
 		
 		// different wises (particularly for incommutable function)
 		var kernel3 = createKernel(
 			"kernel" + id + "3",
-			"__kernel void kernel" + id + "3(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols) " +
-			"{                                                                           " +
-			"    size_t i =  get_global_id(0);                                           " +
-			"    if(i >= iNumElements) return;                                           " +
-			"    c[i] = a[(i % cols) * rows + i / cols] " + operator + " b[i];           " +
-			"}                                                                           "
+			"__kernel void kernel" + id + "3(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) " +
+			"{                                                                                             " +
+			"    size_t i =  get_global_id(0);                                                             " +
+			"    if(i >= iNumElements) return;                                                             " +
+			"    a[(i % cols) * rows + i / cols] = a[(i % cols) * rows + i / cols] " + operator + " b[i];  " +
+			"}                                                                                             "
 		);
 		
 		return function(mat1, mat2) {
@@ -81,13 +81,11 @@ if (nodejs) {
 			if (mat1.row_wise == mat2.row_wise) {
 				// Prepare buffer
 				var size = mat1.length * Float32Array.BYTES_PER_ELEMENT;
-				var aBuffer = context.createBuffer(WebCL.MEM_READ_ONLY, size);
+				var aBuffer = context.createBuffer(WebCL.MEM_READ_WRITE, size);
 				var bBuffer = context.createBuffer(WebCL.MEM_READ_ONLY, size);
-				var cBuffer = context.createBuffer(WebCL.MEM_WRITE_ONLY, size);
 				kernel.setArg(0, aBuffer);
 				kernel.setArg(1, bBuffer);
-				kernel.setArg(2, cBuffer);
-				kernel.setArg(3, mat1.length, WebCL.type.UINT);
+				kernel.setArg(2, mat1.length, WebCL.type.UINT);
 	
 				// Create command queue
 				queue = context.createCommandQueue($CL.devices[0], 0);
@@ -104,10 +102,7 @@ if (nodejs) {
 				queue.enqueueNDRangeKernel(kernel, null, globalWS, localWS);
 	
 				// get results and block while getting them
-				var newM = new $M(mat1.rows, mat1.cols);
-				newM.copyPropertyFrom(mat1);
-				queue.enqueueReadBuffer(cBuffer, true, 0, size, newM.data);
-				return newM;
+				queue.enqueueReadBuffer(aBuffer, true, 0, size, mat1.data);
 			} else {
 				var kernel_to_use = kernel2;
 				if (mat1.row_wise !== true) {
@@ -115,15 +110,13 @@ if (nodejs) {
 				}
 				// Prepare buffer
 				var size = mat1.length * Float32Array.BYTES_PER_ELEMENT;
-				var aBuffer = context.createBuffer(WebCL.MEM_READ_ONLY, size);
+				var aBuffer = context.createBuffer(WebCL.MEM_READ_WRITE, size);
 				var bBuffer = context.createBuffer(WebCL.MEM_READ_ONLY, size);
-				var cBuffer = context.createBuffer(WebCL.MEM_WRITE_ONLY, size);
 				kernel_to_use.setArg(0, aBuffer);
 				kernel_to_use.setArg(1, bBuffer);
-				kernel_to_use.setArg(2, cBuffer);
-				kernel_to_use.setArg(3, mat1.length, WebCL.type.UINT);
-				kernel_to_use.setArg(4, mat1.rows, WebCL.type.UINT);
-				kernel_to_use.setArg(5, mat1.cols, WebCL.type.UINT);
+				kernel_to_use.setArg(2, mat1.length, WebCL.type.UINT);
+				kernel_to_use.setArg(3, mat1.rows, WebCL.type.UINT);
+				kernel_to_use.setArg(4, mat1.cols, WebCL.type.UINT);
 	
 				// Create command queue
 				queue = context.createCommandQueue($CL.devices[0], 0);
@@ -140,9 +133,7 @@ if (nodejs) {
 				queue.enqueueNDRangeKernel(kernel_to_use, null, globalWS, localWS);
 	
 				// get results and block while getting them
-				var newM = new $M(mat1.rows, mat1.cols);
-				queue.enqueueReadBuffer(cBuffer, true, 0, size, newM.data);
-				return newM;
+				queue.enqueueReadBuffer(aBuffer, true, 0, size, mat1.data);
 			}
 		};
 	};
@@ -152,4 +143,14 @@ if (nodejs) {
 	$CL.sub = eachOperationGenerator('sub', '-');
 	
 	$CL.mulEach = eachOperationGenerator('mulEach', '*');
+	
+	// alter large matrix calculation
+	(function() {
+		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
+		$P.largeSub = function(mat) { $CL.sub(this, mat); return this; };
+		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
+		$M.largeAdd = function(mat1, mat2) { return mat1.clone().largeAdd(mat2); };
+		$M.largeSub = function(mat1, mat2) { return mat1.clone().largeSub(mat2); };
+		$M.largeMulEach = function(mat1, mat2) { return mat1.clone().largeMulEach(mat2); };
+	})();
 })(WebCL);

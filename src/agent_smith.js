@@ -387,6 +387,19 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 })();
 
+// large matrix calculation
+(function() {
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
+	
+	$P.largeAdd = $P.add;
+	$M.largeAdd = $M.add;
+	$P.largeSub = $P.sub;
+	$M.largeSub = $M.sub;
+	$P.largeMulEach = $P.mulEach;
+	$M.largeMulEach = $M.mulEach;
+})();
+
 var nodejs = (typeof window === 'undefined');
 if (nodejs) {
 	module.exports = AgentSmith;
