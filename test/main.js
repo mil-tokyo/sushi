@@ -178,13 +178,14 @@ var tests = {
 };
 
 var cl_tests = {
-	checkAddCl : function() {
+	checkAddCL : function() {
 		var a = new $M(7, 9);
-		a.range();
+		a.random();
 		var b = new $M(7, 9);
-		b.range();
+		b.random();
 		var b2 = new $M(9, 7);
-		b2.range();
+		b2.random();
+		
 		return (
 			$M.CL.add(a, b).nearlyEquals($M.add(a, b)) &&
 			$M.CL.add(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
@@ -192,10 +193,40 @@ var cl_tests = {
 			$M.CL.add(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t()))
 			);
 	},
+	checkSubCL : function() {
+		var a = new $M(7, 9);
+		a.random();
+		var b = new $M(7, 9);
+		b.random();
+		var b2 = new $M(9, 7);
+		b2.random();
+		
+		return (
+			$M.CL.sub(a, b).nearlyEquals($M.sub(a, b)) &&
+			$M.CL.sub(a.t(), b2).nearlyEquals($M.sub(a.t(), b2)) &&
+			$M.CL.sub(a, b2.t()).nearlyEquals($M.sub(a, b2.t())) &&
+			$M.CL.sub(a.t(), b.t()).nearlyEquals($M.sub(a.t(), b.t()))
+			);
+	},
+	checkMulEachCL : function() {
+		var a = new $M(7, 9);
+		a.random();
+		var b = new $M(7, 9);
+		b.random();
+		var b2 = new $M(9, 7);
+		b2.random();
+		return (
+			$M.CL.mulEach(a, b).nearlyEquals($M.mulEach(a, b)) &&
+			$M.CL.mulEach(a.t(), b2).nearlyEquals($M.mulEach(a.t(), b2)) &&
+			$M.CL.mulEach(a, b2.t()).nearlyEquals($M.mulEach(a, b2.t())) &&
+			$M.CL.mulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
+			);
+	},
 	benchNomalAdd : function() {
+		return true;
 		var a = new $M(1000, 100);
 		a.random();
-		var b = new $M(1000, 100);
+		var b = new $M(100, 1000).t();
 		b.random();
 		for (var i = 0; i < 100; i++) {
 			var c = $M.add(a, b);
@@ -203,9 +234,10 @@ var cl_tests = {
 		return true;
 	},
 	benchCLAdd : function() {
+		return true;
 		var a = new $M(1000, 100);
 		a.random();
-		var b = new $M(1000, 100);
+		var b = new $M(100, 1000).t();
 		b.random();
 		for (var i = 0; i < 100; i++) {
 			var c = $M.CL.add(a, b);

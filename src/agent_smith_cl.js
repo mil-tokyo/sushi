@@ -41,25 +41,36 @@ if (nodejs) {
 		return program.createKernel(name);
 	};
 
-	$CL.add = (function() {
+	var eachOperationGenerator = function(id, operator) {
 		// if the wises are same
 		var kernel = createKernel(
-			"vadd",
-			"__kernel void vadd(__global float *a, __global float *b, __global float *c, uint iNumElements) " +
+			"kernel" + id + "1",
+			"__kernel void kernel" + id + "1(__global float *a, __global float *b, __global float *c, uint iNumElements) " +
 			"{                                                                           " +
 			"    size_t i =  get_global_id(0);                                           " +
 			"    if(i >= iNumElements) return;                                           " +
-			"    c[i] = a[i] + b[i];                                                     " +
+			"    c[i] = a[i] " + operator + " b[i];                                      " +
 			"}                                                                           "
 		);
 		// different wises
 		var kernel2 = createKernel(
-			"vadd2",
-			"__kernel void vadd2(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols) " +
+			"kernel" + id + "2",
+			"__kernel void kernel" + id + "2(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols) " +
 			"{                                                                           " +
 			"    size_t i =  get_global_id(0);                                           " +
 			"    if(i >= iNumElements) return;                                           " +
-			"    c[i] = a[i] + b[(i % cols) * rows + i / cols];                          " +
+			"    c[i] = a[i] " + operator + " b[(i % cols) * rows + i / cols];           " +
+			"}                                                                           "
+		);
+		
+		// different wises (particularly for incommutable function)
+		var kernel3 = createKernel(
+			"kernel" + id + "3",
+			"__kernel void kernel" + id + "3(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols) " +
+			"{                                                                           " +
+			"    size_t i =  get_global_id(0);                                           " +
+			"    if(i >= iNumElements) return;                                           " +
+			"    c[i] = a[(i % cols) * rows + i / cols] " + operator + " b[i];           " +
 			"}                                                                           "
 		);
 		
@@ -98,22 +109,21 @@ if (nodejs) {
 				queue.enqueueReadBuffer(cBuffer, true, 0, size, newM.data);
 				return newM;
 			} else {
-				if (mat2.row_wise !== true) {
-					var tmp = mat1;
-					mat1 = mat2;
-					mat2 = tmp;
+				var kernel_to_use = kernel2;
+				if (mat1.row_wise !== true) {
+					kernel_to_use = kernel3;
 				}
 				// Prepare buffer
 				var size = mat1.length * Float32Array.BYTES_PER_ELEMENT;
 				var aBuffer = context.createBuffer(WebCL.MEM_READ_ONLY, size);
 				var bBuffer = context.createBuffer(WebCL.MEM_READ_ONLY, size);
 				var cBuffer = context.createBuffer(WebCL.MEM_WRITE_ONLY, size);
-				kernel2.setArg(0, aBuffer);
-				kernel2.setArg(1, bBuffer);
-				kernel2.setArg(2, cBuffer);
-				kernel2.setArg(3, mat1.length, WebCL.type.UINT);
-				kernel2.setArg(4, mat1.rows, WebCL.type.UINT);
-				kernel2.setArg(5, mat1.cols, WebCL.type.UINT);
+				kernel_to_use.setArg(0, aBuffer);
+				kernel_to_use.setArg(1, bBuffer);
+				kernel_to_use.setArg(2, cBuffer);
+				kernel_to_use.setArg(3, mat1.length, WebCL.type.UINT);
+				kernel_to_use.setArg(4, mat1.rows, WebCL.type.UINT);
+				kernel_to_use.setArg(5, mat1.cols, WebCL.type.UINT);
 	
 				// Create command queue
 				queue = context.createCommandQueue($CL.devices[0], 0);
@@ -127,7 +137,7 @@ if (nodejs) {
 				queue.enqueueWriteBuffer(bBuffer, false, 0, size, mat2.data);
 	
 				// Execute (enqueue) kernel
-				queue.enqueueNDRangeKernel(kernel2, null, globalWS, localWS);
+				queue.enqueueNDRangeKernel(kernel_to_use, null, globalWS, localWS);
 	
 				// get results and block while getting them
 				var newM = new $M(mat1.rows, mat1.cols);
@@ -135,5 +145,11 @@ if (nodejs) {
 				return newM;
 			}
 		};
-	})();
+	};
+	
+	$CL.add = eachOperationGenerator('add', '+');
+	
+	$CL.sub = eachOperationGenerator('sub', '-');
+	
+	$CL.mulEach = eachOperationGenerator('mulEach', '*');
 })(WebCL);
