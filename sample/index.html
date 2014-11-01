@@ -14,28 +14,10 @@
 <link rel="shortcut icon" href="">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="../src/agent_smith.js"></script>
+<script src="../src/agent_smith_cl.js"></script>
+<script src="../test/main.js"></script>
 </head>
 <body>
-<script>
-$(function() {
-	var $M = AgentSmith.Matrix;
-	
-	var a = new $M(2,3);
-	a.setArray([
-		[1, 2, 3],
-		[6, 5, 4]
-	]);
-	console.log(a.toString());
-	console.log(a.getShape());
-	console.log(a.t().toString());
-	console.log(a.t());
-	console.log(a.t().get(0, 0));
-	console.log(a.t().get(1, 0));
-	console.log(a.t().get(2, 0));
-	console.log(a.t().get(0, 1));
-	console.log(a.t().get(1, 1));
-	console.log(a.t().get(2, 1));
-});
-</script>
+See Console.
 </body>
 </html>

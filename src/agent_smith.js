@@ -381,6 +381,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 })();
 
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+var nodejs = (typeof window === 'undefined');
+if (nodejs) {
 	module.exports = AgentSmith;
 }

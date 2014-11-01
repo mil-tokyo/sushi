@@ -1,5 +1,8 @@
-var AgentSmith = require('../src/agent_smith');
-require('../src/agent_smith_cl');
+var nodejs = (typeof window === 'undefined');
+if (nodejs) {
+	AgentSmith = require('../src/agent_smith');
+	require('../src/agent_smith_cl');
+}
 var $M = AgentSmith.Matrix;
 
 var nearlyEquals = function(a, b) {
@@ -149,6 +152,9 @@ var tests = {
 			])
 		);
 	},
+};
+
+var cl_tests = {
 	checkAddCl : function() {
 		var a = new $M(10, 10);
 		a.random();
@@ -157,7 +163,8 @@ var tests = {
 		return $M.CL.add(a, b).nearlyEquals($M.add(a, b));
 	},
 };
-var start_test = function(tests) {
+
+var start_tests = function(tests) {
 	var success = 0;
 	Object.keys(tests).forEach(function (test_name) {
 		var start_time = (new Date()).getTime();
@@ -179,6 +186,12 @@ var start_test = function(tests) {
 	});
 	console.log();
 	console.log(success + ' / ' + Object.keys(tests).length + ' test cases succeeded.');
+	console.log();
 };
 
-start_test(tests);
+console.log('===================== start tests =====================');
+start_tests(tests);
+if (typeof $M.CL !== 'undefined') {
+	console.log('===================== start tests for webCL =====================');
+	start_tests(cl_tests);
+}

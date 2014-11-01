@@ -25,19 +25,17 @@ if (nodejs) {
 	var $CL = $M.CL;
 	var $P = $M.prototype;
 	
-	// Pick platform
 	var platformList = WebCL.getPlatforms();
-	var platform = platformList[0];
-	console.log('using platform: ' + platform.getInfo(WebCL.PLATFORM_NAME));
+	$CL.platform = platformList[0];
+	$CL.platform_info = $CL.platform.getInfo(WebCL.PLATFORM_NAME);
 
-	// Query the set of devices on this platform
-	var devices = platform.getDevices(WebCL.DEVICE_TYPE_DEFAULT);
-	console.log('using device: ' + devices[0].getInfo(WebCL.DEVICE_NAME));
+	$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_DEFAULT);
+	$CL.device_info = $CL.devices[0].getInfo(WebCL.DEVICE_NAME);
 
-	// create GPU context for this platform
+	// create GPU context for this $CL.platform
 	var context = WebCL.createContext({
 		deviceType : WebCL.DEVICE_TYPE_DEFAULT,
-		platform : platform
+		platform : $CL.platform
 	});
 
 	$CL.add = function(mat1, mat2) {
@@ -58,7 +56,7 @@ if (nodejs) {
 			var program = context.createProgram(kernelSourceCode);
 
 			// Build program
-			program.build(devices);
+			program.build($CL.devices);
 
 			var size = mat1.length * Float32Array.BYTES_PER_ELEMENT;
 
@@ -73,7 +71,7 @@ if (nodejs) {
 			try {
 				kernel = program.createKernel("vadd");
 			} catch (err) {
-				console.log(program.getBuildInfo(devices[0],
+				console.log(program.getBuildInfo($CL.devices[0],
 						WebCL.PROGRAM_BUILD_LOG));
 			}
 
@@ -84,7 +82,7 @@ if (nodejs) {
 			kernel.setArg(3, mat1.length, WebCL.type.FLOAT);
 
 			// Create command queue
-			queue = context.createCommandQueue(devices[0], 0);
+			queue = context.createCommandQueue($CL.devices[0], 0);
 
 			// Execute the OpenCL kernel on the list
 			var localWS = [ 5 ]; // process one list at a time
