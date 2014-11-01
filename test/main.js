@@ -162,6 +162,26 @@ var cl_tests = {
 		b.random();
 		return $M.CL.add(a, b).nearlyEquals($M.add(a, b));
 	},
+	benchNomalAdd : function() {
+		var a = new $M(1000, 100);
+		a.random();
+		var b = new $M(1000, 100);
+		b.random();
+		for (var i = 0; i < 100; i++) {
+			var c = $M.add(a, b);
+		}
+		return true;
+	},
+	benchCLAdd : function() {
+		var a = new $M(1000, 100);
+		a.random();
+		var b = new $M(1000, 100);
+		b.random();
+		for (var i = 0; i < 100; i++) {
+			var c = $M.CL.add(a, b);
+		}
+		return true;
+	},
 };
 
 var start_tests = function(tests) {
