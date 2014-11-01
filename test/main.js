@@ -227,8 +227,20 @@ var cl_tests = {
 		a.random();
 		var b = new $M(90, 40);
 		b.random();
-		return $M.largeMul(a, b).nearlyEquals($M.mul(a, b));
+		var b2 = new $M(70, 40);
+		b2.random();
+		var b3 = new $M(40, 90);
+		b3.random();
+		var b4 = new $M(40, 70);
+		b4.random();		
+		return (
+			$M.largeMul(a, b).nearlyEquals($M.mul(a, b)) &&
+			$M.largeMul(a.t(), b2).nearlyEquals($M.mul(a.t(), b2)) &&
+			$M.largeMul(a, b3.t()).nearlyEquals($M.mul(a, b3.t())) &&
+			$M.largeMul(a.t(), b4.t()).nearlyEquals($M.mul(a.t(), b4.t()))
+			);
 	},
+	/*
 	benchNomalAdd : function() {
 		var a = new $M(1000, 100);
 		a.random();
@@ -265,6 +277,7 @@ var cl_tests = {
 		}
 		return true;
 	},
+	*/
 	benchCLMul : function() {
 		var a = new $M(1000, 100);
 		a.random();
