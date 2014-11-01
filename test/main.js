@@ -240,7 +240,6 @@ var cl_tests = {
 			$M.largeMul(a.t(), b4.t()).nearlyEquals($M.mul(a.t(), b4.t()))
 			);
 	},
-	/*
 	benchNomalAdd : function() {
 		var a = new $M(1000, 100);
 		a.random();
@@ -268,20 +267,19 @@ var cl_tests = {
 		return true;
 	},
 	benchNormalMul : function() {
-		var a = new $M(1000, 100);
+		var a = new $M(128, 768);
 		a.random();
-		var b = new $M(100, 1000);
+		var b = new $M(768, 10);
 		b.random();
 		for (var i = 0; i < 1; i++) {
 			$M.mul(a, b);
 		}
 		return true;
 	},
-	*/
 	benchCLMul : function() {
-		var a = new $M(1000, 100);
+		var a = new $M(128, 768);
 		a.random();
-		var b = new $M(100, 1000);
+		var b = new $M(768, 10);
 		b.random();
 		for (var i = 0; i < 1; i++) {
 			$M.largeMul(a, b);
