@@ -223,24 +223,28 @@ var cl_tests = {
 			);
 	},
 	benchNomalAdd : function() {
-		return true;
 		var a = new $M(1000, 100);
 		a.random();
-		var b = new $M(100, 1000).t();
+		var b = new $M(1000, 100);
 		b.random();
+		var b2 = new $M(100, 1000).t();
+		b2.random();
 		for (var i = 0; i < 100; i++) {
 			var c = $M.add(a, b);
+			var c2 = $M.add(a, b2);
 		}
 		return true;
 	},
 	benchCLAdd : function() {
-		return true;
 		var a = new $M(1000, 100);
 		a.random();
-		var b = new $M(100, 1000).t();
+		var b = new $M(1000, 100);
 		b.random();
+		var b2 = new $M(100, 1000).t();
+		b2.random();
 		for (var i = 0; i < 100; i++) {
 			var c = $M.CL.add(a, b);
+			var c2 = $M.CL.add(a, b2);
 		}
 		return true;
 	},
