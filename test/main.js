@@ -222,6 +222,13 @@ var cl_tests = {
 			$M.largeMulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
 			);
 	},
+	checkMulCL : function() {
+		var a = new $M(70, 90);
+		a.random();
+		var b = new $M(90, 40);
+		b.random();
+		return $M.largeMul(a, b).nearlyEquals($M.mul(a, b));
+	},
 	benchNomalAdd : function() {
 		var a = new $M(1000, 100);
 		a.random();
@@ -248,6 +255,26 @@ var cl_tests = {
 		}
 		return true;
 	},
+	benchNormalMul : function() {
+		var a = new $M(1000, 100);
+		a.random();
+		var b = new $M(100, 1000);
+		b.random();
+		for (var i = 0; i < 1; i++) {
+			$M.mul(a, b);
+		}
+		return true;
+	},
+	benchCLMul : function() {
+		var a = new $M(1000, 100);
+		a.random();
+		var b = new $M(100, 1000);
+		b.random();
+		for (var i = 0; i < 1; i++) {
+			$M.largeMul(a, b);
+		}
+		return true;
+	}
 };
 
 var start_tests = function(tests) {

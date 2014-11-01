@@ -398,6 +398,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.largeSub = $M.sub;
 	$P.largeMulEach = $P.mulEach;
 	$M.largeMulEach = $M.mulEach;
+	$P.largeMul = $P.mul;
+	$M.largeMul = $M.mul;
 })();
 
 var nodejs = (typeof window === 'undefined');
