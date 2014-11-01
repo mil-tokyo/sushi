@@ -141,6 +141,12 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
+	$P.range = function() {
+		for (var i = 0; i < this.data.length; i++) {
+			this.data[i] = i;
+		}
+	};
+	
 	$M.fromArray = function(original_array) {
 		var newM = new $M(original_array.length, original_array[0].length, null);
 		newM.setArray(original_array);

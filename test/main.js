@@ -78,6 +78,29 @@ var tests = {
 		}
 		return true;
 	},
+	checkTransposeAddSub : function() {
+		var a = new $M(4, 6);
+		a.random();
+		var b = new $M(6, 4);
+		b.random();
+		var a_add_bt = $M.add(a, b.t());
+		for (var row = 0; row < a_add_bt.rows; row++) {
+			for (var col = 0; col < a_add_bt.cols; col++) {
+				if (!nearlyEquals(a_add_bt.get(row, col), (a.get(row, col) + b.t().get(row, col)))) {
+					return false;
+				}
+			}
+		}
+		var a_sub_bt = $M.sub(a, b.t());
+		for (var row = 0; row < a_sub_bt.rows; row++) {
+			for (var col = 0; col < a_sub_bt.cols; col++) {
+				if (!nearlyEquals(a_sub_bt.get(row, col), (a.get(row, col) - b.t().get(row, col)))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	},
 	checkMulEach : function() {
 		var a = new $M(3, 7);
 		var b = new $M(3, 7);
@@ -156,11 +179,18 @@ var tests = {
 
 var cl_tests = {
 	checkAddCl : function() {
-		var a = new $M(10, 10);
-		a.random();
-		var b = new $M(10, 10);
-		b.random();
-		return $M.CL.add(a, b).nearlyEquals($M.add(a, b));
+		var a = new $M(7, 9);
+		a.range();
+		var b = new $M(7, 9);
+		b.range();
+		var b2 = new $M(9, 7);
+		b2.range();
+		return (
+			$M.CL.add(a, b).nearlyEquals($M.add(a, b)) &&
+			$M.CL.add(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
+			$M.CL.add(a, b2.t()).nearlyEquals($M.add(a, b2.t())) &&
+			$M.CL.add(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t()))
+			);
 	},
 	benchNomalAdd : function() {
 		var a = new $M(1000, 100);
