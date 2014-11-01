@@ -1,5 +1,11 @@
 var AgentSmith = require('../src/agent_smith');
+require('../src/agent_smith_cl');
 var $M = AgentSmith.Matrix;
+
+var nearlyEquals = function(a, b) {
+	var tmp = a - b;
+	return -0.01 < tmp && tmp < 0.01;
+};
 
 var tests = {
 	checkEquals : function() {
@@ -10,11 +16,11 @@ var tests = {
 			a.data[i] = tmp;
 			b.data[i] = tmp;
 		}
-		if (a.equals(b) !== true) {
+		if (a.nearlyEquals(b) !== true) {
 			return false;
 		}
 		a.set(0, 0, -100);
-		if (a.equals(b) === true) {
+		if (a.nearlyEquals(b) === true) {
 			return false;
 		}
 		return true;
@@ -38,13 +44,13 @@ var tests = {
 		b.random();
 		var c1 = $M.add(a, b);
 		for (var i = 0; i < a.length; i++) {
-			if (c1.data[i] !== a.data[i] + b.data[i]) {
+			if (!nearlyEquals(c1.data[i], a.data[i] + b.data[i])) {
 				return false;
 			}
 		}
 		var c2 = a.clone().add(b);
 		for (var i = 0; i < a.length; i++) {
-			if (c2.data[i] !== a.data[i] + b.data[i]) {
+			if (!nearlyEquals(c2.data[i], a.data[i] + b.data[i])) {
 				return false;
 			}
 		}
@@ -57,13 +63,13 @@ var tests = {
 		b.random();
 		var c1 = $M.sub(a, b);
 		for (var i = 0; i < a.length; i++) {
-			if (c1.data[i] !== a.data[i] - b.data[i]) {
+			if (!nearlyEquals(c1.data[i], a.data[i] - b.data[i])) {
 				return false;
 			}
 		}
 		var c2 = a.clone().sub(b);
 		for (var i = 0; i < a.length; i++) {
-			if (c2.data[i] !== a.data[i] - b.data[i]) {
+			if (!nearlyEquals(c2.data[i], a.data[i] - b.data[i])) {
 				return false;
 			}
 		}
@@ -76,13 +82,13 @@ var tests = {
 		b.random();
 		var c1 = $M.mulEach(a, b);
 		for (var i = 0; i < a.length; i++) {
-			if (c1.data[i] !== a.data[i] * b.data[i]) {
+			if (!nearlyEquals(c1.data[i], a.data[i] * b.data[i])) {
 				return false;
 			}
 		}
 		var c2 = a.clone().mulEach(b);
 		for (var i = 0; i < a.length; i++) {
-			if (c2.data[i] !== a.data[i] * b.data[i]) {
+			if (!nearlyEquals(c2.data[i], a.data[i] * b.data[i])) {
 				return false;
 			}
 		}
@@ -142,6 +148,13 @@ var tests = {
 				[8, 10, 12]
 			])
 		);
+	},
+	checkAddCl : function() {
+		var a = new $M(10, 10);
+		a.random();
+		var b = new $M(10, 10);
+		b.random();
+		return $M.CL.add(a, b).nearlyEquals($M.add(a, b));
 	},
 };
 var start_test = function(tests) {

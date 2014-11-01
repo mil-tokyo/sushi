@@ -4,7 +4,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.rows = rows;
 	this.cols = cols;
 	this.length = rows * cols;
-	this.datum_type = Float64Array;
+	this.datum_type = Float32Array;
 	if (data === void 0) {
 		this.data = new this.datum_type(this.length);
 	} else {
@@ -15,10 +15,10 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 // utilities
 (function() {
-	var M = AgentSmith.Matrix;
-	var P = M.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
 	
-	P.copyPropertyFrom = function(original) {
+	$P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
 		this.cols = original.cols;
 		this.length = original.length;
@@ -26,7 +26,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		this.row_wise = original.row_wise;
 	};
 	
-	P.equals = function(mat) {
+	$P.equals = function(mat) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			return false;
 		}
@@ -48,11 +48,40 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return true;
 	};
 	
-	P.print = function() {
+	$P.nearlyEquals = function(mat, epsilon) {
+		if (epsilon === void 0) {
+			var epsilon = 0.01;
+		}
+		var nearlyEquals = function(a, b) {
+			var tmp = a - b;
+			return -epsilon < tmp && tmp < epsilon;
+		};
+		if (this.rows !== mat.rows || this.cols !== mat.cols) {
+			return false;
+		}
+		if (this.row_wise == mat.row_wise) {
+			for (var i = 0; i < this.length; i++) {
+				if (!nearlyEquals(this.data[i], mat.data[i])) {
+					return false;
+				}
+			}
+		} else {
+			for (var row = 0; row < this.rows; row++) {
+				for (var col = 0; col < this.cols; col++) {
+					if (!nearlyEquals(this.get(row, col), mat.get(row, col))) {
+						return false;
+					}				
+				}
+			};
+		}
+		return true;
+	};
+	
+	$P.print = function() {
 		console.log(this.toString());
 	};
 	
-	P.toString = function() {
+	$P.toString = function() {
 		var formatWidth = function(str, width) {
 			while(str.length < width) {
 				str = ' ' + str;
@@ -74,15 +103,15 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return write_buf;
 	};
 	
-	P.clone = function() {
-		var newM = new M(this.rows, this.cols);
+	$P.clone = function() {
+		var newM = new $M(this.rows, this.cols);
 		newM.copyPropertyFrom(this);
 		newM.data = new this.datum_type(this.data);
 		return newM;
 	};
 	
-	P.alias = function() {
-		var newM = new M(this.rows, this.cols);
+	$P.alias = function() {
+		var newM = new $M(this.rows, this.cols);
 		newM.copyPropertyFrom(this);
 		newM.data = this.data;
 		return newM;
@@ -91,17 +120,17 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 // initializer
 (function() {
-	var M = AgentSmith.Matrix;
-	var P = M.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
 	
-	P.zeros = function() {
+	$P.zeros = function() {
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] = 0;
 		}
 		return this;
 	};
 	
-	P.random = function(min, max) {
+	$P.random = function(min, max) {
 		if (typeof min === 'undefined') {
 			var min = 0.0;
 		}
@@ -112,13 +141,13 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	M.fromArray = function(original_array) {
-		var newM = new M(original_array.length, original_array[0].length, null);
+	$M.fromArray = function(original_array) {
+		var newM = new $M(original_array.length, original_array[0].length, null);
 		newM.setArray(original_array);
 		return newM;
 	};
 	
-	P.setArray = function(original_array) {
+	$P.setArray = function(original_array) {
 		var flatten = Array.prototype.concat.apply([], original_array);
 		this.data = new this.datum_type(flatten);
 		return this;
@@ -127,10 +156,10 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 // general manipulation
 (function() {
-	var M = AgentSmith.Matrix;
-	var P = M.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
 	
-	P.get = function(row, col) {
+	$P.get = function(row, col) {
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
 		}
@@ -141,7 +170,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 	};
 	
-	P.set = function(row, col, datum) {
+	$P.set = function(row, col, datum) {
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
 		}
@@ -153,14 +182,14 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	P.map = function(func) {
+	$P.map = function(func) {
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] = func(this.data[i]);
 		};
 		return this;
 	};
 	
-	P.setEach = function(func) {
+	$P.setEach = function(func) {
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
 				this.set(row, col, func(row, col));
@@ -169,7 +198,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	P.forEach = function(func) {
+	$P.forEach = function(func) {
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
 				func(row, col);
@@ -181,10 +210,10 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 // shape
 (function() {
-	var M = AgentSmith.Matrix;
-	var P = M.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
 	
-	P.reshape = function(rows, cols) {
+	$P.reshape = function(rows, cols) {
 		if (rows * cols !== this.rows * this.cols) {
 			console.error('shape does not match');
 		}
@@ -193,7 +222,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	P.t = function() {
+	$P.t = function() {
 		var alias = this.alias();
 		alias.row_wise = !alias.row_wise;
 		var tmp = alias.rows;
@@ -202,17 +231,17 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return alias;
 	};
 	
-	P.getShape = function() {
+	$P.getShape = function() {
 		return { rows : this.rows, cols : this.cols };
 	};
 })();
 
 // statistics
 (function() {
-	var M = AgentSmith.Matrix;
-	var P = M.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
 	
-	P.argmax = function() {
+	$P.argmax = function() {
 		var max_val = this.data[0];
 		var arg = { row : 0, col : 0 };
 		for (var row = 0; row < this.rows; row++) {
@@ -227,7 +256,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return arg;
 	};
 	
-	P.sum = function() {
+	$P.sum = function() {
 		var sum = 0.0;
 		for (var i = 0; i < this.length; i++) {
 			sum += this.data[i];
@@ -238,17 +267,17 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 // basic calculation
 (function() {
-	var M = AgentSmith.Matrix;
-	var P = M.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = $M.prototype;
 	
-	P.times = function(times) {
+	$P.times = function(times) {
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] *= times;
 		}
 		return this;
 	};
 	
-	P.add = function(mat) {
+	$P.add = function(mat) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			throw new Error('shape does not match');
 		}
@@ -264,11 +293,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	M.add = function(mat1, mat2) {
+	$M.add = function(mat1, mat2) {
 		return mat1.clone().add(mat2);
 	};
 	
-	P.sub = function(mat) {
+	$P.sub = function(mat) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			throw new Error('shape does not match');
 		}
@@ -284,11 +313,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	M.sub = function(mat1, mat2) {
+	$M.sub = function(mat1, mat2) {
 		return mat1.clone().sub(mat2);
 	};
 	
-	P.mulEach = function(mat) {
+	$P.mulEach = function(mat) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			throw new Error('shape does not match');
 		}
@@ -304,11 +333,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	M.mulEach = function(mat1, mat2) {
+	$M.mulEach = function(mat1, mat2) {
 		return mat1.clone().mulEach(mat2);
 	};
 	
-	P.dot = function(mat) {
+	$P.dot = function(mat) {
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			throw new Error('shape does not match');
 		}
@@ -325,19 +354,19 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return sum;
 	};
 	
-	M.dot = function(mat1, mat2) {
+	$M.dot = function(mat1, mat2) {
 		return mat1.dot(mat2);
 	};
 	
-	P.mul = function(mat) {
-		return M.mul(this, mat);
+	$P.mul = function(mat) {
+		return $M.mul(this, mat);
 	};
 	
-	M.mul = function(mat1, mat2) {
+	$M.mul = function(mat1, mat2) {
 		if (mat1.cols !== mat2.rows) {
 			throw new Error('shape does not match');
 		}
-		var newM = new M(mat1.rows, mat2.cols);
+		var newM = new $M(mat1.rows, mat2.cols);
 		var tmp = 0;
 		for (var row = 0; row < newM.rows; row++) {
 			for (var col = 0; col < newM.cols; col++) {
