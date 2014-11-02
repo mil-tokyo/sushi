@@ -77,17 +77,50 @@ if (nodejs) {
 			"}                                                                                             "
 		);
 		
+		// broadcast 1
+		var kernel4 = createKernel(
+			"kernel_" + id + "_4",
+			"__kernel void kernel_" + id + "_4(__global float *a, __global float *b, uint iNumElements, uint b_length) " +
+			"{                                                                                             " +
+			"    size_t i =  get_global_id(0);                                                             " +
+			"    if(i >= iNumElements) return;                                                             " +
+			"    a[i] = a[i] " + operator + " b[i % b_length];                                             " +
+			"}                                                                                             "
+		);
+		
+		// broadcast 2
+		var kernel5 = createKernel(
+				"kernel_" + id + "_5",
+				"__kernel void kernel_" + id + "_5(__global float *a, __global float *b, uint iNumElements, uint b_skip) " +
+				"{                                                                                             " +
+				"    size_t i =  get_global_id(0);                                                             " +
+				"    if(i >= iNumElements) return;                                                             " +
+				"    a[i] = a[i] " + operator + " b[i / b_skip];                                               " +
+				"}                                                                                             "
+			);
+		
 		return function(mat1, mat2) {
-			if (mat1.rows !== mat2.rows || mat1.cols !== mat2.cols) {
-				throw new Error('shape does not match');
+			if (!(
+				(mat1.rows === mat2.rows && mat1.cols === mat2.cols) ||
+				(mat1.rows === mat2.rows && mat2.cols === 1) ||
+				(mat1.cols === mat2.cols && mat2.rows === 1) ) ) {
+					throw new Error('shape does not match');
 			}
 			var kernel_to_use = null;
-			if (mat1.row_wise === mat2.row_wise) {
-				kernel_to_use = kernel1;
-			} else if (mat1.row_wise === true) {
-				kernel_to_use = kernel2;
+			if (mat1.rows === mat2.rows && mat1.cols === mat2.cols) {
+				if (mat1.row_wise === mat2.row_wise) {
+					kernel_to_use = kernel1;
+				} else if (mat1.row_wise === true) {
+					kernel_to_use = kernel2;
+				} else {
+					kernel_to_use = kernel3;
+				}
+			} else if ((mat1.row_wise && mat2.rows === 1) || (!mat1.row_wise && mat2.cols === 1)) {
+				// broadcast 1
+				kernel_to_use = kernel4;
 			} else {
-				kernel_to_use = kernel3;
+				// broadcast 2
+				kernel_to_use = kernel5;
 			}
 			// Prepare buffer
 			var size = mat1.length * Float32Array.BYTES_PER_ELEMENT;
@@ -96,9 +129,14 @@ if (nodejs) {
 			kernel_to_use.setArg(0, aBuffer);
 			kernel_to_use.setArg(1, bBuffer);
 			kernel_to_use.setArg(2, mat1.length, WebCL.type.UINT);
-			if (mat1.row_wise !== mat2.row_wise) {
+			if (kernel_to_use === kernel1) {
+			} else if (kernel_to_use === kernel2 || kernel_to_use === kernel3) {
 				kernel_to_use.setArg(3, mat1.rows, WebCL.type.UINT);
 				kernel_to_use.setArg(4, mat1.cols, WebCL.type.UINT);
+			} else if (kernel_to_use === kernel4) {
+				kernel_to_use.setArg(3, mat2.length, WebCL.type.UINT);
+			} else if (kernel_to_use === kernel5) {
+				kernel_to_use.setArg(3, mat1.length / mat2.length, WebCL.type.UINT);
 			}
 			
 			// Execute the OpenCL kernel on the list

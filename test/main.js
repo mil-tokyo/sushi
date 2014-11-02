@@ -309,6 +309,55 @@ var cl_tests = {
 			$M.largeMulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
 			);
 	},
+	checkBroadCastAddCL : function() {
+		var a = $M.fromArray([
+			[1, 2, 3],
+			[4, 5, 6]
+		]);
+		var b = $M.fromArray([
+			[1, 2, 3]
+		]);
+		var c = $M.fromArray([
+			[1],
+			[4]
+		]);
+		var d = $M.fromArray([
+			[1, 4]
+		]);
+		var e = $M.fromArray([
+			[1, 4],
+			[2, 5],
+			[3, 6]
+		]);
+		var f = $M.fromArray([
+			[1],
+			[2],
+			[3]
+		]);
+		return 	$M.largeAdd(a, b).equals(
+			$M.fromArray([
+				[2, 4, 6],
+				[5, 7, 9]
+			])
+		) && $M.largeAdd(a, c).equals(
+			$M.fromArray([
+				[2, 3, 4],
+				[8, 9, 10]
+			])
+		) && $M.largeAdd(a, d.t()).equals(
+			$M.add(a, c)
+		) && $M.largeAdd(a, f.t()).equals(
+			$M.add(a, b)
+		) && $M.largeAdd(a.t(), d).equals(
+			$M.add(e, d)
+		) && $M.largeAdd(a.t(), f).equals(
+			$M.add(e, f)
+		) && $M.largeAdd(a.t(), b.t()).equals(
+			$M.add(a, b).t()
+		) && $M.largeAdd(a.t(), c.t()).equals(
+			$M.add(a, c).t()
+		);
+	},
 	checkMulCL : function() {
 		var a = new $M(70, 90);
 		a.random();
