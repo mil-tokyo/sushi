@@ -175,6 +175,21 @@ var tests = {
 			])
 		);
 	},
+	checkColVectors : function() {
+		var vectors = [];
+		for (var i = 0; i < 5; i++) {
+			vectors.push((new $M(10, 1)).random());
+		}
+		var mat = $M.fromColVectors(vectors);
+		for (var i = 0; i < vectors.length; i++) {
+			for (var row = 0; row < vectors[i].rows; row++) {
+				if (vectors[i].get(row, 0) !== mat.get(row, i)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	},
 };
 
 var cl_tests = {

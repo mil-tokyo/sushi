@@ -158,6 +158,20 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		this.data = new this.datum_type(flatten);
 		return this;
 	};
+	
+	$M.fromColVectors = function(original_vectors) {
+		if (!(original_vectors instanceof Array)) {
+			throw new Error('input must be an array');
+		}
+		if (original_vectors[0].cols !== 1) {
+			throw new Error('vectors must be col vectors');
+		}
+		var newM = new $M(original_vectors[0].length, original_vectors.length);
+		newM.setEach(function(row, col) {
+			return original_vectors[col].get(row, 0);
+		});
+		return newM;
+	};
 })();
 
 // general manipulation
