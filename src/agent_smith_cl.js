@@ -214,7 +214,7 @@ if (nodejs) {
 
 			// Execute the OpenCL kernel on the list
 			var localWS = [5]; // process one list at a time
-			var globalWS = [clu.roundUp(localWS, mat1.length)]; // process entire list
+			var globalWS = [clu.roundUp(localWS, newM.length)]; // process entire list
 
 			// Do the work
 			queue.enqueueWriteBuffer(aBuffer, false, 0, mat1.length * Float32Array.BYTES_PER_ELEMENT, mat1.data);

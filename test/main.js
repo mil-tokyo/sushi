@@ -294,7 +294,7 @@ var cl_tests = {
 		var b3 = new $M(40, 90);
 		b3.random();
 		var b4 = new $M(40, 70);
-		b4.random();		
+		b4.random();
 		return (
 			$M.largeMul(a, b).nearlyEquals($M.mul(a, b)) &&
 			$M.largeMul(a.t(), b2).nearlyEquals($M.mul(a.t(), b2)) &&
