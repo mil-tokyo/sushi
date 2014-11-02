@@ -316,35 +316,55 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	var eachOperationGenerator = function(op) {
 		return eval(
-			"	(function(mat) {																			" +
-			"		if (!( (this.rows === mat.rows && this.cols === mat.cols) || 							" +
-			"			   (this.rows === mat.rows && mat.cols === 1) ||									" +
-			"			   (this.cols === mat.cols && mat.rows === 1) ) ) {									" +
-			"			throw new Error('shape does not match');											" +
-			"		}																						" +
-			"		if (this.rows === mat.rows && this.cols === mat.cols) {									" +
-			"			if (this.row_wise == mat.row_wise) {												" +
-			"				for (var i = 0; i < this.length; i++) {											" +
-			"					this.data[i] " + op + "= mat.data[i];										" +
-			"				}																				" +
-			"			} else {																			" +
-			"				this.forEach(function(row, col) {												" +
-			"					this.set(row, col, this.get(row, col) " + op + " mat.get(row, col));		" +
-			"				}.bind(this));																	" +
-			"			}																					" +
-			"		} else if ((this.row_wise && mat.rows === 1) || (!this.row_wise && mat.cols === 1)) {	" +
-			"			for (var i = 0; i < this.length; i++) {												" +
-			"				this.data[i] " + op + "= mat.data[i % this.cols];								" +
-			"			}																					" +
-			"		} else {																				" +
-			"			for (var i = 0; i < mat.length; i++) {												" +
-			"				for (var j = 0; j < this.cols; j++) {											" +
-			"					this.data[i * this.cols + j] " + op + "= mat.data[i];						" +
-			"				}																				" +
-			"			}																					" +
-			"		}																						" +
-			"		return this;																			" +
+			[
+			"	(function(mat) {																			",
+			"		if (!( (this.rows === mat.rows && this.cols === mat.cols) || 							",
+			"			   (this.rows === mat.rows && mat.cols === 1) ||									",
+			"			   (this.cols === mat.cols && mat.rows === 1) ) ) {									",
+			"			throw new Error('shape does not match');											",
+			"		}																						",
+			"		if (this.rows === mat.rows && this.cols === mat.cols) {									",
+			"			if (this.row_wise == mat.row_wise) {												",
+			"				for (var i = 0; i < this.length; i++) {											",
+			"					this.data[i] " + op + "= mat.data[i];										",
+			"				}																				",
+			"			} else {																			",
+			"				this.forEach(function(row, col) {												",
+			"					this.set(row, col, this.get(row, col) " + op + " mat.get(row, col));		",
+			"				}.bind(this));																	",
+			"			}																					",
+			"		} else if (this.row_wise) {																",
+			"			if (mat.cols ===1) {																",
+			"				for (var row = 0; row < mat.rows; row++) {										",
+			"					for (var col = 0; col < this.cols; col++) {									",
+			"						this.data[row * this.cols + col] " + op + "= mat.data[row];				",
+			"					}																			",
+			"				}																				",
+			"			} else {																			",
+			"				for (var col = 0; col < mat.cols; col++) {										",
+			"					for (var row = 0; row < this.rows; row++) {									",
+			"						this.data[row * this.cols + col] " + op + "= mat.data[col];				",
+			"					}																			",
+			"				}																				",
+			"			}																					",
+			"		} else {																				",
+			"			if (mat.cols ===1) {																",
+			"				for (var row = 0; row < mat.rows; row++) {										",
+			"					for (var col = 0; col < this.cols; col++) {									",
+			"						this.data[col * this.rows + row] " + op + "= mat.data[row];				",
+			"					}																			",
+			"				}																				",
+			"			} else {																			",
+			"				for (var col = 0; col < mat.cols; col++) {										",
+			"					for (var row = 0; row < this.rows; row++) {									",
+			"						this.data[col * this.rows + row] " + op + "= mat.data[col];				",
+			"					}																			",
+			"				}																				",
+			"			}																					",
+			"		}																						",
+			"		return this;																			",
 			"	});																							"
+			].join('\r\n')
 		);
 	};
 	

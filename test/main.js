@@ -113,16 +113,41 @@ var tests = {
 			[1],
 			[4]
 		]);
+		var d = $M.fromArray([
+			[1, 4]
+		]);
+		var e = $M.fromArray([
+			[1, 4],
+			[2, 5],
+			[3, 6]
+		]);
+		var f = $M.fromArray([
+			[1],
+			[2],
+			[3]
+		]);
 		return 	$M.add(a, b).equals(
 			$M.fromArray([
 				[2, 4, 6],
 				[5, 7, 9]
 			])
-		) && $M.mulEach(a, c).equals(
+		) && $M.add(a, c).equals(
 			$M.fromArray([
-				[1, 2, 3],
-				[16, 20, 24]
+				[2, 3, 4],
+				[8, 9, 10]
 			])
+		) && $M.add(a, d.t()).equals(
+			$M.add(a, c)
+		) && $M.add(a, f.t()).equals(
+			$M.add(a, b)
+		) && $M.add(a.t(), d).equals(
+			$M.add(e, d)
+		) && $M.add(a.t(), f).equals(
+			$M.add(e, f)
+		) && $M.add(a.t(), b.t()).equals(
+			$M.add(a, b).t()
+		) && $M.add(a.t(), c.t()).equals(
+			$M.add(a, c).t()
 		);
 	},
 	checkMulEach : function() {
