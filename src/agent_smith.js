@@ -283,6 +283,18 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		return sum;
 	};
+	
+	$P.sumRows = function() {
+		var newM = new $M(this.rows, 1);
+		for (var row = 0; row < this.rows; row++) {
+			var tmp = 0;
+			for (var col = 0; col < this.cols; col++) {
+				tmp += this.get(row, col);
+			}
+			newM.set(row, 0, tmp);
+		}
+		return newM;
+	};
 })();
 
 // basic calculation
