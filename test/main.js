@@ -214,12 +214,12 @@ var tests = {
 		}
 		return true;
 	},
-	checkSumRows : function() {
+	checkSumEachRow : function() {
 		var a = $M.fromArray([
 			[1, 2, 3, 4],
 			[5, 6, 7, 8]
 		]);
-		return a.sumRows().equals(
+		return a.sumEachRow().equals(
 			$M.fromArray([
 				[10],
 				[26]

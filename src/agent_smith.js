@@ -284,7 +284,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return sum;
 	};
 	
-	$P.sumRows = function() {
+	$P.sumEachRow = function() {
 		var newM = new $M(this.rows, 1);
 		for (var row = 0; row < this.rows; row++) {
 			var tmp = 0;
