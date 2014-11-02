@@ -376,6 +376,18 @@ var cl_tests = {
 			$M.largeMul(a.t(), b4.t()).nearlyEquals($M.mul(a.t(), b4.t()))
 			);
 	},
+	checkTimesCL : function() {
+		var a = $M.fromArray([
+			[1, 2, 3],
+			[4, 5, 6]
+		]);
+		return a.largeTimes(2).nearlyEquals(
+			$M.fromArray([
+				[2, 4, 6],
+				[8, 10, 12]
+			])
+		);
+	},
 	benchNomalAdd : function() {
 		var a = new $M(1000, 100);
 		a.random();

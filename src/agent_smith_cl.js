@@ -270,15 +270,50 @@ if (nodejs) {
 		};
 	}();
 	
+	$CL.times = function() {
+		var kernel_to_use = createKernel(
+				"kernel_times",
+				"__kernel void kernel_times(__global float *a, float b, uint iNumElements)   " +
+				"{                                                                           " +
+				"    size_t i =  get_global_id(0);                                           " +
+				"    if(i >= iNumElements) return;                                           " +
+				"    a[i] *= b;                                                              " +
+				"}                                                                           "
+			);
+		return function(mat1, times) {
+			// Prepare buffer
+			var aBuffer = context.createBuffer(WebCL.MEM_READ_WRITE, mat1.length * Float32Array.BYTES_PER_ELEMENT);
+			kernel_to_use.setArg(0, aBuffer);
+			kernel_to_use.setArg(1, times, WebCL.type.FLOAT);
+			kernel_to_use.setArg(2, mat1.length, WebCL.type.UINT);
+
+			// Execute the OpenCL kernel on the list
+			var globalWS = [clu.roundUp(localWS, mat1.length)]; // process entire list
+
+			// Do the work
+			queue.enqueueWriteBuffer(aBuffer, false, 0, mat1.length * Float32Array.BYTES_PER_ELEMENT, mat1.data);
+
+			// Execute (enqueue) kernel
+			queue.enqueueNDRangeKernel(kernel_to_use, null, globalWS, localWS);
+
+			// get results and block while getting them
+			queue.enqueueReadBuffer(aBuffer, true, 0, mat1.length * Float32Array.BYTES_PER_ELEMENT, mat1.data);
+			
+			aBuffer.release();
+			return mat1;
+		};
+	}();
+	
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
-		$P.largeSub = function(mat) { $CL.sub(this, mat); return this; };
-		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
-		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeAdd = function(mat1, mat2) { return mat1.clone().largeAdd(mat2); };
+		$P.largeSub = function(mat) { $CL.sub(this, mat); return this; };
 		$M.largeSub = function(mat1, mat2) { return mat1.clone().largeSub(mat2); };
+		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
 		$M.largeMulEach = function(mat1, mat2) { return mat1.clone().largeMulEach(mat2); };
+		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeMul = $CL.mul;
+		$P.largeTimes = function(times) { return $CL.times(this, times); };
 	})();
 })(WebCL);
