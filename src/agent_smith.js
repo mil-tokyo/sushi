@@ -302,6 +302,26 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	var $M = AgentSmith.Matrix;
 	var $P = $M.prototype;
 	
+	var eachOperationGenerator = function(op) {
+		return eval(
+			"	(function(mat) {																	" +
+			"		if (this.rows !== mat.rows || this.cols !== mat.cols) {							" +
+			"			throw new Error('shape does not match');									" +
+			"		}																				" +
+			"		if (this.row_wise == mat.row_wise) {											" +
+			"			for (var i = 0; i < this.length; i++) {										" +
+			"				this.data[i] " + op + "= mat.data[i];									" +
+			"			}																			" +
+			"		} else {																		" +
+			"			this.forEach(function(row, col) {											" +
+			"				this.set(row, col, this.get(row, col) " + op + " mat.get(row, col));	" +
+			"			}.bind(this));																" +
+			"		}																				" +
+			"		return this;																	" +
+			"	});																					"
+		);
+	};
+	
 	$P.times = function(times) {
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] *= times;
@@ -309,61 +329,19 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	$P.add = function(mat) {
-		if (this.rows !== mat.rows || this.cols !== mat.cols) {
-			throw new Error('shape does not match');
-		}
-		if (this.row_wise == mat.row_wise) {
-			for (var i = 0; i < this.length; i++) {
-				this.data[i] += mat.data[i];
-			}
-		} else {
-			this.forEach(function(row, col) {
-				this.set(row, col, this.get(row, col) + mat.get(row, col));
-			}.bind(this));
-		}
-		return this;
-	};
+	$P.add = eachOperationGenerator("+");
 	
 	$M.add = function(mat1, mat2) {
 		return mat1.clone().add(mat2);
 	};
 	
-	$P.sub = function(mat) {
-		if (this.rows !== mat.rows || this.cols !== mat.cols) {
-			throw new Error('shape does not match');
-		}
-		if (this.row_wise == mat.row_wise) {
-			for (var i = 0; i < this.length; i++) {
-				this.data[i] -= mat.data[i];
-			}
-		} else {
-			this.forEach(function(row, col) {
-				this.set(row, col, this.get(row, col) - mat.get(row, col));
-			}.bind(this));
-		}
-		return this;
-	};
+	$P.sub = eachOperationGenerator("-");
 	
 	$M.sub = function(mat1, mat2) {
 		return mat1.clone().sub(mat2);
 	};
 	
-	$P.mulEach = function(mat) {
-		if (this.rows !== mat.rows || this.cols !== mat.cols) {
-			throw new Error('shape does not match');
-		}
-		if (this.row_wise == mat.row_wise) {
-			for (var i = 0; i < this.length; i++) {
-				this.data[i] *= mat.data[i];
-			}
-		} else {
-			this.forEach(function(row, col) {
-				this.set(row, col, this.get(row, col) * mat.get(row, col));
-			}.bind(this));
-		}
-		return this;
-	};
+	$P.mulEach = eachOperationGenerator("*");
 	
 	$M.mulEach = function(mat1, mat2) {
 		return mat1.clone().mulEach(mat2);
