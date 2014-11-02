@@ -42,6 +42,7 @@ if (nodejs) {
 		program.build($CL.devices);
 		return program.createKernel(name);
 	};
+	var localWS = [12];
 
 	var eachOperationGenerator = function(id, operator) {
 		// if the wises are same
@@ -101,7 +102,6 @@ if (nodejs) {
 			}
 			
 			// Execute the OpenCL kernel on the list
-			var localWS = [5]; // process one list at a time
 			var globalWS = [clu.roundUp(localWS, mat1.length)]; // process entire list
 
 			// Do the work
@@ -213,7 +213,6 @@ if (nodejs) {
 			kernel_to_use.setArg(6, mat1.cols, WebCL.type.UINT);
 
 			// Execute the OpenCL kernel on the list
-			var localWS = [5]; // process one list at a time
 			var globalWS = [clu.roundUp(localWS, newM.length)]; // process entire list
 
 			// Do the work

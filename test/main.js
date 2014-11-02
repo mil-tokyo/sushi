@@ -331,7 +331,7 @@ var cl_tests = {
 	benchNormalMul : function() {
 		var a = new $M(128, 768);
 		a.random();
-		var b = new $M(768, 10);
+		var b = new $M(768, 100);
 		b.random();
 		for (var i = 0; i < 1; i++) {
 			$M.mul(a, b);
@@ -341,7 +341,7 @@ var cl_tests = {
 	benchCLMul : function() {
 		var a = new $M(128, 768);
 		a.random();
-		var b = new $M(768, 10);
+		var b = new $M(768, 100);
 		b.random();
 		for (var i = 0; i < 1; i++) {
 			$M.largeMul(a, b);
