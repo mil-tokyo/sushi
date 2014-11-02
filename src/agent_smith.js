@@ -304,21 +304,35 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	var eachOperationGenerator = function(op) {
 		return eval(
-			"	(function(mat) {																	" +
-			"		if (this.rows !== mat.rows || this.cols !== mat.cols) {							" +
-			"			throw new Error('shape does not match');									" +
-			"		}																				" +
-			"		if (this.row_wise == mat.row_wise) {											" +
-			"			for (var i = 0; i < this.length; i++) {										" +
-			"				this.data[i] " + op + "= mat.data[i];									" +
-			"			}																			" +
-			"		} else {																		" +
-			"			this.forEach(function(row, col) {											" +
-			"				this.set(row, col, this.get(row, col) " + op + " mat.get(row, col));	" +
-			"			}.bind(this));																" +
-			"		}																				" +
-			"		return this;																	" +
-			"	});																					"
+			"	(function(mat) {																			" +
+			"		if (!( (this.rows === mat.rows && this.cols === mat.cols) || 							" +
+			"			   (this.rows === mat.rows && mat.cols === 1) ||									" +
+			"			   (this.cols === mat.cols && mat.rows === 1) ) ) {									" +
+			"			throw new Error('shape does not match');											" +
+			"		}																						" +
+			"		if (this.rows === mat.rows && this.cols === mat.cols) {									" +
+			"			if (this.row_wise == mat.row_wise) {												" +
+			"				for (var i = 0; i < this.length; i++) {											" +
+			"					this.data[i] " + op + "= mat.data[i];										" +
+			"				}																				" +
+			"			} else {																			" +
+			"				this.forEach(function(row, col) {												" +
+			"					this.set(row, col, this.get(row, col) " + op + " mat.get(row, col));		" +
+			"				}.bind(this));																	" +
+			"			}																					" +
+			"		} else if ((this.row_wise && mat.rows === 1) || (!this.row_wise && mat.cols === 1)) {	" +
+			"			for (var i = 0; i < this.length; i++) {												" +
+			"				this.data[i] " + op + "= mat.data[i % this.cols];								" +
+			"			}																					" +
+			"		} else {																				" +
+			"			for (var i = 0; i < mat.length; i++) {												" +
+			"				for (var j = 0; j < this.cols; j++) {											" +
+			"					this.data[i * this.cols + j] " + op + "= mat.data[i];						" +
+			"				}																				" +
+			"			}																					" +
+			"		}																						" +
+			"		return this;																			" +
+			"	});																							"
 		);
 	};
 	

@@ -101,6 +101,30 @@ var tests = {
 		}
 		return true;
 	},
+	checkBroadCastAdd : function() {
+		var a = $M.fromArray([
+			[1, 2, 3],
+			[4, 5, 6]
+		]);
+		var b = $M.fromArray([
+			[1, 2, 3]
+		]);
+		var c = $M.fromArray([
+			[1],
+			[4]
+		]);
+		return 	$M.add(a, b).equals(
+			$M.fromArray([
+				[2, 4, 6],
+				[5, 7, 9]
+			])
+		) && $M.mulEach(a, c).equals(
+			$M.fromArray([
+				[1, 2, 3],
+				[16, 20, 24]
+			])
+		);
+	},
 	checkMulEach : function() {
 		var a = new $M(3, 7);
 		var b = new $M(3, 7);
