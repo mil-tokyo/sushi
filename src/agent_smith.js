@@ -14,8 +14,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 };
 
 (function() {
-	$M = AgentSmith.Matrix;
-	$P = AgentSmith.Matrix.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = AgentSmith.Matrix.prototype;
 	
 	/* ##### utilities ##### */
 	
