@@ -19,7 +19,7 @@ are supported.
 	node main
 if you want to use WebCL, install node-webcl https://github.com/Motorola-Mobility/node-webcl and set the path in agent_smith_cl.js
 ### browsers
-	open sample/index.html with your browser
+open sample/index.html with your browser.
 if you want to use WebCL, install Nokia WebCL http://webcl.nokiaresearch.com/ in Firefox and open with it
 
 ## Please Contribute the Fastest Matrix Library
