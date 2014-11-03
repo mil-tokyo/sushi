@@ -1,0 +1,3 @@
+[submodule "node-webcl"]
+	path = node-webcl
+	url = https://github.com/Motorola-Mobility/node-webcl.git
