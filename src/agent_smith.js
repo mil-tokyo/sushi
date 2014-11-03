@@ -13,10 +13,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.row_wise = true;
 };
 
-// utilities
 (function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
+	$M = AgentSmith.Matrix;
+	$P = AgentSmith.Matrix.prototype;
+	
+	/* ##### utilities ##### */
 	
 	$P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
@@ -116,12 +117,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		newM.data = this.data;
 		return newM;
 	};
-})();
 
-// initializer
-(function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
+	/* #####initializer ##### */
 	
 	$P.zeros = function() {
 		for (var i = 0; i < this.length; i++) {
@@ -172,13 +169,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		});
 		return newM;
 	};
-})();
 
-// general manipulation
-(function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
-	
+	/* ##### general manipulation ##### */
 	$P.get = function(row, col) {
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
@@ -226,12 +218,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		return this;
 	}
-})();
 
-// shape
-(function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
+	/* ##### shape ##### */
 	
 	$P.reshape = function(rows, cols) {
 		if (rows * cols !== this.rows * this.cols) {
@@ -254,12 +242,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.getShape = function() {
 		return { rows : this.rows, cols : this.cols };
 	};
-})();
 
-// statistics
-(function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
+	/* ##### statistics ##### */
 	
 	$P.argmax = function() {
 		var max_val = this.data[0];
@@ -307,12 +291,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		return newM;
 	};
-})();
 
-// basic calculation
-(function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
+	/* ##### basic calculation ##### */
 	
 	var eachOperationGenerator = function(op) {
 		return eval(
@@ -435,12 +415,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		return newM;
 	};
-})();
 
-// large matrix calculation
-(function() {
-	var $M = AgentSmith.Matrix;
-	var $P = $M.prototype;
+	/* ##### large matrix calculation ##### */
 	
 	$P.largeAdd = $P.add;
 	$M.largeAdd = $M.add;

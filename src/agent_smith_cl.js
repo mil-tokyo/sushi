@@ -6,16 +6,15 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	throw new Error('AgentSmith.Matrix is not loaded');
 }
 
-var nodejs = (typeof window === 'undefined');
-if (nodejs) {
-	var node_webcl_root = '../../node_modules/node-webcl'; // depends on the environment
-	WebCL = require(node_webcl_root + '/webcl');
-	clu = require(node_webcl_root + '/lib/clUtils');
-} else {
-	WebCL = window.webcl;
-}
-
-(function(WebCL) {
+(function() {
+	var nodejs = (typeof window === 'undefined');
+	if (nodejs) {
+		var node_webcl_root = '../../node_modules/node-webcl'; // depends on the environment
+		WebCL = require(node_webcl_root + '/webcl');
+	} else {
+		WebCL = window.webcl;
+	}
+	
 	if (WebCL === void 0) {
 		return;
 	}
@@ -42,61 +41,65 @@ if (nodejs) {
 		program.build($CL.devices);
 		return program.createKernel(name);
 	};
+	// Parallelization parameter
 	var localWS = [12];
+	var roundUp = function (group_size, global_size) {
+		return Math.ceil(global_size / group_size) * group_size;
+	};
 
 	var eachOperationGenerator = function(id, operator) {
 		// if the wises are same
 		var kernel1 = createKernel(
-			"kernel_" + id + "_1",
-			"__kernel void kernel_" + id + "_1(__global float *a, __global float *b, uint iNumElements) " +
-			"{                                                                           " +
-			"    size_t i =  get_global_id(0);                                           " +
-			"    if(i >= iNumElements) return;                                           " +
-			"    a[i] = a[i] " + operator + " b[i];                                      " +
-			"}                                                                           "
+			"kernel_" + id + "_1", [
+			"__kernel void kernel_" + id + "_1(__global float *a, __global float *b, uint iNumElements) ",
+			"{                                                                           ",
+			"    size_t i =  get_global_id(0);                                           ",
+			"    if(i >= iNumElements) return;                                           ",
+			"    a[i] = a[i] " + operator + " b[i];                                      ",
+			"}                                                                           "].join('\r\n')
 		);
 		// different wises
 		var kernel2 = createKernel(
-			"kernel_" + id + "_2",
-			"__kernel void kernel_" + id + "_2(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) " +
-			"{                                                                           " +
-			"    size_t i =  get_global_id(0);                                           " +
-			"    if(i >= iNumElements) return;                                           " +
-			"    a[i] = a[i] " + operator + " b[(i % cols) * rows + i / cols];           " +
-			"}                                                                           "
+			"kernel_" + id + "_2", [
+			"__kernel void kernel_" + id + "_2(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
+			"{                                                                           ",
+			"    size_t i =  get_global_id(0);                                           ",
+			"    if(i >= iNumElements) return;                                           ",
+			"    a[i] = a[i] " + operator + " b[(i % cols) * rows + i / cols];           ",
+			"}                                                                           "].join('\r\n')
 		);
 		
 		// different wises (particularly for incommutable function)
 		var kernel3 = createKernel(
-			"kernel_" + id + "_3",
-			"__kernel void kernel_" + id + "_3(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) " +
-			"{                                                                                             " +
-			"    size_t i =  get_global_id(0);                                                             " +
-			"    if(i >= iNumElements) return;                                                             " +
-			"    a[(i % cols) * rows + i / cols] = a[(i % cols) * rows + i / cols] " + operator + " b[i];  " +
-			"}                                                                                             "
+			"kernel_" + id + "_3", [
+			"__kernel void kernel_" + id + "_3(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
+			"{                                                                                             ",
+			"    size_t i =  get_global_id(0);                                                             ",
+			"    if(i >= iNumElements) return;                                                             ",
+			"    a[(i % cols) * rows + i / cols] = a[(i % cols) * rows + i / cols] " + operator + " b[i];  ",
+			"}                                                                                             "].join('\r\n')
 		);
 		
 		// broadcast 1
 		var kernel4 = createKernel(
-			"kernel_" + id + "_4",
-			"__kernel void kernel_" + id + "_4(__global float *a, __global float *b, uint iNumElements, uint b_length) " +
-			"{                                                                                             " +
-			"    size_t i =  get_global_id(0);                                                             " +
-			"    if(i >= iNumElements) return;                                                             " +
-			"    a[i] = a[i] " + operator + " b[i % b_length];                                             " +
-			"}                                                                                             "
+			"kernel_" + id + "_4", [
+			"__kernel void kernel_" + id + "_4(__global float *a, __global float *b, uint iNumElements, uint b_length) ",
+			"{                                                                                             ",
+			"    size_t i =  get_global_id(0);                                                             ",
+			"    if(i >= iNumElements) return;                                                             ",
+			"    a[i] = a[i] " + operator + " b[i % b_length];                                             ",
+			"}                                                                                             "].join('\r\n')
 		);
 		
 		// broadcast 2
 		var kernel5 = createKernel(
-				"kernel_" + id + "_5",
-				"__kernel void kernel_" + id + "_5(__global float *a, __global float *b, uint iNumElements, uint b_skip) " +
-				"{                                                                                             " +
-				"    size_t i =  get_global_id(0);                                                             " +
-				"    if(i >= iNumElements) return;                                                             " +
-				"    a[i] = a[i] " + operator + " b[i / b_skip];                                               " +
-				"}                                                                                             "
+				"kernel_" + id + "_5", [
+				"__kernel void kernel_" + id + "_5(__global float *a, __global float *b, uint iNumElements, uint b_skip) ",
+				"{                                                                                             ",
+				"    size_t i =  get_global_id(0);                                                             ",
+				"    if(i >= iNumElements) return;                                                             ",
+				"    a[i] = a[i] " + operator + " b[i / b_skip];                                               ",
+				"}                                                                                             "].join('\r\n')
 			);
 		
 		return function(mat1, mat2) {
@@ -140,7 +143,7 @@ if (nodejs) {
 			}
 			
 			// Execute the OpenCL kernel on the list
-			var globalWS = [clu.roundUp(localWS, mat1.length)]; // process entire list
+			var globalWS = [roundUp(localWS, mat1.length)]; // process entire list
 
 			// Do the work
 			queue.enqueueWriteBuffer(aBuffer, false, 0, size, mat1.data);
@@ -180,49 +183,49 @@ if (nodejs) {
 				"}                                                                           "
 			);
 		var kernel2 = createKernel(
-				"kernel_mul_2",
-				"__kernel void kernel_mul_2(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    uint row = i / cols;                                                    " +
-				"    uint col = i % cols;                                                    " +
-				"    float sum = 0.0;                                                        " +
-				"    for (uint j = 0; j < width; j++) {                                      " +
-				"        sum += a[row * width + j] * b[j + col * width];                     " +
-				"    }                                                                       " +
-				"    c[i] = sum;                                                             " +
-				"}                                                                           "
+				"kernel_mul_2", [
+				"__kernel void kernel_mul_2(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    uint row = i / cols;                                                    ",
+				"    uint col = i % cols;                                                    ",
+				"    float sum = 0.0;                                                        ",
+				"    for (uint j = 0; j < width; j++) {                                      ",
+				"        sum += a[row * width + j] * b[j + col * width];                     ",
+				"    }                                                                       ",
+				"    c[i] = sum;                                                             ",
+				"}                                                                           "].join('\r\n')
 			);
 		var kernel3 = createKernel(
-				"kernel_mul_3",
-				"__kernel void kernel_mul_3(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    uint row = i / cols;                                                    " +
-				"    uint col = i % cols;                                                    " +
-				"    float sum = 0.0;                                                        " +
-				"    for (uint j = 0; j < width; j++) {                                      " +
-				"        sum += a[row + j * rows] * b[j * cols + col];                       " +
-				"    }                                                                       " +
-				"    c[i] = sum;                                                             " +
-				"}                                                                           "
+				"kernel_mul_3", [
+				"__kernel void kernel_mul_3(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    uint row = i / cols;                                                    ",
+				"    uint col = i % cols;                                                    ",
+				"    float sum = 0.0;                                                        ",
+				"    for (uint j = 0; j < width; j++) {                                      ",
+				"        sum += a[row + j * rows] * b[j * cols + col];                       ",
+				"    }                                                                       ",
+				"    c[i] = sum;                                                             ",
+				"}                                                                           "].join('\r\n')
 			);
 		var kernel4 = createKernel(
-				"kernel_mul_4",
-				"__kernel void kernel_mul_4(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    uint row = i / cols;                                                    " +
-				"    uint col = i % cols;                                                    " +
-				"    float sum = 0.0;                                                        " +
-				"    for (uint j = 0; j < width; j++) {                                      " +
-				"        sum += a[row + j * rows] * b[j + col * width];                      " +
-				"    }                                                                       " +
-				"    c[i] = sum;                                                             " +
-				"}                                                                           "
+				"kernel_mul_4", [
+				"__kernel void kernel_mul_4(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    uint row = i / cols;                                                    ",
+				"    uint col = i % cols;                                                    ",
+				"    float sum = 0.0;                                                        ",
+				"    for (uint j = 0; j < width; j++) {                                      ",
+				"        sum += a[row + j * rows] * b[j + col * width];                      ",
+				"    }                                                                       ",
+				"    c[i] = sum;                                                             ",
+				"}                                                                           "].join('\r\n')
 			);
 		return function(mat1, mat2) {
 			if (mat1.cols !== mat2.rows) {
@@ -251,7 +254,7 @@ if (nodejs) {
 			kernel_to_use.setArg(6, mat1.cols, WebCL.type.UINT);
 
 			// Execute the OpenCL kernel on the list
-			var globalWS = [clu.roundUp(localWS, newM.length)]; // process entire list
+			var globalWS = [roundUp(localWS, newM.length)]; // process entire list
 
 			// Do the work
 			queue.enqueueWriteBuffer(aBuffer, false, 0, mat1.length * Float32Array.BYTES_PER_ELEMENT, mat1.data);
@@ -288,7 +291,7 @@ if (nodejs) {
 			kernel_to_use.setArg(2, mat1.length, WebCL.type.UINT);
 
 			// Execute the OpenCL kernel on the list
-			var globalWS = [clu.roundUp(localWS, mat1.length)]; // process entire list
+			var globalWS = [roundUp(localWS, mat1.length)]; // process entire list
 
 			// Do the work
 			queue.enqueueWriteBuffer(aBuffer, false, 0, mat1.length * Float32Array.BYTES_PER_ELEMENT, mat1.data);
@@ -316,4 +319,4 @@ if (nodejs) {
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
 	})();
-})(WebCL);
+})();
