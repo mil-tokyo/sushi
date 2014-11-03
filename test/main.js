@@ -265,15 +265,14 @@
 				);
 			},
 		},
-		CL : {
-			checkAddCL : function() {
+		Large : {
+			checkAddLarge : function() {
 				var a = new $M(7, 9);
 				a.random();
 				var b = new $M(7, 9);
 				b.random();
 				var b2 = new $M(9, 7);
 				b2.random();
-				
 				return (
 					$M.largeAdd(a, b).nearlyEquals($M.add(a, b)) &&
 					$M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
@@ -281,14 +280,13 @@
 					$M.largeAdd(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t()))
 					);
 			},
-			checkSubCL : function() {
+			checkSubLarge : function() {
 				var a = new $M(7, 9);
 				a.random();
 				var b = new $M(7, 9);
 				b.random();
 				var b2 = new $M(9, 7);
 				b2.random();
-				
 				return (
 					$M.largeSub(a, b).nearlyEquals($M.sub(a, b)) &&
 					$M.largeSub(a.t(), b2).nearlyEquals($M.sub(a.t(), b2)) &&
@@ -296,7 +294,7 @@
 					$M.largeSub(a.t(), b.t()).nearlyEquals($M.sub(a.t(), b.t()))
 					);
 			},
-			checkMulEachCL : function() {
+			checkMulEachLarge : function() {
 				var a = new $M(7, 9);
 				a.random();
 				var b = new $M(7, 9);
@@ -310,7 +308,7 @@
 					$M.largeMulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
 					);
 			},
-			checkBroadCastAddCL : function() {
+			checkBroadCastAddLarge : function() {
 				var a = $M.fromArray([
 					[1, 2, 3],
 					[4, 5, 6]
@@ -359,16 +357,16 @@
 					$M.add(a, c).t()
 				);
 			},
-			checkMulCL : function() {
-				var a = new $M(70, 90);
+			checkMulLarge : function() {
+				var a = new $M(7, 9);
 				a.random();
-				var b = new $M(90, 40);
+				var b = new $M(9, 4);
 				b.random();
-				var b2 = new $M(70, 40);
+				var b2 = new $M(7, 4);
 				b2.random();
-				var b3 = new $M(40, 90);
+				var b3 = new $M(4, 9);
 				b3.random();
-				var b4 = new $M(40, 70);
+				var b4 = new $M(4, 7);
 				b4.random();
 				return (
 					$M.largeMul(a, b).nearlyEquals($M.mul(a, b)) &&
@@ -377,7 +375,7 @@
 					$M.largeMul(a.t(), b4.t()).nearlyEquals($M.mul(a.t(), b4.t()))
 					);
 			},
-			checkTimesCL : function() {
+			checkTimesLarge : function() {
 				var a = $M.fromArray([
 					[1, 2, 3],
 					[4, 5, 6]
@@ -389,33 +387,33 @@
 					])
 				);
 			},
-			benchNomalAdd : function() {
-				var a = new $M(1000, 100);
+			benchAddNormal : function() {
+				var a = new $M(100, 2000);
 				a.random();
-				var b = new $M(1000, 100);
+				var b = new $M(100, 2000);
 				b.random();
-				var b2 = new $M(100, 1000).t();
+				var b2 = new $M(2000, 100).t();
 				b2.random();
-				for (var i = 0; i < 100; i++) {
+				for (var i = 0; i < 1; i++) {
 					a.add(b)
 					a.add(b2);
 				}
 				return true;
 			},
-			benchCLAdd : function() {
-				var a = new $M(1000, 100);
+			benchAddLarge : function() {
+				var a = new $M(100, 2000);
 				a.random();
-				var b = new $M(1000, 100);
+				var b = new $M(100, 2000);
 				b.random();
-				var b2 = new $M(100, 1000).t();
+				var b2 = new $M(2000, 100).t();
 				b2.random();
-				for (var i = 0; i < 100; i++) {
+				for (var i = 0; i < 1; i++) {
 					a.largeAdd(b);
 					a.largeAdd(b2);
 				}
 				return true;
 			},
-			benchNormalMul : function() {
+			benchMulNormal : function() {
 				var a = new $M(128, 768);
 				a.random();
 				var b = new $M(768, 100);
@@ -425,7 +423,7 @@
 				}
 				return true;
 			},
-			benchCLMul : function() {
+			benchMulLarge : function() {
 				var a = new $M(128, 768);
 				a.random();
 				var b = new $M(768, 100);
@@ -434,7 +432,19 @@
 					$M.largeMul(a, b);
 				}
 				return true;
-			}
+			},
+			benchTimesNormal : function() {
+				var a = new $M(1000, 1000);
+				a.random();
+				a.times(10);
+				return true;
+			},
+			benchTimesLarge : function() {
+				var a = new $M(1000, 1000);
+				a.random();
+				a.largeTimes(10);
+				return true;
+			},
 		}
 	};
 	

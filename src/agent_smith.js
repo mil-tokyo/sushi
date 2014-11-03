@@ -128,13 +128,15 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.random = function(min, max) {
-		if (typeof min === 'undefined') {
+		if (min === void 0) {
 			var min = 0.0;
 		}
-		if (typeof max === 'undefined') {
+		if (max === void 0) {
 			var max = 1.0;
 		}
-		this.setEach(function(row, col) { return min + (max - min) * Math.random(); });
+		for (var i = 0; i < this.length; i++) {
+			this.data[i] = min + (max - min) * Math.random();
+		}
 		return this;
 	};
 	
@@ -223,7 +225,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	$P.reshape = function(rows, cols) {
 		if (rows * cols !== this.rows * this.cols) {
-			console.error('shape does not match');
+			throw new Error('shape does not match');
 		}
 		this.rows = rows;
 		this.cols = cols;
