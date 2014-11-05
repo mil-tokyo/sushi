@@ -5,6 +5,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.cols = cols;
 	this.length = rows * cols;
 	this.datum_type = Float32Array;
+	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
 	if (data === void 0) {
 		this.data = new this.datum_type(this.length);
 	} else {
