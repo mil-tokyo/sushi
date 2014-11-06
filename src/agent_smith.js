@@ -5,6 +5,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.cols = cols;
 	this.length = rows * cols;
 	this.datum_type = Float32Array;
+	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
 	if (data === void 0) {
 		this.data = new this.datum_type(this.length);
 	} else {
@@ -14,10 +15,14 @@ AgentSmith.Matrix = function(rows, cols, data) {
 };
 
 (function() {
-	$M = AgentSmith.Matrix;
-	$P = AgentSmith.Matrix.prototype;
+	var $M = AgentSmith.Matrix;
+	var $P = AgentSmith.Matrix.prototype;
 	
 	/* ##### utilities ##### */
+	
+	$P.syncData = function() { };
+	
+	$P.destruct = function() { this.data = void 0; };
 	
 	$P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
@@ -28,6 +33,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.equals = function(mat) {
+		this.syncData();
+		mat.syncData();
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			return false;
 		}
@@ -50,6 +57,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.nearlyEquals = function(mat, epsilon) {
+		this.syncData();
+		mat.syncData();
 		if (epsilon === void 0) {
 			var epsilon = 0.01;
 		}
@@ -83,6 +92,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.toString = function() {
+		this.syncData();
 		var formatWidth = function(str, width) {
 			while(str.length < width) {
 				str = ' ' + str;
@@ -105,6 +115,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.clone = function() {
+		this.syncData();
 		var newM = new $M(this.rows, this.cols);
 		newM.copyPropertyFrom(this);
 		newM.data = new this.datum_type(this.data);
@@ -112,6 +123,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.alias = function() {
+		this.syncData();
 		var newM = new $M(this.rows, this.cols);
 		newM.copyPropertyFrom(this);
 		newM.data = this.data;
@@ -121,6 +133,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	/* #####initializer ##### */
 	
 	$P.zeros = function() {
+		this.syncData();
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] = 0;
 		}
@@ -128,6 +141,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.random = function(min, max) {
+		this.syncData();
 		if (min === void 0) {
 			var min = 0.0;
 		}
@@ -141,6 +155,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.range = function() {
+		this.syncData();
 		for (var i = 0; i < this.data.length; i++) {
 			this.data[i] = i;
 		}
@@ -153,6 +168,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.setArray = function(original_array) {
+		this.syncData();
 		var flatten = Array.prototype.concat.apply([], original_array);
 		this.data = new this.datum_type(flatten);
 		return this;
@@ -174,6 +190,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 	/* ##### general manipulation ##### */
 	$P.get = function(row, col) {
+		this.syncData();
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
 		}
@@ -185,6 +202,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.set = function(row, col, datum) {
+		this.syncData();
 		if (row >= this.rows || col >= this.cols) {
 			throw new Error('out of range');
 		}
@@ -197,6 +215,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.map = function(func) {
+		this.syncData();
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] = func(this.data[i]);
 		};
@@ -204,6 +223,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.setEach = function(func) {
+		this.syncData();
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
 				this.set(row, col, func(row, col));
@@ -213,6 +233,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.forEach = function(func) {
+		this.syncData();
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
 				func(row, col);
@@ -248,6 +269,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	/* ##### statistics ##### */
 	
 	$P.argmax = function() {
+		this.syncData();
 		var max_val = this.data[0];
 		var arg = { row : 0, col : 0 };
 		for (var row = 0; row < this.rows; row++) {
@@ -263,6 +285,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.sum = function() {
+		this.syncData();
 		var sum = 0.0;
 		for (var i = 0; i < this.length; i++) {
 			sum += this.data[i];
@@ -271,6 +294,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.sumEachRow = function() {
+		this.syncData();
 		var newM = new $M(this.rows, 1);
 		for (var row = 0; row < this.rows; row++) {
 			var tmp = 0;
@@ -283,6 +307,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.sumEachCol = function() {
+		this.syncData();
 		var newM = new $M(1, this.cols);
 		for (var col = 0; col < this.cols; col++) {
 			var tmp = 0;
@@ -300,6 +325,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return eval(
 			[
 			"	(function(mat) {																			",
+			"		this.syncData();																		",
+			"		mat.syncData();																			",
 			"		if (!( (this.rows === mat.rows && this.cols === mat.cols) || 							",
 			"			   (this.rows === mat.rows && mat.cols === 1) ||									",
 			"			   (this.cols === mat.cols && mat.rows === 1) ) ) {									",
@@ -351,6 +378,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.times = function(times) {
+		this.syncData();
 		for (var i = 0; i < this.length; i++) {
 			this.data[i] *= times;
 		}
@@ -375,7 +403,15 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return mat1.clone().mulEach(mat2);
 	};
 	
+	$P.divEach = eachOperationGenerator("/");
+	
+	$M.divEach = function(mat1, mat2) {
+		return mat1.clone().divEach(mat2);
+	};
+	
 	$P.dot = function(mat) {
+		this.syncData();
+		mat.syncData();
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			throw new Error('shape does not match');
 		}
@@ -401,6 +437,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$M.mul = function(mat1, mat2) {
+		mat1.syncData();
+		mat2.syncData();
 		if (mat1.cols !== mat2.rows) {
 			throw new Error('shape does not match');
 		}

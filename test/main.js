@@ -171,6 +171,25 @@
 				}
 				return true;
 			},
+			checkDivEach : function() {
+				var a = new $M(3, 7);
+				var b = new $M(3, 7);
+				a.random();
+				b.random();
+				var c1 = $M.divEach(a, b);
+				for (var i = 0; i < a.length; i++) {
+					if (!nearlyEquals(c1.data[i], a.data[i] / b.data[i])) {
+						return false;
+					}
+				}
+				var c2 = a.clone().divEach(b);
+				for (var i = 0; i < a.length; i++) {
+					if (!nearlyEquals(c2.data[i], a.data[i] / b.data[i])) {
+						return false;
+					}
+				}
+				return true;
+			},
 			checkDot : function() {
 				var a = new $M(3, 7);
 				var b = new $M(3, 7);
@@ -266,6 +285,16 @@
 			},
 		},
 		Large : {
+			checkClone : function() {
+				var a = new $M(7, 9);
+				a.random();
+				var b = new $M(7, 9);
+				b.random();
+				return (
+					a.largeClone().nearlyEquals(a.clone()) &&
+					b.t().largeClone().nearlyEquals(b.t().clone())
+					);
+			},
 			checkAddLarge : function() {
 				var a = new $M(7, 9);
 				a.random();
@@ -306,6 +335,20 @@
 					$M.largeMulEach(a.t(), b2).nearlyEquals($M.mulEach(a.t(), b2)) &&
 					$M.largeMulEach(a, b2.t()).nearlyEquals($M.mulEach(a, b2.t())) &&
 					$M.largeMulEach(a.t(), b.t()).nearlyEquals($M.mulEach(a.t(), b.t()))
+					);
+			},
+			checkDivEachLarge : function() {
+				var a = new $M(7, 9);
+				a.random();
+				var b = new $M(7, 9);
+				b.random();
+				var b2 = new $M(9, 7);
+				b2.random();
+				return (
+					$M.largeDivEach(a, b).nearlyEquals($M.divEach(a, b)) &&
+					$M.largeDivEach(a.t(), b2).nearlyEquals($M.divEach(a.t(), b2)) &&
+					$M.largeDivEach(a, b2.t()).nearlyEquals($M.divEach(a, b2.t())) &&
+					$M.largeDivEach(a.t(), b.t()).nearlyEquals($M.divEach(a.t(), b.t()))
 					);
 			},
 			checkBroadCastAddLarge : function() {
@@ -387,6 +430,52 @@
 					])
 				);
 			},
+			checkSumEachRowLarge : function() {
+				var a = $M.fromArray([
+					[1, 2, 3],
+					[4, 5, 6]
+				]);
+				return a.largeSumEachRow().nearlyEquals(
+					$M.fromArray([
+						[6],
+						[15]
+					])
+				) && a.t().largeSumEachRow().nearlyEquals(
+					$M.fromArray([
+						[5],
+						[7],
+						[9]
+					])
+				);
+			},
+			checkSumEachColLarge : function() {
+				var a = $M.fromArray([
+					[1, 2, 3],
+					[4, 5, 6]
+				]);
+				return a.largeSumEachCol().nearlyEquals(
+					$M.fromArray([
+						[5, 7, 9]
+					])
+				) && a.t().largeSumEachCol().nearlyEquals(
+					$M.fromArray([
+						[6, 15]
+					])
+				);
+			},
+			checkMapGenerator : function() {
+				if (!$M.CL) {
+					return false;
+				}
+				var exp = $M.CL.mapGenerator('exp', 'exp(a[i])');
+				var a = $M.fromArray([
+					[1, 2]
+				]);
+				var b = a.clone();
+				exp(a);
+				b.map(Math.exp);
+				return a.nearlyEquals(b);
+			},
 			benchAddNormal : function() {
 				var a = new $M(100, 2000);
 				a.random();
@@ -443,6 +532,18 @@
 				var a = new $M(1000, 1000);
 				a.random();
 				a.largeTimes(10);
+				return true;
+			},
+			benchCloneNormal : function() {
+				var a = new $M(10000, 1000);
+				a.random();
+				a.clone();
+				return true;
+			},
+			benchCloneLarge : function() {
+				var a = new $M(10000, 1000);
+				a.random();
+				a.largeClone();
 				return true;
 			},
 		}
