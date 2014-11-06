@@ -266,6 +266,17 @@
 			},
 		},
 		Large : {
+			checkClone : function() {
+				var a = new $M(7, 9);
+				a.random();
+				var b = new $M(7, 9);
+				b.random();
+				console.log(a.largeClone().toString());
+				return (
+					a.largeClone().nearlyEquals(a.clone()) &&
+					b.t().largeClone().nearlyEquals(b.t().clone())
+					);
+			},
 			checkAddLarge : function() {
 				var a = new $M(7, 9);
 				a.random();
@@ -463,6 +474,18 @@
 				var a = new $M(1000, 1000);
 				a.random();
 				a.largeTimes(10);
+				return true;
+			},
+			benchCloneNormal : function() {
+				var a = new $M(10000, 1000);
+				a.random();
+				a.clone();
+				return true;
+			},
+			benchCloneLarge : function() {
+				var a = new $M(10000, 1000);
+				a.random();
+				a.largeClone();
 				return true;
 			},
 		}

@@ -418,6 +418,32 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		return newM;
 	};
 	
+	$CL.clone = function() {
+		var kernel = $CL.createKernel(
+				"kernel_clone",
+				"__kernel void kernel_clone(__global float *a, __global float *b, uint iNumElements)   " +
+				"{                                                                           " +
+				"    size_t i =  get_global_id(0);                                           " +
+				"    if(i >= iNumElements) return;                                           " +
+				"    a[i] = b[i];                                                            " +
+				"}                                                                           "
+			);
+		return function(mat) {
+			var newM = new $M(mat.rows, mat.cols);
+			newM.copyPropertyFrom(mat);
+			$CL.executeKernel(
+					kernel,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat },
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			return newM;
+		};
+	}();
+	
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
@@ -430,5 +456,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
 		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
+		$P.largeClone = function() { return $CL.clone(this); };
 	})();
 })();
