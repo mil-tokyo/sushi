@@ -401,6 +401,12 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return mat1.clone().mulEach(mat2);
 	};
 	
+	$P.divEach = eachOperationGenerator("/");
+	
+	$M.divEach = function(mat1, mat2) {
+		return mat1.clone().divEach(mat2);
+	};
+	
 	$P.dot = function(mat) {
 		this.syncData();
 		mat.syncData();

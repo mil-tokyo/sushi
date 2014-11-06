@@ -259,6 +259,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.mulEach = $CL.eachOperationGenerator('mulEach', '*');
 	
+	$CL.divEach = $CL.eachOperationGenerator('divEach', '/');
+	
 	$CL.mul = function() {
 		var kernel1 = $CL.createKernel(
 				"kernel_mul_1",
@@ -526,6 +528,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$M.largeSub = function(mat1, mat2) { return mat1.clone().largeSub(mat2); };
 		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
 		$M.largeMulEach = function(mat1, mat2) { return mat1.clone().largeMulEach(mat2); };
+		$P.largeDivEach = function(mat) { $CL.divEach(this, mat); return this; };
+		$M.largeDivEach = function(mat1, mat2) { return mat1.clone().largeDivEach(mat2); };
 		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
