@@ -531,13 +531,13 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
-		$M.largeAdd = function(mat1, mat2) { return mat1.clone().largeAdd(mat2); };
+		$M.largeAdd = function(mat1, mat2) { return mat1.largeClone().largeAdd(mat2); };
 		$P.largeSub = function(mat) { $CL.sub(this, mat); return this; };
-		$M.largeSub = function(mat1, mat2) { return mat1.clone().largeSub(mat2); };
+		$M.largeSub = function(mat1, mat2) { return mat1.largeClone().largeSub(mat2); };
 		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
-		$M.largeMulEach = function(mat1, mat2) { return mat1.clone().largeMulEach(mat2); };
+		$M.largeMulEach = function(mat1, mat2) { return mat1.largeClone().largeMulEach(mat2); };
 		$P.largeDivEach = function(mat) { $CL.divEach(this, mat); return this; };
-		$M.largeDivEach = function(mat1, mat2) { return mat1.clone().largeDivEach(mat2); };
+		$M.largeDivEach = function(mat1, mat2) { return mat1.largeClone().largeDivEach(mat2); };
 		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
