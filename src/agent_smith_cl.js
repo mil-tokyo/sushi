@@ -97,6 +97,14 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			}
 		};
 		
+		$P.destruct = function() {
+			this.data = void 0;
+			if (this.buffer) {
+				this.buffer.release();
+				this.buffer = void 0;
+			}
+		};
+		
 		$CL.createKernel = function(name, code) {
 			var program = $CL.context.createProgram(code);
 			program.build($CL.devices);

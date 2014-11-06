@@ -22,6 +22,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	$P.syncData = function() { };
 	
+	$P.destruct = function() { this.data = void 0; };
+	
 	$P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
 		this.cols = original.cols;
