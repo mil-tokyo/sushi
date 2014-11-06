@@ -29,7 +29,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	var $CL = $M.CL;
 	var $P = $M.prototype;
 	
-	// Prepare WebCL
+	// Prepare WebCL and functions
 	(function () {
 		var platformList = WebCL.getPlatforms();
 		$CL.platform = platformList[0];
@@ -86,6 +86,17 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			};
 		}
 		
+		var queue = $CL.context.createCommandQueue($CL.devices[0], 0);
+		
+		$P.syncData = function() {
+			// there being buffer means data is obsolete
+			if (this.buffer) {
+				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
+				this.buffer.release();
+				this.buffer = null;
+			}
+		};
+		
 		$CL.createKernel = function(name, code) {
 			var program = $CL.context.createProgram(code);
 			program.build($CL.devices);
@@ -94,23 +105,18 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		
 		$CL.executeKernel = function() {
 			var localWS = [12];
-			var queue = $CL.context.createCommandQueue($CL.devices[0], 0);
 			
 			return function(kernel, params, parallelization) {
-				var buffers = [];
-				var buffers_to_read_back = [];
 				for (var i = 0; i < params.length; i++) {
 					if (params[i].type === void 0) {
 						// matrix
-						var buffer = $CL.context.createBuffer(params[i].access, params[i].datum.byte_length);
-						$CL.kernelSetArg(kernel, i, buffer);
-						if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
-							queue.enqueueWriteBuffer(buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
+						if (!params[i].datum.buffer) {
+							params[i].datum.buffer = $CL.context.createBuffer(WebCL.MEM_READ_WRITE, params[i].datum.byte_length);
+							if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
+								queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
+							}
 						}
-						buffers[i] = buffer;
-						if (params[i].access === WebCL.MEM_WRITE_ONLY || params[i].access === WebCL.MEM_READ_WRITE) {
-							buffers_to_read_back[i] = true;
-						}
+						$CL.kernelSetArg(kernel, i, params[i].datum.buffer);
 					} else {
 						// native type
 						$CL.kernelSetArg(kernel, i, params[i].datum, params[i].type);
@@ -125,17 +131,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				} else {
 					queue.enqueueNDRangeKernel(kernel, globalWS.length, null, globalWS, localWS);
 				}
-	
-				// Read back from buffers
-				for (var i = 0; i < buffers.length; i++) {
-					if (buffers[i] === void 0) {
-						continue;
-					}
-					if (buffers_to_read_back[i]) {
-						queue.enqueueReadBuffer(buffers[i], true, 0, params[i].datum.byte_length, params[i].datum.data);
-					}
-					buffers[i].release();
-				};
 			};
 		}();
 	})();
@@ -360,6 +355,69 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	}();
 	
+
+	$CL.sumEachRow = function() {
+		var kernel1 = $CL.createKernel(
+				"kernel_sum_each_row_1",
+				"__kernel void kernel_sum_each_row_1(__global float *a, __global float *b, uint cols, uint iNumElements)   " +
+				"{                                                                           " +
+				"    size_t i =  get_global_id(0);                                           " +
+				"    if(i >= iNumElements) return;                                           " +
+				"    for (uint j = 0; j < cols; j++) {                                       " +
+				"        a[i] += b[i * cols + j];                                            " +
+				"    }                                                                       " +
+				"}                                                                           "
+			);
+		var kernel2 = $CL.createKernel(
+				"kernel_sum_each_row_2",
+				"__kernel void kernel_sum_each_row_2(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   " +
+				"{                                                                           " +
+				"    size_t i =  get_global_id(0);                                           " +
+				"    if(i >= iNumElements) return;                                           " +
+				"    for (uint j = 0; j < cols; j++) {                                       " +
+				"        a[i] += b[j * rows + i];                                            " +
+				"    }                                                                       " +
+				"}                                                                           "
+			);
+		return function(mat1) {
+			if (mat1.row_wise) {
+				var newM = new $M(mat1.rows, 1);
+				$CL.executeKernel(
+					kernel1,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.cols, type : WebCL.type.UINT}, 
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			} else {
+				var newM = new $M(mat1.rows, 1);
+				$CL.executeKernel(
+					kernel2,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			}
+			return newM;
+		};
+	}();
+	
+	$P.alias = function() {
+		var newM = new $M(this.rows, this.cols);
+		newM.copyPropertyFrom(this);
+		newM.data = this.data;
+		newM.buffer = this.buffer;
+		return newM;
+	};
+	
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
@@ -371,5 +429,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
+		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
 	})();
 })();

@@ -387,6 +387,26 @@
 					])
 				);
 			},
+			checkSumEachRow : function() {
+				var a = $M.fromArray([
+					[1, 2, 3],
+					[4, 5, 6]
+				]);
+				console.log(a.largeSumEachRow().toString());
+				console.log(a.t().largeSumEachRow().toString());
+				return a.largeSumEachRow().nearlyEquals(
+					$M.fromArray([
+						[6],
+						[15]
+					])
+				) && a.t().largeSumEachRow().nearlyEquals(
+					$M.fromArray([
+						[5],
+						[7],
+						[9]
+					])
+				);
+			},
 			benchAddNormal : function() {
 				var a = new $M(100, 2000);
 				a.random();
