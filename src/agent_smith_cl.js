@@ -232,6 +232,27 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	};
 	
+	$CL.mapGenerator = function(id, expression_ai) {
+		// if the wises are same
+		var kernel = $CL.createKernel(
+			"kernel_" + id, [
+			"__kernel void kernel_" + id + "(__global float *a, uint iNumElements) ",
+			"{                                                                           ",
+			"    size_t i =  get_global_id(0);                                           ",
+			"    if(i >= iNumElements) return;                                           ",
+			"    a[i] = " + expression_ai + ";                                            ",
+			"}                                                                           "].join('\r\n')
+		);
+		
+		return function(mat) {
+			var params = [
+				{ access : WebCL.MEM_READ_WRITE, datum : mat },
+				{ datum : mat.length, type : WebCL.type.UINT }
+			];
+			$CL.executeKernel(kernel, params, mat.length);
+		};
+	};
+	
 	$CL.add = $CL.eachOperationGenerator('add', '+');
 	
 	$CL.sub = $CL.eachOperationGenerator('sub', '-');
@@ -355,7 +376,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	}();
 	
-
 	$CL.sumEachRow = function() {
 		var kernel1 = $CL.createKernel(
 				"kernel_sum_each_row_1",
@@ -400,6 +420,60 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
 						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
 						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			}
+			return newM;
+		};
+	}();
+
+	$CL.sumEachCol = function() {
+		var kernel1 = $CL.createKernel(
+				"kernel_sum_each_col_1",
+				"__kernel void kernel_sum_each_col_1(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)   " +
+				"{                                                                           " +
+				"    size_t i =  get_global_id(0);                                           " +
+				"    if(i >= iNumElements) return;                                           " +
+				"    for (uint j = 0; j < rows; j++) {                                       " +
+				"        a[i] += b[i + j * cols];                                            " +
+				"    }                                                                       " +
+				"}                                                                           "
+			);
+		var kernel2 = $CL.createKernel(
+				"kernel_sum_each_col_2",
+				"__kernel void kernel_sum_each_col_2(__global float *a, __global float *b, uint rows, uint iNumElements)   " +
+				"{                                                                           " +
+				"    size_t i =  get_global_id(0);                                           " +
+				"    if(i >= iNumElements) return;                                           " +
+				"    for (uint j = 0; j < rows; j++) {                                       " +
+				"        a[i] += b[i * rows + j];                                            " +
+				"    }                                                                       " +
+				"}                                                                           "
+			);
+		return function(mat1) {
+			if (mat1.row_wise) {
+				var newM = new $M(1, mat1.cols);
+				$CL.executeKernel(
+					kernel1,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.rows, type : WebCL.type.UINT}, 
+						{ datum : mat1.cols, type : WebCL.type.UINT}, 
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			} else {
+				var newM = new $M(1, mat1.cols);
+				$CL.executeKernel(
+					kernel2,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
 						{ datum : mat1.rows, type : WebCL.type.UINT},
 						{ datum : newM.length, type : WebCL.type.UINT }
 					],
@@ -456,6 +530,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
 		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
+		$P.largeSumEachCol = function() { return $CL.sumEachCol(this); };
 		$P.largeClone = function() { return $CL.clone(this); };
 	})();
 })();

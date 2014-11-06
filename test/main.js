@@ -271,7 +271,6 @@
 				a.random();
 				var b = new $M(7, 9);
 				b.random();
-				console.log(a.largeClone().toString());
 				return (
 					a.largeClone().nearlyEquals(a.clone()) &&
 					b.t().largeClone().nearlyEquals(b.t().clone())
@@ -398,13 +397,11 @@
 					])
 				);
 			},
-			checkSumEachRow : function() {
+			checkSumEachRowLarge : function() {
 				var a = $M.fromArray([
 					[1, 2, 3],
 					[4, 5, 6]
 				]);
-				console.log(a.largeSumEachRow().toString());
-				console.log(a.t().largeSumEachRow().toString());
 				return a.largeSumEachRow().nearlyEquals(
 					$M.fromArray([
 						[6],
@@ -417,6 +414,34 @@
 						[9]
 					])
 				);
+			},
+			checkSumEachColLarge : function() {
+				var a = $M.fromArray([
+					[1, 2, 3],
+					[4, 5, 6]
+				]);
+				return a.largeSumEachCol().nearlyEquals(
+					$M.fromArray([
+						[5, 7, 9]
+					])
+				) && a.t().largeSumEachCol().nearlyEquals(
+					$M.fromArray([
+						[6, 15]
+					])
+				);
+			},
+			checkMapGenerator : function() {
+				if (!$M.CL) {
+					return false;
+				}
+				var exp = $M.CL.mapGenerator('exp', 'exp(a[i])');
+				var a = $M.fromArray([
+					[1, 2]
+				]);
+				var b = a.clone();
+				exp(a);
+				b.map(Math.exp);
+				return a.nearlyEquals(b);
 			},
 			benchAddNormal : function() {
 				var a = new $M(100, 2000);
