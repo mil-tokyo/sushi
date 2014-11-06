@@ -463,6 +463,13 @@
 					])
 				);
 			},
+			checkSumLarge : function() {
+				var a = $M.fromArray([
+					[1, 2, 3],
+					[4, 5, 6]
+				]);
+				return a.largeSum() === 21;
+			},
 			checkMapGenerator : function() {
 				if (!$M.CL) {
 					return false;

@@ -541,6 +541,14 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
+		$P.largeSum = function() {
+			var row_sum = $CL.sumEachRow(this);
+			var col_sum = $CL.sumEachCol(row_sum);
+			var sum = col_sum.get(0, 0);
+			row_sum.destruct();
+			col_sum.destruct();
+			return sum;
+		};
 		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
 		$P.largeSumEachCol = function() { return $CL.sumEachCol(this); };
 		$P.largeClone = function() { return $CL.clone(this); };

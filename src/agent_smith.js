@@ -462,6 +462,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.largeAdd = $M.add;
 	$P.largeSub = $P.sub;
 	$M.largeSub = $M.sub;
+	$P.largeSum = $P.sum;
 	$P.largeMulEach = $P.mulEach;
 	$M.largeMulEach = $M.mulEach;
 	$P.largeMul = $P.mul;
