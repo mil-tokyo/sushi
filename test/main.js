@@ -472,7 +472,7 @@
 			},
 			checkMapGenerator : function() {
 				if (!$M.CL) {
-					return false;
+					return null;
 				}
 				var exp = $M.CL.mapGenerator('exp', 'exp(a[i])');
 				var a = $M.fromArray([
@@ -494,7 +494,7 @@
 					a.add(b)
 					a.add(b2);
 				}
-				return true;
+				return;
 			},
 			benchAddLarge : function() {
 				var a = new $M(100, 2000);
@@ -507,7 +507,7 @@
 					a.largeAdd(b);
 					a.largeAdd(b2);
 				}
-				return true;
+				return;
 			},
 			benchMulNormal : function() {
 				var a = new $M(128, 768);
@@ -517,7 +517,7 @@
 				for (var i = 0; i < 1; i++) {
 					$M.mul(a, b);
 				}
-				return true;
+				return;
 			},
 			benchMulLarge : function() {
 				var a = new $M(128, 768);
@@ -527,31 +527,31 @@
 				for (var i = 0; i < 1; i++) {
 					$M.largeMul(a, b);
 				}
-				return true;
+				return;
 			},
 			benchTimesNormal : function() {
 				var a = new $M(1000, 1000);
 				a.random();
 				a.times(10);
-				return true;
+				return;
 			},
 			benchTimesLarge : function() {
 				var a = new $M(1000, 1000);
 				a.random();
 				a.largeTimes(10);
-				return true;
+				return;
 			},
 			benchCloneNormal : function() {
 				var a = new $M(10000, 1000);
 				a.random();
 				a.clone();
-				return true;
+				return;
 			},
 			benchCloneLarge : function() {
 				var a = new $M(10000, 1000);
 				a.random();
 				a.largeClone();
-				return true;
+				return;
 			},
 		}
 	};
@@ -560,11 +560,12 @@
 		console.log('==================== start tests ====================');
 		var success = 0;
 		var all = 0;
+		var na = 0;
 		var results_statistics = {};
 		Object.keys(tests).forEach(function (test_name) {
 			console.log('################ TEST : ' + test_name + ' ########################');
 			var test = tests[test_name];
-			results_statistics[test_name] = { success : 0, all : 0 };
+			results_statistics[test_name] = { success : 0, all : 0, na : 0 };
 			Object.keys(test).forEach(function (test_case_name) {
 				var start_time = (new Date()).getTime();
 				var result = false;
@@ -574,23 +575,33 @@
 				} catch (exception) {
 					console.log('exception catched');
 					console.log(exception);
-					throw exception;
 				} finally {
-					console.log(result);
+					if (result === void 0) {
+						console.log('benchmark');
+					} else if (result === null) {
+						console.log('N/A')
+					} else {
+						console.log(result);
+					}
 					console.log('elapsed time : ' + ((new Date()).getTime() - start_time) + ' ms');
-					if (result) {
+					if (result === true) {
 						success++;
 						results_statistics[test_name].success++;
+					} else if (result === null) {
+						na++;
+						results_statistics[test_name].na++;
 					}
-					all++;
-					results_statistics[test_name].all++;
+					if (result === true || result === false) {
+						all++;
+						results_statistics[test_name].all++;
+					}
 				};
 			});
 		});
 		console.log();
 		console.log('=====================================');
 		Object.keys(results_statistics).forEach(function (test_name) {
-			console.log(test_name + ' : ' + results_statistics[test_name].success + ' / ' + results_statistics[test_name].all + ' test cases succeeded.');
+			console.log(test_name + ' : ' + results_statistics[test_name].success + ' / ' + results_statistics[test_name].all + ' test cases succeeded. (N/A : ' + results_statistics[test_name].na + ' )');
 		});
 		console.log('=====================================');
 		console.log('TOTAL : ' + success + ' / ' + all + ' test cases succeeded.');
