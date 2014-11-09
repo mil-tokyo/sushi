@@ -271,19 +271,18 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.mul = function() {
 		var kernel1 = $CL.createKernel(
-				"kernel_mul_1",
-				"__kernel void kernel_mul_1(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    uint row = i / cols;                                                    " +
-				"    uint col = i % cols;                                                    " +
-				"    float sum = 0.0;                                                        " +
-				"    for (uint j = 0; j < width; j++) {                                      " +
-				"        sum += a[row * width + j] * b[j * cols + col];                      " +
-				"    }                                                                       " +
-				"    c[i] = sum;                                                             " +
-				"}                                                                           "
+				"kernel_mul_1", [
+				"__kernel void kernel_mul_1(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    uint row = i / cols;                                                    ",
+				"    uint col = i % cols;                                                    ",
+				"    c[i] = 0.0;                                                             ",
+				"    for (uint j = 0; j < width; j++) {                                      ",
+				"        c[i] += a[row * width + j] * b[j * cols + col];                     ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
 			);
 		var kernel2 = $CL.createKernel(
 				"kernel_mul_2", [
@@ -293,11 +292,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    if(i >= iNumElements) return;                                           ",
 				"    uint row = i / cols;                                                    ",
 				"    uint col = i % cols;                                                    ",
-				"    float sum = 0.0;                                                        ",
+				"    c[i] = 0.0;                                                             ",
 				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        sum += a[row * width + j] * b[j + col * width];                     ",
+				"        c[i] += a[row * width + j] * b[j + col * width];                    ",
 				"    }                                                                       ",
-				"    c[i] = sum;                                                             ",
 				"}                                                                           "].join('\r\n')
 			);
 		var kernel3 = $CL.createKernel(
@@ -308,11 +306,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    if(i >= iNumElements) return;                                           ",
 				"    uint row = i / cols;                                                    ",
 				"    uint col = i % cols;                                                    ",
-				"    float sum = 0.0;                                                        ",
+				"    c[i] = 0.0;                                                             ",
 				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        sum += a[row + j * rows] * b[j * cols + col];                       ",
+				"        c[i] += a[row + j * rows] * b[j * cols + col];                      ",
 				"    }                                                                       ",
-				"    c[i] = sum;                                                             ",
 				"}                                                                           "].join('\r\n')
 			);
 		var kernel4 = $CL.createKernel(
@@ -323,11 +320,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    if(i >= iNumElements) return;                                           ",
 				"    uint row = i / cols;                                                    ",
 				"    uint col = i % cols;                                                    ",
-				"    float sum = 0.0;                                                        ",
+				"    c[i] = 0.0;                                                             ",
 				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        sum += a[row + j * rows] * b[j + col * width];                      ",
+				"        c[i] += a[row + j * rows] * b[j + col * width];                     ",
 				"    }                                                                       ",
-				"    c[i] = sum;                                                             ",
 				"}                                                                           "].join('\r\n')
 			);
 		return function(mat1, mat2) {
@@ -393,6 +389,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"{                                                                           " +
 				"    size_t i =  get_global_id(0);                                           " +
 				"    if(i >= iNumElements) return;                                           " +
+				"    a[i] = 0;                                                               " +
 				"    for (uint j = 0; j < cols; j++) {                                       " +
 				"        a[i] += b[i * cols + j];                                            " +
 				"    }                                                                       " +
@@ -404,6 +401,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"{                                                                           " +
 				"    size_t i =  get_global_id(0);                                           " +
 				"    if(i >= iNumElements) return;                                           " +
+				"    a[i] = 0;                                                               " +
 				"    for (uint j = 0; j < cols; j++) {                                       " +
 				"        a[i] += b[j * rows + i];                                            " +
 				"    }                                                                       " +
@@ -447,6 +445,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"{                                                                           " +
 				"    size_t i =  get_global_id(0);                                           " +
 				"    if(i >= iNumElements) return;                                           " +
+				"    a[i] = 0;                                                               " +
 				"    for (uint j = 0; j < rows; j++) {                                       " +
 				"        a[i] += b[i + j * cols];                                            " +
 				"    }                                                                       " +
@@ -458,6 +457,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"{                                                                           " +
 				"    size_t i =  get_global_id(0);                                           " +
 				"    if(i >= iNumElements) return;                                           " +
+				"    a[i] = 0;                                                               " +
 				"    for (uint j = 0; j < rows; j++) {                                       " +
 				"        a[i] += b[i * rows + j];                                            " +
 				"    }                                                                       " +
@@ -541,6 +541,14 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
 		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
+		$P.largeSum = function() {
+			var row_sum = $CL.sumEachRow(this);
+			var col_sum = $CL.sumEachCol(row_sum);
+			var sum = col_sum.get(0, 0);
+			row_sum.destruct();
+			col_sum.destruct();
+			return sum;
+		};
 		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
 		$P.largeSumEachCol = function() { return $CL.sumEachCol(this); };
 		$P.largeClone = function() { return $CL.clone(this); };

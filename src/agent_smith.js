@@ -462,11 +462,18 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.largeAdd = $M.add;
 	$P.largeSub = $P.sub;
 	$M.largeSub = $M.sub;
+	$P.largeSum = $P.sum;
 	$P.largeMulEach = $P.mulEach;
 	$M.largeMulEach = $M.mulEach;
+	$P.largeDivEach = $P.divEach;
+	$M.largeDivEach = $M.divEach;
 	$P.largeMul = $P.mul;
 	$M.largeMul = $M.mul;
 	$P.largeTimes = $P.times;
+	$P.largeClone = $P.clone;
+	$P.largeSum = $P.sum;
+	$P.largeSumEachRow = $P.sumEachRow;
+	$P.largeSumEachCol = $P.sumEachCol;
 })();
 
 var nodejs = (typeof window === 'undefined');
