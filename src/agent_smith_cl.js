@@ -360,13 +360,13 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.times = function() {
 		var kernel_to_use = $CL.createKernel(
-				"kernel_times",
-				"__kernel void kernel_times(__global float *a, float b, uint iNumElements)   " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    a[i] *= b;                                                              " +
-				"}                                                                           "
+				"kernel_times", [
+				"__kernel void kernel_times(__global float *a, float b, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] *= b;                                                              ",
+				"}                                                                           "].join('\r\n')
 			);
 		return function(mat1, times) {
 			$CL.executeKernel(
@@ -384,28 +384,28 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.sumEachRow = function() {
 		var kernel1 = $CL.createKernel(
-				"kernel_sum_each_row_1",
-				"__kernel void kernel_sum_each_row_1(__global float *a, __global float *b, uint cols, uint iNumElements)   " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    a[i] = 0;                                                               " +
-				"    for (uint j = 0; j < cols; j++) {                                       " +
-				"        a[i] += b[i * cols + j];                                            " +
-				"    }                                                                       " +
-				"}                                                                           "
+				"kernel_sum_each_row_1", [
+				"__kernel void kernel_sum_each_row_1(__global float *a, __global float *b, uint cols, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = 0;                                                               ",
+				"    for (uint j = 0; j < cols; j++) {                                       ",
+				"        a[i] += b[i * cols + j];                                            ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
 			);
 		var kernel2 = $CL.createKernel(
-				"kernel_sum_each_row_2",
-				"__kernel void kernel_sum_each_row_2(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    a[i] = 0;                                                               " +
-				"    for (uint j = 0; j < cols; j++) {                                       " +
-				"        a[i] += b[j * rows + i];                                            " +
-				"    }                                                                       " +
-				"}                                                                           "
+				"kernel_sum_each_row_2", [
+				"__kernel void kernel_sum_each_row_2(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = 0;                                                               ",
+				"    for (uint j = 0; j < cols; j++) {                                       ",
+				"        a[i] += b[j * rows + i];                                            ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
 			);
 		return function(mat1) {
 			if (mat1.row_wise) {
@@ -440,28 +440,28 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 
 	$CL.sumEachCol = function() {
 		var kernel1 = $CL.createKernel(
-				"kernel_sum_each_col_1",
-				"__kernel void kernel_sum_each_col_1(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)   " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    a[i] = 0;                                                               " +
-				"    for (uint j = 0; j < rows; j++) {                                       " +
-				"        a[i] += b[i + j * cols];                                            " +
-				"    }                                                                       " +
-				"}                                                                           "
+				"kernel_sum_each_col_1", [
+				"__kernel void kernel_sum_each_col_1(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = 0;                                                               ",
+				"    for (uint j = 0; j < rows; j++) {                                       ",
+				"        a[i] += b[i + j * cols];                                            ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
 			);
 		var kernel2 = $CL.createKernel(
-				"kernel_sum_each_col_2",
-				"__kernel void kernel_sum_each_col_2(__global float *a, __global float *b, uint rows, uint iNumElements)   " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    a[i] = 0;                                                               " +
-				"    for (uint j = 0; j < rows; j++) {                                       " +
-				"        a[i] += b[i * rows + j];                                            " +
-				"    }                                                                       " +
-				"}                                                                           "
+				"kernel_sum_each_col_2", [
+				"__kernel void kernel_sum_each_col_2(__global float *a, __global float *b, uint rows, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = 0;                                                               ",
+				"    for (uint j = 0; j < rows; j++) {                                       ",
+				"        a[i] += b[i * rows + j];                                            ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
 			);
 		return function(mat1) {
 			if (mat1.row_wise) {
@@ -504,13 +504,13 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.clone = function() {
 		var kernel = $CL.createKernel(
-				"kernel_clone",
-				"__kernel void kernel_clone(__global float *a, __global float *b, uint iNumElements)   " +
-				"{                                                                           " +
-				"    size_t i =  get_global_id(0);                                           " +
-				"    if(i >= iNumElements) return;                                           " +
-				"    a[i] = b[i];                                                            " +
-				"}                                                                           "
+				"kernel_clone", [
+				"__kernel void kernel_clone(__global float *a, __global float *b, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = b[i];                                                            ",
+				"}                                                                           "].join('\r\n')
 			);
 		return function(mat) {
 			var newM = new $M(mat.rows, mat.cols);
