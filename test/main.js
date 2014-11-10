@@ -567,6 +567,42 @@
 					}
 				},
 				{
+					name : "checkConvolveLarge",
+					test : function() {
+						if (!$M.CL) {
+							return null;
+						}
+						var a = $M.fromArray([
+							[1, 2, 3],
+							[4, 5, 6],
+							[7, 8, 9]
+						]);
+						var at = $M.fromArray([
+							[1, 4, 7],
+							[2, 5, 8],
+							[3, 6, 9]
+						]);
+						var b = $M.fromArray([
+							[1, 2],
+							[3, 4]
+						]);
+						var bt = $M.fromArray([
+							[1, 3],
+							[2, 4]
+						]);
+						var c = $M.fromArray([
+							[ 4, 11, 18,  9],
+							[18, 37, 47, 21],
+							[36, 67, 77, 33],
+							[14, 23, 26,  9]
+						]);
+						return $M.largeConvolve(a, b, 'full').equals(c) &&
+						       $M.largeConvolve(at.t(), b, 'full').equals(c) &&
+						       $M.largeConvolve(a, bt.t(), 'full').equals(c) &&
+						       $M.largeConvolve(at.t(), bt.t(), 'full').equals(c);
+					}
+				},
+				{
 					name : "benchAddNormal",
 					test : function() {
 						var a = new $M(100, 2000);

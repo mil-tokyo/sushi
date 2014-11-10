@@ -455,6 +455,10 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		return newM;
 	};
+	
+	$M.convolve = function(mat1, mat2, mode) {
+		throw new Error('not implemented');
+	};
 
 	/* ##### large matrix calculation ##### */
 	
@@ -474,6 +478,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.largeSum = $P.sum;
 	$P.largeSumEachRow = $P.sumEachRow;
 	$P.largeSumEachCol = $P.sumEachCol;
+	$M.largeConvolve = $M.convolve;
 })();
 
 var nodejs = (typeof window === 'undefined');

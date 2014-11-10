@@ -358,6 +358,114 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	}();
 	
+	$CL.convolve = function() {
+		var createConvolveKernelCode = function(id, mat1_row_col_to_idx, mat2_row_col_to_idx) {
+			return [
+					"__kernel void " + id + "(__global float *mat1, __global float *mat2, __global float *output, uint cols, uint mat1_rows, uint mat1_cols, uint mat2_rows, uint mat2_cols, uint offset_row, uint offset_col, uint iNumElements) ",
+					"{                                                                              ",
+					"    size_t i =  get_global_id(0);                                              ",
+					"    if(i >= iNumElements) return;                                              ",
+					"    uint row = i / cols;                                                       ",
+					"    uint col = i % cols;                                                       ",
+					"    int tmp_row;                                                               ",
+					"    int tmp_col;                                                               ",
+					"    output[i] = 0.0;                                                           ",
+					"    for (uint d_row = 0; d_row < mat2_rows; d_row++) {                          ",
+					"        for (uint d_col = 0; d_col < mat2_cols; d_col++) {                      ",
+					"            tmp_row = row + d_row - offset_row;                                ",
+					"            tmp_col = col + d_col - offset_col;                                ",
+					"            if (tmp_row < 0 || tmp_row >= mat1_rows ||                         ",
+					"                tmp_col < 0 || tmp_col >= mat1_cols ) {                        ",
+					"                continue;                                                      ",
+					"            }                                                                  ",
+					"            output[i] += mat1[",mat1_row_col_to_idx('tmp_row', 'tmp_col'),"] * ",
+					"                    mat2[",mat2_row_col_to_idx('d_row', 'd_col'),"];           ",
+					"        }                                                                      ",
+					"    }                                                                          ",
+					"}                                                                              "].join('\r\n');
+		};
+		var kernel1 = $CL.createKernel(
+				"kernel_convolve_1",
+				createConvolveKernelCode(
+					"kernel_convolve_1",
+					function(row, col) { return ['mat1_cols * ',row,' + ',col,''].join(''); },
+					function(row, col) { return ['mat2_cols * ',row,' + ',col,''].join(''); }
+				)
+			);
+		var kernel2 = $CL.createKernel(
+				"kernel_convolve_1",
+				createConvolveKernelCode(
+					"kernel_convolve_1",
+					function(row, col) { return ['mat1_cols * ',row,' + ',col,''].join(''); },
+					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
+				)
+			);
+		var kernel3 = $CL.createKernel(
+				"kernel_convolve_1",
+				createConvolveKernelCode(
+					"kernel_convolve_1",
+					function(row, col) { return ['mat1_rows * ',col,' + ',row,''].join(''); },
+					function(row, col) { return ['mat2_cols * ',row,' + ',col,''].join(''); }
+				)
+			);
+		var kernel4 = $CL.createKernel(
+				"kernel_convolve_1",
+				createConvolveKernelCode(
+					"kernel_convolve_1",
+					function(row, col) { return ['mat1_rows * ',col,' + ',row,''].join(''); },
+					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
+				)
+			);
+		return function(mat1, mat2, mode) {
+			if (mode === 'valid' && mat1.cols < mat2.cols || mat1.rows < mat2.rows) {
+				throw new Error('the size of the second matrix must be smaller than that of the first one');
+			}
+			if (mat1.row_wise === true && mat2.row_wise === true) {
+				kernel_to_use = kernel1;
+			} else if (mat1.row_wise === true && mat2.row_wise === false) {
+				kernel_to_use = kernel2;
+			} else if (mat1.row_wise === false && mat2.row_wise === true) {
+				kernel_to_use = kernel3;
+			} else {
+				kernel_to_use = kernel4;
+			}
+			
+			if (mode === 'valid') {
+				var newM = new $M(mat1.rows - mat2.rows + 1, mat1.cols - mat2.cols + 1);
+				var offset_row = 0;
+				var offset_col = 0;
+			} else if (mode === 'full') {
+				var newM = new $M(mat1.rows + mat2.rows - 1, mat1.cols + mat2.cols - 1);
+				var offset_row = mat2.rows - 1;
+				var offset_col = mat2.cols - 1;
+			} else if (mode === 'same') {
+				var newM = new $M(mat1.rows, mat1.cols);
+				var offset_row = Math.floor((mat2.rows - 1) / 2);
+				var offset_col = Math.floor((mat2.cols - 1) / 2);
+			} else {
+				throw new Error('the mode is not supported');
+			}
+			$CL.executeKernel(
+				kernel_to_use,
+				[
+					{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+					{ access : WebCL.MEM_READ_ONLY, datum : mat2 },
+					{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+					{ datum : newM.cols, type : WebCL.type.UINT},
+					{ datum : mat1.rows, type : WebCL.type.UINT},
+					{ datum : mat1.cols, type : WebCL.type.UINT},
+					{ datum : mat2.rows, type : WebCL.type.UINT},
+					{ datum : mat2.cols, type : WebCL.type.UINT},
+					{ datum : offset_row, type : WebCL.type.UINT},
+					{ datum : offset_col, type : WebCL.type.UINT},
+					{ datum : newM.length, type : WebCL.type.UINT}
+				],
+				newM.length
+			);
+			return newM;
+		};
+	}();
+	
 	$CL.times = function() {
 		var kernel_to_use = $CL.createKernel(
 				"kernel_times", [
@@ -552,5 +660,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
 		$P.largeSumEachCol = function() { return $CL.sumEachCol(this); };
 		$P.largeClone = function() { return $CL.clone(this); };
+		$M.largeConvolve = $CL.convolve;
 	})();
 })();
