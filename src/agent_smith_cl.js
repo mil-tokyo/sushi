@@ -105,10 +105,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			}
 		};
 		
-		$CL.createKernel = function(name, code) {
+		$CL.createKernel = function(code) {
 			var program = $CL.context.createProgram(code);
 			program.build($CL.devices);
-			return program.createKernel(name);
+			return program.createKernel('kernel_func');
 		};
 		
 		$CL.executeKernel = function() {
@@ -145,9 +145,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 
 	$CL.eachOperationGenerator = function(id, operator) {
 		// if the wises are same
-		var kernel1 = $CL.createKernel(
-			"kernel_" + id + "_1", [
-			"__kernel void kernel_" + id + "_1(__global float *a, __global float *b, uint iNumElements) ",
+		var kernel1 = $CL.createKernel([
+			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements) ",
 			"{                                                                           ",
 			"    size_t i =  get_global_id(0);                                           ",
 			"    if(i >= iNumElements) return;                                           ",
@@ -155,9 +154,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			"}                                                                           "].join('\r\n')
 		);
 		// different wises
-		var kernel2 = $CL.createKernel(
-			"kernel_" + id + "_2", [
-			"__kernel void kernel_" + id + "_2(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
+		var kernel2 = $CL.createKernel([
+			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
 			"{                                                                           ",
 			"    size_t i =  get_global_id(0);                                           ",
 			"    if(i >= iNumElements) return;                                           ",
@@ -166,9 +164,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		);
 		
 		// different wises (particularly for incommutable function)
-		var kernel3 = $CL.createKernel(
-			"kernel_" + id + "_3", [
-			"__kernel void kernel_" + id + "_3(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
+		var kernel3 = $CL.createKernel([
+			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
 			"{                                                                                             ",
 			"    size_t i =  get_global_id(0);                                                             ",
 			"    if(i >= iNumElements) return;                                                             ",
@@ -177,9 +174,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		);
 		
 		// broadcast 1
-		var kernel4 = $CL.createKernel(
-			"kernel_" + id + "_4", [
-			"__kernel void kernel_" + id + "_4(__global float *a, __global float *b, uint iNumElements, uint b_length) ",
+		var kernel4 = $CL.createKernel([
+			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint b_length) ",
 			"{                                                                                             ",
 			"    size_t i =  get_global_id(0);                                                             ",
 			"    if(i >= iNumElements) return;                                                             ",
@@ -188,9 +184,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		);
 		
 		// broadcast 2
-		var kernel5 = $CL.createKernel(
-				"kernel_" + id + "_5", [
-				"__kernel void kernel_" + id + "_5(__global float *a, __global float *b, uint iNumElements, uint b_skip) ",
+		var kernel5 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint b_skip) ",
 				"{                                                                                             ",
 				"    size_t i =  get_global_id(0);                                                             ",
 				"    if(i >= iNumElements) return;                                                             ",
@@ -240,11 +235,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	};
 	
-	$CL.mapGenerator = function(id, expression_ai) {
+	$CL.mapGenerator = function(expression_ai) {
 		// if the wises are same
-		var kernel = $CL.createKernel(
-			"kernel_" + id, [
-			"__kernel void kernel_" + id + "(__global float *a, uint iNumElements) ",
+		var kernel = $CL.createKernel([
+			"__kernel void kernel_func(__global float *a, uint iNumElements) ",
 			"{                                                                           ",
 			"    size_t i =  get_global_id(0);                                           ",
 			"    if(i >= iNumElements) return;                                           ",
@@ -270,9 +264,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	$CL.divEach = $CL.eachOperationGenerator('divEach', '/');
 	
 	$CL.mul = function() {
-		var kernel1 = $CL.createKernel(
-				"kernel_mul_1", [
-				"__kernel void kernel_mul_1(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+		var kernel1 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -284,9 +277,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
-		var kernel2 = $CL.createKernel(
-				"kernel_mul_2", [
-				"__kernel void kernel_mul_2(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+		var kernel2 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -298,9 +290,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
-		var kernel3 = $CL.createKernel(
-				"kernel_mul_3", [
-				"__kernel void kernel_mul_3(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+		var kernel3 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -312,9 +303,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
-		var kernel4 = $CL.createKernel(
-				"kernel_mul_4", [
-				"__kernel void kernel_mul_4(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+		var kernel4 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -359,9 +349,9 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.convolve = function() {
-		var createConvolveKernelCode = function(id, mat1_row_col_to_idx, mat2_row_col_to_idx) {
+		var createConvolveKernelCode = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
 			return [
-					"__kernel void " + id + "(__global float *mat1, __global float *mat2, __global float *output, uint cols, uint mat1_rows, uint mat1_cols, uint mat2_rows, uint mat2_cols, uint offset_row, uint offset_col, uint iNumElements) ",
+					"__kernel void kernel_func(__global float *mat1, __global float *mat2, __global float *output, uint cols, uint mat1_rows, uint mat1_cols, uint mat2_rows, uint mat2_cols, uint offset_row, uint offset_col, uint iNumElements) ",
 					"{                                                                              ",
 					"    size_t i =  get_global_id(0);                                              ",
 					"    if(i >= iNumElements) return;                                              ",
@@ -385,33 +375,25 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					"}                                                                              "].join('\r\n');
 		};
 		var kernel1 = $CL.createKernel(
-				"kernel_convolve_1",
 				createConvolveKernelCode(
-					"kernel_convolve_1",
 					function(row, col) { return ['mat1_cols * ',row,' + ',col,''].join(''); },
 					function(row, col) { return ['mat2_cols * ',row,' + ',col,''].join(''); }
 				)
 			);
 		var kernel2 = $CL.createKernel(
-				"kernel_convolve_1",
 				createConvolveKernelCode(
-					"kernel_convolve_1",
 					function(row, col) { return ['mat1_cols * ',row,' + ',col,''].join(''); },
 					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
 				)
 			);
 		var kernel3 = $CL.createKernel(
-				"kernel_convolve_1",
 				createConvolveKernelCode(
-					"kernel_convolve_1",
 					function(row, col) { return ['mat1_rows * ',col,' + ',row,''].join(''); },
 					function(row, col) { return ['mat2_cols * ',row,' + ',col,''].join(''); }
 				)
 			);
 		var kernel4 = $CL.createKernel(
-				"kernel_convolve_1",
 				createConvolveKernelCode(
-					"kernel_convolve_1",
 					function(row, col) { return ['mat1_rows * ',col,' + ',row,''].join(''); },
 					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
 				)
@@ -467,9 +449,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.times = function() {
-		var kernel_to_use = $CL.createKernel(
-				"kernel_times", [
-				"__kernel void kernel_times(__global float *a, float b, uint iNumElements)   ",
+		var kernel_to_use = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, float b, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -491,9 +472,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.sumEachRow = function() {
-		var kernel1 = $CL.createKernel(
-				"kernel_sum_each_row_1", [
-				"__kernel void kernel_sum_each_row_1(__global float *a, __global float *b, uint cols, uint iNumElements)   ",
+		var kernel1 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -503,9 +483,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
-		var kernel2 = $CL.createKernel(
-				"kernel_sum_each_row_2", [
-				"__kernel void kernel_sum_each_row_2(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   ",
+		var kernel2 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -547,9 +526,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 
 	$CL.sumEachCol = function() {
-		var kernel1 = $CL.createKernel(
-				"kernel_sum_each_col_1", [
-				"__kernel void kernel_sum_each_col_1(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)   ",
+		var kernel1 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -559,9 +537,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
-		var kernel2 = $CL.createKernel(
-				"kernel_sum_each_col_2", [
-				"__kernel void kernel_sum_each_col_2(__global float *a, __global float *b, uint rows, uint iNumElements)   ",
+		var kernel2 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -611,9 +588,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	};
 	
 	$CL.clone = function() {
-		var kernel = $CL.createKernel(
-				"kernel_clone", [
-				"__kernel void kernel_clone(__global float *a, __global float *b, uint iNumElements)   ",
+		var kernel = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",

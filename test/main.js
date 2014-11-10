@@ -556,7 +556,7 @@
 						if (!$M.CL) {
 							return null;
 						}
-						var exp = $M.CL.mapGenerator('exp', 'exp(a[i])');
+						var exp = $M.CL.mapGenerator('exp(a[i])');
 						var a = $M.fromArray([
 							[1, 2]
 						]);
