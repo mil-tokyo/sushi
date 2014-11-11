@@ -612,6 +612,49 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	}();
 	
+	$CL.extract = function() {
+		var createExtractKernelCode = function(input_row_col_to_idx) {
+			return [
+				"__kernel void kernel_func(__global float *output, __global float *input, uint offset_row, uint offset_col, uint input_rows, uint input_cols, uint cols, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    uint row = offset_row + i / cols;                                       ",
+				"    uint col = offset_col + i % cols;                                       ",
+				"    output[i] = input[" + input_row_col_to_idx("row", "col") + "];          ",
+				"}                                                                           "].join('\r\n');
+		};
+		var kernel1 = $CL.createKernel(
+				createExtractKernelCode(function(row, col) { return ['input_cols * ',row,' + ',col,''].join(''); })
+			);
+		var kernel2 = $CL.createKernel(
+				createExtractKernelCode(function(row, col) { return ['input_rows * ',col,' + ',row,''].join(''); })
+			);
+		return function(mat, offset_row, offset_col, rows, cols) {
+			var newM = new $M(rows, cols);
+			if (mat.row_wise) {
+				var kernel_to_use = kernel1;
+			} else {
+				var kernel_to_use = kernel2;
+			}
+			$CL.executeKernel(
+					kernel_to_use,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat },
+						{ datum : offset_row, type : WebCL.type.UINT },
+						{ datum : offset_col, type : WebCL.type.UINT },
+						{ datum : mat.rows, type : WebCL.type.UINT },
+						{ datum : mat.cols, type : WebCL.type.UINT },
+						{ datum : cols, type : WebCL.type.UINT },
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			return newM;
+		}
+	}();
+	
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
@@ -637,5 +680,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeSumEachCol = function() { return $CL.sumEachCol(this); };
 		$P.largeClone = function() { return $CL.clone(this); };
 		$M.largeConvolve = $CL.convolve;
+		$P.largeExtract = function(offset_row, offset_col, rows, cols) { return $CL.extract(this, offset_row, offset_col, rows, cols); };
 	})();
 })();

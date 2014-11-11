@@ -187,6 +187,10 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		});
 		return newM;
 	};
+	
+	$P.extract = function(offest_row, offset_col, rows, cols) {
+		throw new Error('not implemented');
+	};
 
 	/* ##### general manipulation ##### */
 	$P.get = function(row, col) {
@@ -479,6 +483,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.largeSumEachRow = $P.sumEachRow;
 	$P.largeSumEachCol = $P.sumEachCol;
 	$M.largeConvolve = $M.convolve;
+	$P.largeExtract = $P.extract;
 })();
 
 var nodejs = (typeof window === 'undefined');

@@ -333,7 +333,7 @@
 			name : "Large",
 			tests : [
 				{
-					name : "checkClone",
+					name : "checkCloneLarge",
 					test : function() {
 						var a = new $M(7, 9);
 						a.random();
@@ -342,6 +342,23 @@
 						return (
 							a.largeClone().nearlyEquals(a.clone()) &&
 							b.t().largeClone().nearlyEquals(b.t().clone())
+							);
+					}
+				},
+				{
+					name : "checkExtractLarge",
+					test : function() {
+						var a = new $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						return (
+							a.largeExtract(1, 1, 3, 1).equals($M.fromArray([[5], [8], [11]])) &&
+							a.largeExtract(2, 0, 1, 3).equals($M.fromArray([[7, 8, 9]])) &&
+							a.t().largeExtract(1, 1, 1, 3).equals($M.fromArray([[5, 8, 11]])) &&
+							a.t().largeExtract(0, 2, 3, 1).equals($M.fromArray([[7], [8], [9]]))
 							);
 					}
 				},
