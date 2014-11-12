@@ -188,11 +188,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
-	$P.extract = function(offest_row, offset_col, rows, cols) {
+	$M.extract = function(mat, offest_row, offset_col, rows, cols) {
 		throw new Error('not implemented');
 	};
 	
-	$P.writeSubmat = function(submat, offset_row, offset_col) {
+	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {
 		throw new Error('not implemented');
 	};
 
@@ -276,14 +276,14 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 	/* ##### statistics ##### */
 	
-	$P.argmax = function() {
-		this.syncData();
-		var max_val = this.data[0];
+	$M.argmax = function(mat) {
+		mat.syncData();
+		var max_val = mat.data[0];
 		var arg = { row : 0, col : 0 };
-		for (var row = 0; row < this.rows; row++) {
-			for (var col = 0; col < this.cols; col++) {
-				if (this.get(row, col) > max_val) {
-					max_val = this.get(row, col);
+		for (var row = 0; row < mat.rows; row++) {
+			for (var col = 0; col < mat.cols; col++) {
+				if (mat.get(row, col) > max_val) {
+					max_val = mat.get(row, col);
 					arg.row = row;
 					arg.col = col;
 				}		
@@ -292,35 +292,35 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return arg;
 	};
 	
-	$P.sum = function() {
-		this.syncData();
+	$M.sum = function(mat) {
+		mat.syncData();
 		var sum = 0.0;
-		for (var i = 0; i < this.length; i++) {
-			sum += this.data[i];
+		for (var i = 0; i < mat.length; i++) {
+			sum += mat.data[i];
 		}
 		return sum;
 	};
 	
-	$P.sumEachRow = function() {
-		this.syncData();
-		var newM = new $M(this.rows, 1);
-		for (var row = 0; row < this.rows; row++) {
+	$M.sumEachRow = function(mat) {
+		mat.syncData();
+		var newM = new $M(mat.rows, 1);
+		for (var row = 0; row < mat.rows; row++) {
 			var tmp = 0;
-			for (var col = 0; col < this.cols; col++) {
-				tmp += this.get(row, col);
+			for (var col = 0; col < mat.cols; col++) {
+				tmp += mat.get(row, col);
 			}
 			newM.set(row, 0, tmp);
 		}
 		return newM;
 	};
 	
-	$P.sumEachCol = function() {
-		this.syncData();
-		var newM = new $M(1, this.cols);
-		for (var col = 0; col < this.cols; col++) {
+	$M.sumEachCol = function(mat) {
+		mat.syncData();
+		var newM = new $M(1, mat.cols);
+		for (var col = 0; col < mat.cols; col++) {
 			var tmp = 0;
-			for (var row = 0; row < this.rows; row++) {
-				tmp += this.get(row, col);
+			for (var row = 0; row < mat.rows; row++) {
+				tmp += mat.get(row, col);
 			}
 			newM.set(0, col, tmp);
 		}
@@ -471,24 +471,25 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	/* ##### large matrix calculation ##### */
 	
 	$P.largeAdd = $P.add;
-	$M.largeAdd = $M.add;
 	$P.largeSub = $P.sub;
-	$M.largeSub = $M.sub;
-	$P.largeSum = $P.sum;
 	$P.largeMulEach = $P.mulEach;
-	$M.largeMulEach = $M.mulEach;
 	$P.largeDivEach = $P.divEach;
-	$M.largeDivEach = $M.divEach;
 	$P.largeMul = $P.mul;
-	$M.largeMul = $M.mul;
 	$P.largeTimes = $P.times;
 	$P.largeClone = $P.clone;
-	$P.largeSum = $P.sum;
-	$P.largeSumEachRow = $P.sumEachRow;
-	$P.largeSumEachCol = $P.sumEachCol;
+	
+	$M.largeAdd = $M.add;
+	$M.largeSub = $M.sub;
+	$M.largeMulEach = $M.mulEach;
+	$M.largeDivEach = $M.divEach;
+	$M.largeMul = $M.mul;
+	$M.largeSum = $M.sum;
+	
+	$M.largeSumEachRow = $M.sumEachRow;
+	$M.largeSumEachCol = $M.sumEachCol;
 	$M.largeConvolve = $M.convolve;
-	$P.largeExtract = $P.extract;
-	$P.largeWriteSubmat = $P.writeSubmat;
+	$M.largeExtract = $M.extract;
+	$M.largeWriteSubmat = $M.writeSubmat;
 })();
 
 var nodejs = (typeof window === 'undefined');

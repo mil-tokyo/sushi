@@ -305,7 +305,7 @@
 							[1, 2, 3, 4],
 							[5, 6, 7, 8]
 						]);
-						return a.sumEachRow().equals(
+						return $M.sumEachRow(a).equals(
 							$M.fromArray([
 								[10],
 								[26]
@@ -320,7 +320,7 @@
 							[1, 2, 3, 4],
 							[5, 6, 7, 8]
 						]);
-						return a.sumEachCol().equals(
+						return $M.sumEachCol(a).equals(
 							$M.fromArray([
 								[6, 8, 10, 12]
 							])
@@ -355,10 +355,10 @@
 							[10, 11, 12],
 							]);
 						return (
-							a.largeExtract(1, 1, 3, 1).equals($M.fromArray([[5], [8], [11]])) &&
-							a.largeExtract(2, 0, 1, 3).equals($M.fromArray([[7, 8, 9]])) &&
-							a.t().largeExtract(1, 1, 1, 3).equals($M.fromArray([[5, 8, 11]])) &&
-							a.t().largeExtract(0, 2, 3, 1).equals($M.fromArray([[7], [8], [9]]))
+							$M.largeExtract(a, 1, 1, 3, 1).equals($M.fromArray([[5], [8], [11]])) &&
+							$M.largeExtract(a, 2, 0, 1, 3).equals($M.fromArray([[7, 8, 9]])) &&
+							$M.largeExtract(a.t(), 1, 1, 1, 3).equals($M.fromArray([[5, 8, 11]])) &&
+							$M.largeExtract(a.t(), 0, 2, 3, 1).equals($M.fromArray([[7], [8], [9]]))
 							);
 					}
 				},
@@ -377,24 +377,24 @@
 							[-5, -6]
 							]);
 						return (
-							a.clone().largeWriteSubmat(b, 1, 1).equals($M.fromArray([
+							$M.largeWriteSubmat(a.clone(), b, 1, 1).equals($M.fromArray([
 								[ 1,  2,  3],
 								[ 4, -1, -2],
 								[ 7, -3, -4],
 								[10, -5, -6],
 							])) &&
-							a.t().clone().largeWriteSubmat(b, 0, 1).equals($M.fromArray([
+							$M.largeWriteSubmat(a.t().clone(), b, 0, 1).equals($M.fromArray([
 								[ 1, -1, -2, 10],
 								[ 2, -3, -4, 11],
 								[ 3, -5, -6, 12],
 							])) &&
-							a.clone().largeWriteSubmat(b.t(), 1, 0).equals($M.fromArray([
+							$M.largeWriteSubmat(a.clone(), b.t(), 1, 0).equals($M.fromArray([
 								[ 1,  2,  3],
 								[-1, -3, -5],
 								[-2, -4, -6],
 								[10, 11, 12],
 							])) &&
-							a.t().clone().largeWriteSubmat(b.t(), 1, 1).equals($M.fromArray([
+							$M.largeWriteSubmat(a.t().clone(), b.t(), 1, 1).equals($M.fromArray([
 								[ 1,  2,  3],
 								[ 4, -1, -2],
 								[ 7, -3, -4],
@@ -566,12 +566,12 @@
 							[1, 2, 3],
 							[4, 5, 6]
 						]);
-						return a.largeSumEachRow().nearlyEquals(
+						return $M.largeSumEachRow(a).nearlyEquals(
 							$M.fromArray([
 								[6],
 								[15]
 							])
-						) && a.t().largeSumEachRow().nearlyEquals(
+						) && $M.largeSumEachRow(a.t()).nearlyEquals(
 							$M.fromArray([
 								[5],
 								[7],
@@ -587,11 +587,11 @@
 							[1, 2, 3],
 							[4, 5, 6]
 						]);
-						return a.largeSumEachCol().nearlyEquals(
+						return $M.largeSumEachCol(a).nearlyEquals(
 							$M.fromArray([
 								[5, 7, 9]
 							])
-						) && a.t().largeSumEachCol().nearlyEquals(
+						) && $M.largeSumEachCol(a.t()).nearlyEquals(
 							$M.fromArray([
 								[6, 15]
 							])
@@ -605,7 +605,7 @@
 							[1, 2, 3],
 							[4, 5, 6]
 						]);
-						return a.largeSum() === 21;
+						return $M.largeSum(a) === 21;
 					}
 				},
 				{
@@ -779,6 +779,7 @@
 				} catch (exception) {
 					console.log('exception catched');
 					console.log(exception);
+					throw exception;
 				} finally {
 					if (result === void 0) {
 						console.log('benchmark');

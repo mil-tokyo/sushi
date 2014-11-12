@@ -655,7 +655,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		}
 	}();
 	
-	$CL.writeSubMat = function() {
+	$CL.writeSubmat = function() {
 		var createSubMatKernelCode = function(mat_row_col_to_idx, submat_row_col_to_idx) {
 			return [
 				"__kernel void kernel_func(__global float *mat, __global float *submat, uint offset_row, uint offset_col, uint mat_rows, uint mat_cols, uint submat_rows, uint submat_cols, uint iNumElements)   ",
@@ -721,35 +721,38 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					],
 					submat.length
 				);
+			return mat;
 		}
 	}();
 	
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
-		$M.largeAdd = function(mat1, mat2) { return mat1.largeClone().largeAdd(mat2); };
 		$P.largeSub = function(mat) { $CL.sub(this, mat); return this; };
-		$M.largeSub = function(mat1, mat2) { return mat1.largeClone().largeSub(mat2); };
 		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
-		$M.largeMulEach = function(mat1, mat2) { return mat1.largeClone().largeMulEach(mat2); };
 		$P.largeDivEach = function(mat) { $CL.divEach(this, mat); return this; };
-		$M.largeDivEach = function(mat1, mat2) { return mat1.largeClone().largeDivEach(mat2); };
 		$P.largeMul = function(mat) { return $CL.mul(this, mat); };
-		$M.largeMul = $CL.mul;
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
-		$P.largeSum = function() {
-			var row_sum = $CL.sumEachRow(this);
+		$P.largeClone = function() { return $CL.clone(this); };
+		
+		$M.largeAdd = function(mat1, mat2) { return mat1.largeClone().largeAdd(mat2); };
+		$M.largeSub = function(mat1, mat2) { return mat1.largeClone().largeSub(mat2); };
+		$M.largeMulEach = function(mat1, mat2) { return mat1.largeClone().largeMulEach(mat2); };
+		$M.largeDivEach = function(mat1, mat2) { return mat1.largeClone().largeDivEach(mat2); };
+		$M.largeMul = $CL.mul;
+		$M.largeSum = function(mat) {
+			var row_sum = $CL.sumEachRow(mat);
 			var col_sum = $CL.sumEachCol(row_sum);
 			var sum = col_sum.get(0, 0);
 			row_sum.destruct();
 			col_sum.destruct();
 			return sum;
 		};
-		$P.largeSumEachRow = function() { return $CL.sumEachRow(this); };
-		$P.largeSumEachCol = function() { return $CL.sumEachCol(this); };
-		$P.largeClone = function() { return $CL.clone(this); };
+		
+		$M.largeSumEachRow = $CL.sumEachRow;
+		$M.largeSumEachCol = $CL.sumEachCol;
 		$M.largeConvolve = $CL.convolve;
-		$P.largeExtract = function(offset_row, offset_col, rows, cols) { return $CL.extract(this, offset_row, offset_col, rows, cols); };
-		$P.largeWriteSubmat = function(submat, offset_row, offset_col) { $CL.writeSubMat(this, submat, offset_row, offset_col); return this; };
+		$M.largeExtract = $CL.extract;
+		$M.largeWriteSubmat = $CL.writeSubmat;
 	})();
 })();
