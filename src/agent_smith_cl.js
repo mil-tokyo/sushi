@@ -655,6 +655,75 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		}
 	}();
 	
+	$CL.writeSubMat = function() {
+		var createSubMatKernelCode = function(mat_row_col_to_idx, submat_row_col_to_idx) {
+			return [
+				"__kernel void kernel_func(__global float *mat, __global float *submat, uint offset_row, uint offset_col, uint mat_rows, uint mat_cols, uint submat_rows, uint submat_cols, uint iNumElements)   ",
+				"{                                                                              ",
+				"    size_t i =  get_global_id(0);                                              ",
+				"    if(i >= iNumElements) return;                                              ",
+				"    uint row = i / submat_cols;                                                ",
+				"    uint col = i % submat_cols;                                                ",
+				"    mat[",mat_row_col_to_idx("(offset_row + row)", "(offset_col + col)"),"] =  ",
+				"        submat[",submat_row_col_to_idx("row", "col"),"];                       ",
+				"}                                                                           "].join('\r\n');
+		};
+		var kernel1 = $CL.createKernel(
+				createSubMatKernelCode(
+					function(row, col) { return ['mat_cols * ',row,' + ',col,''].join(''); },
+					function(row, col) { return ['submat_cols * ',row,' + ',col,''].join(''); }
+				)
+			);
+		var kernel2 = $CL.createKernel(
+				createSubMatKernelCode(
+					function(row, col) { return ['mat_cols * ',row,' + ',col,''].join(''); },
+					function(row, col) { return ['submat_rows * ',col,' + ',row,''].join(''); }
+				)
+			);
+		var kernel3 = $CL.createKernel(
+				createSubMatKernelCode(
+					function(row, col) { return ['mat_rows * ',col,' + ',row,''].join(''); },
+					function(row, col) { return ['submat_cols * ',row,' + ',col,''].join(''); }
+				)
+			);
+		var kernel4 = $CL.createKernel(
+				createSubMatKernelCode(
+					function(row, col) { return ['mat_rows * ',col,' + ',row,''].join(''); },
+					function(row, col) { return ['submat_rows * ',col,' + ',row,''].join(''); }
+				)
+			);
+		return function(mat, submat, offset_row, offset_col) {
+			if (mat.row_wise) {
+				if (submat.row_wise) {
+					var kernel_to_use = kernel1;
+				} else {
+					var kernel_to_use = kernel2;
+				}
+			} else {
+				if (submat.row_wise) {
+					var kernel_to_use = kernel3;
+				} else {
+					var kernel_to_use = kernel4;
+				}
+			}
+			$CL.executeKernel(
+					kernel_to_use,
+					[
+						{ access : WebCL.MEM_READ_WRITE, datum : mat },
+						{ access : WebCL.MEM_READ_ONLY, datum : submat },
+						{ datum : offset_row, type : WebCL.type.UINT },
+						{ datum : offset_col, type : WebCL.type.UINT },
+						{ datum : mat.rows, type : WebCL.type.UINT },
+						{ datum : mat.cols, type : WebCL.type.UINT },
+						{ datum : submat.rows, type : WebCL.type.UINT },
+						{ datum : submat.cols, type : WebCL.type.UINT },
+						{ datum : submat.length, type : WebCL.type.UINT }
+					],
+					submat.length
+				);
+		}
+	}();
+	
 	// alter large matrix calculation
 	(function() {
 		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
@@ -681,5 +750,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeClone = function() { return $CL.clone(this); };
 		$M.largeConvolve = $CL.convolve;
 		$P.largeExtract = function(offset_row, offset_col, rows, cols) { return $CL.extract(this, offset_row, offset_col, rows, cols); };
+		$P.largeWriteSubmat = function(submat, offset_row, offset_col) { $CL.writeSubMat(this, submat, offset_row, offset_col); return this; };
 	})();
 })();

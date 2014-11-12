@@ -191,6 +191,10 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.extract = function(offest_row, offset_col, rows, cols) {
 		throw new Error('not implemented');
 	};
+	
+	$P.writeSubmat = function(submat, offset_row, offset_col) {
+		throw new Error('not implemented');
+	};
 
 	/* ##### general manipulation ##### */
 	$P.get = function(row, col) {
@@ -484,6 +488,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.largeSumEachCol = $P.sumEachCol;
 	$M.largeConvolve = $M.convolve;
 	$P.largeExtract = $P.extract;
+	$P.largeWriteSubmat = $P.writeSubmat;
 })();
 
 var nodejs = (typeof window === 'undefined');
