@@ -104,10 +104,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		var write_buf = '-- Matrix (' + this.rows + ' x ' + this.cols + ') --';
 		write_buf += '\r\n';
+		var digit = Math.floor(Math.abs(Math.LOG10E * Math.log($M.max(this))));
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
 				var tmp = this.get(row, col);
-				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10);
+				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10 + digit);
 			}
 			if (row != this.rows - 1) { write_buf += '\r\n'; }
 		}
@@ -159,6 +160,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		for (var i = 0; i < this.data.length; i++) {
 			this.data[i] = i;
 		}
+		return this;
 	};
 	
 	$M.fromArray = function(original_array) {
@@ -275,6 +277,18 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 
 	/* ##### statistics ##### */
+	$M.max = function(mat) {
+		mat.syncData();
+		var max_val = mat.data[0];
+		for (var row = 0; row < mat.rows; row++) {
+			for (var col = 0; col < mat.cols; col++) {
+				if (mat.get(row, col) > max_val) {
+					max_val = mat.get(row, col);
+				}		
+			}
+		}
+		return max_val;
+	};
 	
 	$M.argmax = function(mat) {
 		mat.syncData();
