@@ -632,6 +632,9 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				createExtractKernelCode(function(row, col) { return ['input_rows * ',col,' + ',row,''].join(''); })
 			);
 		return function(mat, offset_row, offset_col, rows, cols) {
+			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {
+				throw new Error('out of bounds');
+			}
 			var newM = new $M(rows, cols);
 			if (mat.row_wise) {
 				var kernel_to_use = kernel1;
@@ -694,6 +697,9 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				)
 			);
 		return function(mat, submat, offset_row, offset_col) {
+			if ((mat.rows < submat.rows + offset_row) || (mat.cols < submat.cols + offset_col)) {
+				throw new Error('out of bounds');
+			}
 			if (mat.row_wise) {
 				if (submat.row_wise) {
 					var kernel_to_use = kernel1;
