@@ -125,7 +125,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	$P.alias = function() {
 		this.syncData();
-		var newM = new $M(this.rows, this.cols);
+		var newM = new $M(this.rows, this.cols, null);
 		newM.copyPropertyFrom(this);
 		newM.data = this.data;
 		return newM;

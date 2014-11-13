@@ -91,6 +91,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.syncData = function() {
 			// there being buffer means data is obsolete
 			if (this.buffer) {
+				// console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
 				this.buffer.release();
 				this.buffer = null;
@@ -580,7 +581,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$P.alias = function() {
-		var newM = new $M(this.rows, this.cols);
+		var newM = new $M(this.rows, this.cols, null);
 		newM.copyPropertyFrom(this);
 		newM.data = this.data;
 		newM.buffer = this.buffer;
