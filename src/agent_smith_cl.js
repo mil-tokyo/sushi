@@ -402,6 +402,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
 				)
 			);
+		createConvolveKernelCode = null;
 		return function(mat1, mat2, mode) {
 			if (mode === 'valid' && mat1.cols < mat2.cols || mat1.rows < mat2.rows) {
 				throw new Error('the size of the second matrix must be smaller than that of the first one');
@@ -634,6 +635,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var kernel2 = $CL.createKernel(
 				createExtractKernelCode(function(row, col) { return ['input_rows * ',col,' + ',row,''].join(''); })
 			);
+		createExtractKernelCode = null;
 		return function(mat, offset_row, offset_col, rows, cols) {
 			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {
 				throw new Error('out of bounds');
@@ -699,6 +701,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					function(row, col) { return ['submat_rows * ',col,' + ',row,''].join(''); }
 				)
 			);
+		createSubMatKernelCode = null;
 		return function(mat, submat, offset_row, offset_col) {
 			if ((mat.rows < submat.rows + offset_row) || (mat.cols < submat.cols + offset_col)) {
 				throw new Error('out of bounds');
