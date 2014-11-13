@@ -91,7 +91,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.syncData = function() {
 			// there being buffer means data is obsolete
 			if (this.buffer) {
-				// console.trace("Write Back!! This may cause the slower calculation.");
+				if (this.data === null) {
+					this.data = new this.datum_type(this.length);
+				}
+				console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
 				this.buffer.release();
 				this.buffer = null;
@@ -331,7 +334,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				kernel_to_use = kernel4;
 			}
 			
-			var newM = new $M(mat1.rows, mat2.cols);
+			var newM = new $M(mat1.rows, mat2.cols, null);
 			$CL.executeKernel(
 				kernel_to_use,
 				[
@@ -414,15 +417,15 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			}
 			
 			if (mode === 'valid') {
-				var newM = new $M(mat1.rows - mat2.rows + 1, mat1.cols - mat2.cols + 1);
+				var newM = new $M(mat1.rows - mat2.rows + 1, mat1.cols - mat2.cols + 1, null);
 				var offset_row = 0;
 				var offset_col = 0;
 			} else if (mode === 'full') {
-				var newM = new $M(mat1.rows + mat2.rows - 1, mat1.cols + mat2.cols - 1);
+				var newM = new $M(mat1.rows + mat2.rows - 1, mat1.cols + mat2.cols - 1, null);
 				var offset_row = mat2.rows - 1;
 				var offset_col = mat2.cols - 1;
 			} else if (mode === 'same') {
-				var newM = new $M(mat1.rows, mat1.cols);
+				var newM = new $M(mat1.rows, mat1.cols, null);
 				var offset_row = Math.floor((mat2.rows - 1) / 2);
 				var offset_col = Math.floor((mat2.cols - 1) / 2);
 			} else {
@@ -497,7 +500,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			);
 		return function(mat1) {
 			if (mat1.row_wise) {
-				var newM = new $M(mat1.rows, 1);
+				var newM = new $M(mat1.rows, 1, null);
 				$CL.executeKernel(
 					kernel1,
 					[
@@ -509,7 +512,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					newM.length
 				);
 			} else {
-				var newM = new $M(mat1.rows, 1);
+				var newM = new $M(mat1.rows, 1, null);
 				$CL.executeKernel(
 					kernel2,
 					[
@@ -551,7 +554,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			);
 		return function(mat1) {
 			if (mat1.row_wise) {
-				var newM = new $M(1, mat1.cols);
+				var newM = new $M(1, mat1.cols, null);
 				$CL.executeKernel(
 					kernel1,
 					[
@@ -564,7 +567,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					newM.length
 				);
 			} else {
-				var newM = new $M(1, mat1.cols);
+				var newM = new $M(1, mat1.cols, null);
 				$CL.executeKernel(
 					kernel2,
 					[
@@ -598,7 +601,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"}                                                                           "].join('\r\n')
 			);
 		return function(mat) {
-			var newM = new $M(mat.rows, mat.cols);
+			var newM = new $M(mat.rows, mat.cols, null);
 			newM.copyPropertyFrom(mat);
 			$CL.executeKernel(
 					kernel,
@@ -635,7 +638,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {
 				throw new Error('out of bounds');
 			}
-			var newM = new $M(rows, cols);
+			var newM = new $M(rows, cols, null);
 			if (mat.row_wise) {
 				var kernel_to_use = kernel1;
 			} else {
