@@ -91,6 +91,15 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		console.log(this.toString());
 	};
 	
+	$P.saveString = function(filename) {
+		var fs = require('fs');
+		fs.writeFile(filename, this.toString() , function (err) {
+			if (err) {
+				throw new Error(err);
+			}
+		});
+	};
+	
 	$P.toString = function() {
 		this.syncData();
 		var formatWidth = function(str, width) {

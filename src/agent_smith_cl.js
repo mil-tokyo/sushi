@@ -94,7 +94,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				if (this.data === null) {
 					this.data = new this.datum_type(this.length);
 				}
-				console.trace("Write Back!! This may cause the slower calculation.");
+				// console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
 				this.buffer.release();
 				this.buffer = null;
