@@ -327,6 +327,35 @@
 						);
 					}
 				},
+				{
+					name : "checkMaxEachRow",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[5, 6, 7, 8]
+						]);
+						return $M.maxEachRow(a).equals(
+							$M.fromArray([
+								[4],
+								[8]
+							])
+						);
+					}
+				},
+				{
+					name : "checkMaxEachCol",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[5, 6, 7, 8]
+						]);
+						return $M.maxEachCol(a).equals(
+							$M.fromArray([
+								[5, 6, 7, 8]
+							])
+						);
+					}
+				},
 			],
 		},
 		{
@@ -594,6 +623,45 @@
 						) && $M.largeSumEachCol(a.t()).nearlyEquals(
 							$M.fromArray([
 								[6, 15]
+							])
+						);
+					}
+				},
+				{
+					name : "checkMaxEachRowLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3],
+							[4, 5, 6]
+						]);
+						return $M.largeMaxEachRow(a).nearlyEquals(
+							$M.fromArray([
+								[3],
+								[6]
+							])
+						) && $M.largeMaxEachRow(a.t()).nearlyEquals(
+							$M.fromArray([
+								[4],
+								[5],
+								[6]
+							])
+						);
+					}
+				},
+				{
+					name : "checkMaxEachColLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3],
+							[4, 5, 6]
+						]);
+						return $M.largeMaxEachCol(a).nearlyEquals(
+							$M.fromArray([
+								[4, 5, 6]
+							])
+						) && $M.largeMaxEachCol(a.t()).nearlyEquals(
+							$M.fromArray([
+								[3, 6]
 							])
 						);
 					}

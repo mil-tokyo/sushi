@@ -529,6 +529,60 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			return newM;
 		};
 	}();
+	
+	$CL.maxEachRow = function() {
+		var kernel1 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = b[i * cols];                                                     ",
+				"    for (uint j = 0; j < cols; j++) {                                       ",
+				"        a[i] = max(a[i], b[i * cols + j]);                                  ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
+			);
+		var kernel2 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = b[i];                                                            ",
+				"    for (uint j = 0; j < cols; j++) {                                       ",
+				"        a[i] = max(a[i], b[j * rows + i]);                                  ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
+			);
+		return function(mat1) {
+			if (mat1.row_wise) {
+				var newM = new $M(mat1.rows, 1, null);
+				$CL.executeKernel(
+					kernel1,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.cols, type : WebCL.type.UINT}, 
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			} else {
+				var newM = new $M(mat1.rows, 1, null);
+				$CL.executeKernel(
+					kernel2,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			}
+			return newM;
+		};
+	}();
 
 	$CL.sumEachCol = function() {
 		var kernel1 = $CL.createKernel([
@@ -550,6 +604,60 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    a[i] = 0;                                                               ",
 				"    for (uint j = 0; j < rows; j++) {                                       ",
 				"        a[i] += b[i * rows + j];                                            ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
+			);
+		return function(mat1) {
+			if (mat1.row_wise) {
+				var newM = new $M(1, mat1.cols, null);
+				$CL.executeKernel(
+					kernel1,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.rows, type : WebCL.type.UINT}, 
+						{ datum : mat1.cols, type : WebCL.type.UINT}, 
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			} else {
+				var newM = new $M(1, mat1.cols, null);
+				$CL.executeKernel(
+					kernel2,
+					[
+						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
+					],
+					newM.length
+				);
+			}
+			return newM;
+		};
+	}();
+	
+	$CL.maxEachCol = function() {
+		var kernel1 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = b[i];                                                            ",
+				"    for (uint j = 0; j < rows; j++) {                                       ",
+				"        a[i] = max(a[i], b[i + j * cols]);                                  ",
+				"    }                                                                       ",
+				"}                                                                           "].join('\r\n')
+			);
+		var kernel2 = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint iNumElements)   ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = b[i * rows];                                                     ",
+				"    for (uint j = 0; j < rows; j++) {                                       ",
+				"        a[i] = max(a[i], b[i * rows + j]);                                  ",
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
@@ -764,6 +872,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		
 		$M.largeSumEachRow = $CL.sumEachRow;
 		$M.largeSumEachCol = $CL.sumEachCol;
+		$M.largeMaxEachRow = $CL.maxEachRow;
+		$M.largeMaxEachCol = $CL.maxEachCol;
 		$M.largeConvolve = $CL.convolve;
 		$M.largeExtract = $CL.extract;
 		$M.largeWriteSubmat = $CL.writeSubmat;
