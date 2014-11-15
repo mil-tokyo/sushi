@@ -164,6 +164,25 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
+	$P.gaussRandom = function() {
+		var getGauss = function(mu, std) {
+			var a = 1 - Math.random();
+			var b = 1 - Math.random();
+			var c = Math.sqrt(-2 * Math.log(a));
+			if (0.5 - Math.random() > 0) {
+				return c * Math.sin(Math.PI * 2 * b) * std + mu;
+			} else {
+				return c * Math.cos(Math.PI * 2 * b) * std + mu;
+			}
+		};
+		return function(mu, std) {
+			for (var i = 0; i < this.length; i++) {
+				this.data[i] = getGauss(mu, std);
+			}
+			return this;
+		}
+	}();
+	
 	$P.range = function() {
 		this.syncData();
 		for (var i = 0; i < this.data.length; i++) {
