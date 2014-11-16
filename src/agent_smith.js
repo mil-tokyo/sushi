@@ -141,6 +141,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$M.hasNaN = function(mat) {
+		this.syncData();
 		for (var i = 0; i < mat.length; i++) {
 			if (isNaN(mat.data[i])) {
 				return true;
@@ -174,6 +175,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.gaussRandom = function() {
+		this.syncData();
 		var getGauss = function(mu, std) {
 			var a = 1 - Math.random();
 			var b = 1 - Math.random();
