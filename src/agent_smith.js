@@ -139,6 +139,15 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		newM.data = this.data;
 		return newM;
 	};
+	
+	$M.hasNaN = function(mat) {
+		for (var i = 0; i < mat.length; i++) {
+			if (isNaN(mat.data[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/* #####initializer ##### */
 	

@@ -356,6 +356,17 @@
 						);
 					}
 				},
+				{
+					name : "checkHasNaN",
+					test : function() {
+						var a = new $M(10, 10);
+						a.random();
+						var b = new $M(10, 10);
+						b.random();
+						b.set(5, 5, 0 / 0)
+						return !$M.hasNaN(a) && $M.hasNaN(b);
+					}
+				},
 			],
 		},
 		{
