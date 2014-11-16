@@ -141,7 +141,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$M.hasNaN = function(mat) {
-		this.syncData();
+		mat.syncData();
 		for (var i = 0; i < mat.length; i++) {
 			if (isNaN(mat.data[i])) {
 				return true;
