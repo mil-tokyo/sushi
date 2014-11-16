@@ -175,7 +175,6 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$P.gaussRandom = function() {
-		this.syncData();
 		var getGauss = function(mu, std) {
 			var a = 1 - Math.random();
 			var b = 1 - Math.random();
@@ -187,6 +186,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			}
 		};
 		return function(mu, std) {
+			this.syncData();
 			for (var i = 0; i < this.length; i++) {
 				this.data[i] = getGauss(mu, std);
 			}
