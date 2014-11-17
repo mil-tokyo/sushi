@@ -91,13 +91,22 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		console.log(this.toString());
 	};
 	
-	$P.saveString = function(filename) {
+	$P.saveString = function(filename, async) {
+		if (async) {
+			async = true;
+		} else {
+			async = false;
+		}
 		var fs = require('fs');
-		fs.writeFile(filename, this.toString() , function (err) {
-			if (err) {
-				throw new Error(err);
-			}
-		});
+		if (async) {
+			fs.writeFile(filename, this.toString() , function (err) {
+				if (err) {
+					throw new Error(err);
+				}
+			});
+		} else {
+			fs.writeFileSync(filename, this.toString());
+		}
 	};
 	
 	$P.toString = function() {
