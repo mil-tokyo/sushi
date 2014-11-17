@@ -161,10 +161,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 
 	/* #####initializer ##### */
 	
-	$P.zeros = function() {
+	$P.zeros = function(num) {
+		if (!num) { var num = 0; }
 		this.syncData();
 		for (var i = 0; i < this.length; i++) {
-			this.data[i] = 0;
+			this.data[i] = num;
 		}
 		return this;
 	};
