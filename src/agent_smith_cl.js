@@ -775,38 +775,40 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	$CL.writeSubmat = function() {
 		var createSubMatKernelCode = function(mat_row_col_to_idx, submat_row_col_to_idx) {
 			return [
+				"#define MAT_ROW_COL_TO_INDEX(row, col) (" + mat_row_col_to_idx + ")",
+				"#define SUBMAT_ROW_COL_TO_INDEX(row, col) (" + submat_row_col_to_idx + ")",
 				"__kernel void kernel_func(__global float *mat, __global float *submat, uint offset_row, uint offset_col, uint mat_rows, uint mat_cols, uint submat_rows, uint submat_cols, uint iNumElements)   ",
 				"{                                                                              ",
 				"    size_t i =  get_global_id(0);                                              ",
 				"    if(i >= iNumElements) return;                                              ",
 				"    uint row = i / submat_cols;                                                ",
 				"    uint col = i % submat_cols;                                                ",
-				"    mat[",mat_row_col_to_idx("(offset_row + row)", "(offset_col + col)"),"] =  ",
-				"        submat[",submat_row_col_to_idx("row", "col"),"];                       ",
-				"}                                                                           "].join('\r\n');
+				"    mat[MAT_ROW_COL_TO_INDEX(offset_row + row, offset_col + col)] =            ",
+				"        submat[SUBMAT_ROW_COL_TO_INDEX(row, col)];                             ",
+				"}                                                                              "].join('\r\n');
 		};
 		var kernel1 = $CL.createKernel(
 				createSubMatKernelCode(
-					function(row, col) { return ['mat_cols * ',row,' + ',col,''].join(''); },
-					function(row, col) { return ['submat_cols * ',row,' + ',col,''].join(''); }
+					'mat_cols * (row) + (col)',
+					'submat_cols * (row) + (col)'
 				)
 			);
 		var kernel2 = $CL.createKernel(
 				createSubMatKernelCode(
-					function(row, col) { return ['mat_cols * ',row,' + ',col,''].join(''); },
-					function(row, col) { return ['submat_rows * ',col,' + ',row,''].join(''); }
+					'mat_cols * (row) + (col)',
+					'submat_rows * (col) + (row)'
 				)
 			);
 		var kernel3 = $CL.createKernel(
 				createSubMatKernelCode(
-					function(row, col) { return ['mat_rows * ',col,' + ',row,''].join(''); },
-					function(row, col) { return ['submat_cols * ',row,' + ',col,''].join(''); }
+					'mat_rows * (col) + (row)',
+					'submat_cols * (row) + (col)'
 				)
 			);
 		var kernel4 = $CL.createKernel(
 				createSubMatKernelCode(
-					function(row, col) { return ['mat_rows * ',col,' + ',row,''].join(''); },
-					function(row, col) { return ['submat_rows * ',col,' + ',row,''].join(''); }
+					'mat_rows * (col) + (row)',
+					'submat_rows * (col) + (row)'
 				)
 			);
 		createSubMatKernelCode = null;
