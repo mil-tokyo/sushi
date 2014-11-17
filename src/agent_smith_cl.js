@@ -728,21 +728,18 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	$CL.extract = function() {
 		var createExtractKernelCode = function(input_row_col_to_idx) {
 			return [
+				"#define INPUT_ROW_COL_TO_INDEX(row, col) (" + input_row_col_to_idx + ")",
 				"__kernel void kernel_func(__global float *output, __global float *input, uint offset_row, uint offset_col, uint input_rows, uint input_cols, uint cols, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
 				"    uint row = offset_row + i / cols;                                       ",
 				"    uint col = offset_col + i % cols;                                       ",
-				"    output[i] = input[" + input_row_col_to_idx("row", "col") + "];          ",
+				"    output[i] = input[INPUT_ROW_COL_TO_INDEX(row, col)];                    ",
 				"}                                                                           "].join('\r\n');
 		};
-		var kernel1 = $CL.createKernel(
-				createExtractKernelCode(function(row, col) { return ['input_cols * ',row,' + ',col,''].join(''); })
-			);
-		var kernel2 = $CL.createKernel(
-				createExtractKernelCode(function(row, col) { return ['input_rows * ',col,' + ',row,''].join(''); })
-			);
+		var kernel1 = $CL.createKernel(createExtractKernelCode('input_cols * (row) + (col)'));
+		var kernel2 = $CL.createKernel(createExtractKernelCode('input_rows * (col) + (row)'));
 		createExtractKernelCode = null;
 		return function(mat, offset_row, offset_col, rows, cols) {
 			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {
