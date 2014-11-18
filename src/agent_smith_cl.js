@@ -148,6 +148,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				}
 			};
 		}();
+		
+		$CL.finish = function() {
+			queue.finish();
+		}
 	})();
 
 	$CL.eachOperationGenerator = function(id, operator) {
