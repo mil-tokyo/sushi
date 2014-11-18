@@ -25,7 +25,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}
 
 	var $M = AgentSmith.Matrix;
-	$M.CL = {};
+	$M.CL = { buffers : 0 };
 	var $CL = $M.CL;
 	var $P = $M.prototype;
 	
@@ -97,6 +97,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				// console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
 				this.buffer.release();
+				$CL.buffers--;
 				this.buffer = null;
 			}
 		};
@@ -105,6 +106,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			this.data = void 0;
 			if (this.buffer) {
 				this.buffer.release();
+				$CL.buffers--;
 				this.buffer = void 0;
 			}
 		};
@@ -124,6 +126,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 						// matrix
 						if (!params[i].datum.buffer) {
 							params[i].datum.buffer = $CL.context.createBuffer(WebCL.MEM_READ_WRITE, params[i].datum.byte_length);
+							$CL.buffers++;
 							if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
 								queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
 							}
