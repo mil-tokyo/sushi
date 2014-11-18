@@ -407,7 +407,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			);
 		createConvolveKernelCode = null;
 		return function(mat1, mat2, mode) {
-			if (mode === 'valid' && mat1.cols < mat2.cols || mat1.rows < mat2.rows) {
+			if (mode === 'valid' && (mat1.cols < mat2.cols || mat1.rows < mat2.rows)) {
 				throw new Error('the size of the second matrix must be smaller than that of the first one');
 			}
 			if (mat1.row_wise === true && mat2.row_wise === true) {
