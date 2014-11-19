@@ -9,7 +9,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 (function() {
 	var nodejs = (typeof window === 'undefined');
 	if (nodejs) {
-		var node_webcl_root = '../../node_modules/node-webcl'; // depends on the environment
+		var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
 		try {
 			WebCL = require(node_webcl_root + '/webcl');
 		} catch (e) {
@@ -155,34 +155,25 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	})();
 
 	$CL.eachOperationGenerator = function(id, operator) {
-		// if the wises are same
-		var kernel1 = $CL.createKernel([
-			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements) ",
-			"{                                                                           ",
-			"    size_t i =  get_global_id(0);                                           ",
-			"    if(i >= iNumElements) return;                                           ",
-			"    a[i] = a[i] " + operator + " b[i];                                      ",
-			"}                                                                           "].join('\r\n')
-		);
-		// different wises
-		var kernel2 = $CL.createKernel([
-			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
-			"{                                                                           ",
-			"    size_t i =  get_global_id(0);                                           ",
-			"    if(i >= iNumElements) return;                                           ",
-			"    a[i] = a[i] " + operator + " b[(i % cols) * rows + i / cols];           ",
-			"}                                                                           "].join('\r\n')
-		);
-		
-		// different wises (particularly for incommutable function)
-		var kernel3 = $CL.createKernel([
-			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols) ",
-			"{                                                                                             ",
-			"    size_t i =  get_global_id(0);                                                             ",
-			"    if(i >= iNumElements) return;                                                             ",
-			"    a[(i % cols) * rows + i / cols] = a[(i % cols) * rows + i / cols] " + operator + " b[i];  ",
-			"}                                                                                             "].join('\r\n')
-		);
+		var createEachOperationGeneratorKernel = function(a_i_to_idx, b_i_to_idx) {
+			return $CL.createKernel([
+				"#define OPERATOR " + operator + "                                                                         ",
+				"#define A_I_TO_IDX(i) (" + a_i_to_idx + ")                                                                ",
+				"#define B_I_TO_IDX(i) (" + b_i_to_idx + ")                                                                ",
+				"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint rows, uint cols)  ",
+				"{                                                                                                         ",
+				"    size_t i =  get_global_id(0);                                                                         ",
+				"    if(i >= iNumElements) return;                                                                         ",
+				"    a[A_I_TO_IDX(i)] = a[A_I_TO_IDX(i)] OPERATOR b[B_I_TO_IDX(i)];                                                    ",
+				"}                                                                                                         "].join('\r\n')
+			);
+		};
+		// (row-wiss - row-wise) or (col-wise - col-wise)
+		var kernel1 = createEachOperationGeneratorKernel('(i)', '(i)');
+		// row-wise - col-wise
+		var kernel2 = createEachOperationGeneratorKernel('(i)', '((i) % cols) * rows + (i) / cols');
+		// col-wise - row-wise
+		var kernel3 = createEachOperationGeneratorKernel('((i) % cols) * rows + (i) / cols', '(i)');
 		
 		// broadcast 1
 		var kernel4 = $CL.createKernel([
@@ -233,7 +224,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				{ access : WebCL.MEM_READ_ONLY, datum : mat2 },
 				{ datum : mat1.length, type : WebCL.type.UINT }
 			];
-			if (kernel_to_use === kernel2 || kernel_to_use === kernel3) {
+			if (kernel_to_use === kernel1 || kernel_to_use === kernel2 || kernel_to_use === kernel3) {
 				params.push({ datum : mat1.rows, type : WebCL.type.UINT });
 				params.push({ datum : mat1.cols, type : WebCL.type.UINT });
 			} else if (kernel_to_use === kernel4) {
@@ -538,55 +529,35 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.maxEachRow = function() {
-		var kernel1 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint iNumElements)   ",
+		var createmaxEachRowKernel = function(row_col_to_idx) {
+			return $CL.createKernel([
+				"#define ROW_COL_TO_INDEX(row, col) (" + row_col_to_idx + ")",
+				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
 				"    a[i] = b[i * cols];                                                     ",
 				"    for (uint j = 0; j < cols; j++) {                                       ",
-				"        a[i] = max(a[i], b[i * cols + j]);                                  ",
+				"        a[i] = max(a[i], b[ROW_COL_TO_INDEX(i, j)]);                        ",
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
-			);
-		var kernel2 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, uint cols, uint rows, uint iNumElements)   ",
-				"{                                                                           ",
-				"    size_t i =  get_global_id(0);                                           ",
-				"    if(i >= iNumElements) return;                                           ",
-				"    a[i] = b[i];                                                            ",
-				"    for (uint j = 0; j < cols; j++) {                                       ",
-				"        a[i] = max(a[i], b[j * rows + i]);                                  ",
-				"    }                                                                       ",
-				"}                                                                           "].join('\r\n')
-			);
+			)
+		};
+		var kernel1 = createmaxEachRowKernel('(row) * cols + (col)');
+		var kernel2 = createmaxEachRowKernel('(col) * rows + (row)');
 		return function(mat1) {
-			if (mat1.row_wise) {
-				var newM = new $M(mat1.rows, 1, null);
-				$CL.executeKernel(
-					kernel1,
-					[
-						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
-						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.cols, type : WebCL.type.UINT}, 
-						{ datum : newM.length, type : WebCL.type.UINT }
-					],
-					newM.length
-				);
-			} else {
-				var newM = new $M(mat1.rows, 1, null);
-				$CL.executeKernel(
-					kernel2,
-					[
-						{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
-						{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.cols, type : WebCL.type.UINT},
-						{ datum : mat1.rows, type : WebCL.type.UINT},
-						{ datum : newM.length, type : WebCL.type.UINT }
-					],
-					newM.length
-				);
-			}
+			var newM = new $M(mat1.rows, 1, null);
+			$CL.executeKernel(
+				mat1.row_wise ? kernel1 : kernel2,
+				[
+					{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+					{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+					{ datum : mat1.cols, type : WebCL.type.UINT},
+					{ datum : mat1.rows, type : WebCL.type.UINT},
+					{ datum : newM.length, type : WebCL.type.UINT }
+				],
+				newM.length
+			);
 			return newM;
 		};
 	}();
@@ -733,8 +704,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.extract = function() {
-		var createExtractKernelCode = function(input_row_col_to_idx) {
-			return [
+		var createExtractKernel = function(input_row_col_to_idx) {
+			return $CL.createKernel([
 				"#define INPUT_ROW_COL_TO_INDEX(row, col) (" + input_row_col_to_idx + ")",
 				"__kernel void kernel_func(__global float *output, __global float *input, uint offset_row, uint offset_col, uint input_rows, uint input_cols, uint cols, uint iNumElements)   ",
 				"{                                                                           ",
@@ -743,10 +714,11 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    uint row = offset_row + i / cols;                                       ",
 				"    uint col = offset_col + i % cols;                                       ",
 				"    output[i] = input[INPUT_ROW_COL_TO_INDEX(row, col)];                    ",
-				"}                                                                           "].join('\r\n');
+				"}                                                                           "].join('\r\n')
+			);
 		};
-		var kernel1 = $CL.createKernel(createExtractKernelCode('input_cols * (row) + (col)'));
-		var kernel2 = $CL.createKernel(createExtractKernelCode('input_rows * (col) + (row)'));
+		var kernel1 = createExtractKernel('input_cols * (row) + (col)');
+		var kernel2 = createExtractKernel('input_rows * (col) + (row)');
 		createExtractKernelCode = null;
 		return function(mat, offset_row, offset_col, rows, cols) {
 			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {

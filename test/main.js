@@ -857,7 +857,7 @@
 					var result = test[idx].test();
 				} catch (exception) {
 					console.log('exception catched');
-					console.log(exception);
+					console.error(exception);
 					throw exception;
 				} finally {
 					if (result === void 0) {
