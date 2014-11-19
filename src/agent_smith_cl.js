@@ -164,7 +164,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"{                                                                                                         ",
 				"    size_t i =  get_global_id(0);                                                                         ",
 				"    if(i >= iNumElements) return;                                                                         ",
-				"    a[A_I_TO_IDX(i)] = a[A_I_TO_IDX(i)] OPERATOR b[B_I_TO_IDX(i)];                                                    ",
+				"    a[A_I_TO_IDX(i)] = a[A_I_TO_IDX(i)] OPERATOR b[B_I_TO_IDX(i)];                                        ",
 				"}                                                                                                         "].join('\r\n')
 			);
 		};
@@ -177,23 +177,25 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		
 		// broadcast 1
 		var kernel4 = $CL.createKernel([
+			"#define OPERATOR " + operator + "                                                                 ",
 			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint b_length) ",
-			"{                                                                                             ",
-			"    size_t i =  get_global_id(0);                                                             ",
-			"    if(i >= iNumElements) return;                                                             ",
-			"    a[i] = a[i] " + operator + " b[i % b_length];                                             ",
-			"}                                                                                             "].join('\r\n')
+			"{                                                                                                 ",
+			"    size_t i =  get_global_id(0);                                                                 ",
+			"    if(i >= iNumElements) return;                                                                 ",
+			"    a[i] = a[i] OPERATOR b[i % b_length];                                                 ",
+			"}                                                                                                 "].join('\r\n')
 		);
 		
 		// broadcast 2
 		var kernel5 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint b_skip) ",
-				"{                                                                                             ",
-				"    size_t i =  get_global_id(0);                                                             ",
-				"    if(i >= iNumElements) return;                                                             ",
-				"    a[i] = a[i] " + operator + " b[i / b_skip];                                               ",
-				"}                                                                                             "].join('\r\n')
-			);
+			"#define OPERATOR " + operator + "                                                               ",
+			"__kernel void kernel_func(__global float *a, __global float *b, uint iNumElements, uint b_skip) ",
+			"{                                                                                               ",
+			"    size_t i =  get_global_id(0);                                                               ",
+			"    if(i >= iNumElements) return;                                                               ",
+			"    a[i] = a[i] OPERATOR b[i / b_skip];                                                 ",
+			"}                                                                                               "].join('\r\n')
+		);
 		
 		return function(mat1, mat2) {
 			if (!(
@@ -266,8 +268,11 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	$CL.divEach = $CL.eachOperationGenerator('divEach', '/');
 	
 	$CL.mul = function() {
-		var kernel1 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
+		var createMulKernel = function(a_row_col_to_idx, b_row_col_to_idx) {
+			return $CL.createKernel([
+				"#define A_ROW_COL_TO_IDX(row, col) (" + a_row_col_to_idx + ")               ",
+				"#define B_ROW_COL_TO_IDX(row, col) (" + b_row_col_to_idx + ")               ",
+ 				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -275,49 +280,16 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    uint col = i % cols;                                                    ",
 				"    c[i] = 0.0;                                                             ",
 				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        c[i] += a[row * width + j] * b[j * cols + col];                     ",
+				"        c[i] += a[A_ROW_COL_TO_IDX(row, j)] * b[B_ROW_COL_TO_IDX(j, col)];  ",
 				"    }                                                                       ",
 				"}                                                                           "].join('\r\n')
 			);
-		var kernel2 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
-				"{                                                                           ",
-				"    size_t i =  get_global_id(0);                                           ",
-				"    if(i >= iNumElements) return;                                           ",
-				"    uint row = i / cols;                                                    ",
-				"    uint col = i % cols;                                                    ",
-				"    c[i] = 0.0;                                                             ",
-				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        c[i] += a[row * width + j] * b[j + col * width];                    ",
-				"    }                                                                       ",
-				"}                                                                           "].join('\r\n')
-			);
-		var kernel3 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
-				"{                                                                           ",
-				"    size_t i =  get_global_id(0);                                           ",
-				"    if(i >= iNumElements) return;                                           ",
-				"    uint row = i / cols;                                                    ",
-				"    uint col = i % cols;                                                    ",
-				"    c[i] = 0.0;                                                             ",
-				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        c[i] += a[row + j * rows] * b[j * cols + col];                      ",
-				"    }                                                                       ",
-				"}                                                                           "].join('\r\n')
-			);
-		var kernel4 = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ",
-				"{                                                                           ",
-				"    size_t i =  get_global_id(0);                                           ",
-				"    if(i >= iNumElements) return;                                           ",
-				"    uint row = i / cols;                                                    ",
-				"    uint col = i % cols;                                                    ",
-				"    c[i] = 0.0;                                                             ",
-				"    for (uint j = 0; j < width; j++) {                                      ",
-				"        c[i] += a[row + j * rows] * b[j + col * width];                     ",
-				"    }                                                                       ",
-				"}                                                                           "].join('\r\n')
-			);
+		};
+		var kernel1 = createMulKernel('(row) * width + (col)', '(row) * cols + (col)');
+		var kernel2 = createMulKernel('(row) * width + (col)', '(row) + (col) * width');
+		var kernel3 = createMulKernel('(row) + (col) * rows', '(row) * cols + (col)');
+		var kernel4 = createMulKernel('(row) + (col) * rows', '(row) + (col) * width');
+
 		return function(mat1, mat2) {
 			if (mat1.cols !== mat2.rows) {
 				throw new Error('shape does not match');
