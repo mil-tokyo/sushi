@@ -618,7 +618,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 		var kernel1 = createExtractKernel('input_cols * (row) + (col)');
 		var kernel2 = createExtractKernel('input_rows * (col) + (row)');
-		createExtractKernelCode = null;
+		
 		return function(mat, offset_row, offset_col, rows, cols) {
 			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {
 				throw new Error('out of bounds');
@@ -648,8 +648,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.writeSubmat = function() {
-		var createSubMatKernelCode = function(mat_row_col_to_idx, submat_row_col_to_idx) {
-			return [
+		var createSubMatKernel = function(mat_row_col_to_idx, submat_row_col_to_idx) {
+			return $CL.createKernel([
 				"#define MAT_ROW_COL_TO_INDEX(row, col) (" + mat_row_col_to_idx + ")",
 				"#define SUBMAT_ROW_COL_TO_INDEX(row, col) (" + submat_row_col_to_idx + ")",
 				"__kernel void kernel_func(__global float *mat, __global float *submat, uint offset_row, uint offset_col, uint mat_rows, uint mat_cols, uint submat_rows, uint submat_cols, uint iNumElements)   ",
@@ -660,33 +660,14 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"    uint col = i % submat_cols;                                                ",
 				"    mat[MAT_ROW_COL_TO_INDEX(offset_row + row, offset_col + col)] =            ",
 				"        submat[SUBMAT_ROW_COL_TO_INDEX(row, col)];                             ",
-				"}                                                                              "].join('\r\n');
+				"}                                                                              "].join('\r\n')
+			);
 		};
-		var kernel1 = $CL.createKernel(
-				createSubMatKernelCode(
-					'mat_cols * (row) + (col)',
-					'submat_cols * (row) + (col)'
-				)
-			);
-		var kernel2 = $CL.createKernel(
-				createSubMatKernelCode(
-					'mat_cols * (row) + (col)',
-					'submat_rows * (col) + (row)'
-				)
-			);
-		var kernel3 = $CL.createKernel(
-				createSubMatKernelCode(
-					'mat_rows * (col) + (row)',
-					'submat_cols * (row) + (col)'
-				)
-			);
-		var kernel4 = $CL.createKernel(
-				createSubMatKernelCode(
-					'mat_rows * (col) + (row)',
-					'submat_rows * (col) + (row)'
-				)
-			);
-		createSubMatKernelCode = null;
+		var kernel1 = createSubMatKernel('mat_cols * (row) + (col)', 'submat_cols * (row) + (col)');
+		var kernel2 = createSubMatKernel('mat_cols * (row) + (col)', 'submat_rows * (col) + (row)');
+		var kernel3 = createSubMatKernel('mat_rows * (col) + (row)', 'submat_cols * (row) + (col)');
+		var kernel4 = createSubMatKernel('mat_rows * (col) + (row)', 'submat_rows * (col) + (row)');
+		
 		return function(mat, submat, offset_row, offset_col) {
 			if ((mat.rows < submat.rows + offset_row) || (mat.cols < submat.cols + offset_col)) {
 				throw new Error('out of bounds');
