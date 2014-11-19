@@ -323,8 +323,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	}();
 	
 	$CL.convolve = function() {
-		var createConvolveKernelCode = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
-			return [
+		var createConvolveKernel = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
+			return $CL.createKernel([
+					"#define MAT1_ROW_COL_TO_IDX(row, col) (" + mat1_row_col_to_idx + ")            ",
+					"#define MAT2_ROW_COL_TO_IDX(row, col) (" + mat2_row_col_to_idx + ")            ",
 					"__kernel void kernel_func(__global float *mat1, __global float *mat2, __global float *output, uint cols, uint mat1_rows, uint mat1_cols, uint mat2_rows, uint mat2_cols, uint offset_row, uint offset_col, uint iNumElements) ",
 					"{                                                                              ",
 					"    size_t i =  get_global_id(0);                                              ",
@@ -334,45 +336,26 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					"    int tmp_row;                                                               ",
 					"    int tmp_col;                                                               ",
 					"    output[i] = 0.0;                                                           ",
-					"    for (uint d_row = 0; d_row < mat2_rows; d_row++) {                          ",
-					"        for (uint d_col = 0; d_col < mat2_cols; d_col++) {                      ",
+					"    for (uint d_row = 0; d_row < mat2_rows; d_row++) {                         ",
+					"        for (uint d_col = 0; d_col < mat2_cols; d_col++) {                     ",
 					"            tmp_row = row + d_row - offset_row;                                ",
 					"            tmp_col = col + d_col - offset_col;                                ",
 					"            if (tmp_row < 0 || tmp_row >= mat1_rows ||                         ",
 					"                tmp_col < 0 || tmp_col >= mat1_cols ) {                        ",
 					"                continue;                                                      ",
 					"            }                                                                  ",
-					"            output[i] += mat1[",mat1_row_col_to_idx('tmp_row', 'tmp_col'),"] * ",
-					"                    mat2[",mat2_row_col_to_idx('d_row', 'd_col'),"];           ",
+					"            output[i] += mat1[MAT1_ROW_COL_TO_IDX(tmp_row, tmp_col)] *         ",
+					"                    mat2[MAT2_ROW_COL_TO_IDX(d_row, d_col)];                   ",
 					"        }                                                                      ",
 					"    }                                                                          ",
-					"}                                                                              "].join('\r\n');
+					"}                                                                              "].join('\r\n')
+				);
 		};
-		var kernel1 = $CL.createKernel(
-				createConvolveKernelCode(
-					function(row, col) { return ['mat1_cols * ',row,' + ',col,''].join(''); },
-					function(row, col) { return ['mat2_cols * ',row,' + ',col,''].join(''); }
-				)
-			);
-		var kernel2 = $CL.createKernel(
-				createConvolveKernelCode(
-					function(row, col) { return ['mat1_cols * ',row,' + ',col,''].join(''); },
-					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
-				)
-			);
-		var kernel3 = $CL.createKernel(
-				createConvolveKernelCode(
-					function(row, col) { return ['mat1_rows * ',col,' + ',row,''].join(''); },
-					function(row, col) { return ['mat2_cols * ',row,' + ',col,''].join(''); }
-				)
-			);
-		var kernel4 = $CL.createKernel(
-				createConvolveKernelCode(
-					function(row, col) { return ['mat1_rows * ',col,' + ',row,''].join(''); },
-					function(row, col) { return ['mat2_rows * ',col,' + ',row,''].join(''); }
-				)
-			);
-		createConvolveKernelCode = null;
+		var kernel1 = createConvolveKernel('mat1_cols * (row) + (col)', 'mat2_cols * (row) + (col)');
+		var kernel2 = createConvolveKernel('mat1_cols * (row) + (col)', 'mat2_rows * (col) + (row)');
+		var kernel3 = createConvolveKernel('mat1_rows * (col) + (row)', 'mat2_cols * (row) + (col)');
+		var kernel4 = createConvolveKernel('mat1_rows * (col) + (row)', 'mat2_rows * (col) + (row)');
+
 		return function(mat1, mat2, mode) {
 			if (mode === 'valid' && (mat1.cols < mat2.cols || mat1.rows < mat2.rows)) {
 				throw new Error('the size of the second matrix must be smaller than that of the first one');
