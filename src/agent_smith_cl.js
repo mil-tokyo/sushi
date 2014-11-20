@@ -155,19 +155,6 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			queue.finish();
 		}
 	})();
-	
-	$CL.newMatOrReuseMat = function(rows, cols, mat) {
-		if (mat === void 0) {
-			return new $M(rows, cols);
-		} else if (mat.length !== rows * cols) {
-			throw new Error('The shape of the matrix to reuse does not match');
-		} else {
-			mat.rows = rows;
-			mat.cols = cols;
-			mat.row_wise = true;
-			return mat;
-		}
-	};
 
 	$CL.eachOperationGenerator = function(operator) {
 		var createEachOperationGeneratorKernel = function(a_i_to_idx, b_i_to_idx) {
@@ -319,7 +306,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				kernel_to_use = kernel4;
 			}
 			
-			var newM = $CL.newMatOrReuseMat(mat1.rows, mat2.cols, output);
+			var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);
 			$CL.executeKernel(
 				kernel_to_use,
 				[
@@ -386,15 +373,15 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			}
 			
 			if (mode === 'valid') {
-				var newM = $CL.newMatOrReuseMat(mat1.rows - mat2.rows + 1, mat1.cols - mat2.cols + 1, output);
+				var newM = $M.newMatOrReuseMat(mat1.rows - mat2.rows + 1, mat1.cols - mat2.cols + 1, output);
 				var offset_row = 0;
 				var offset_col = 0;
 			} else if (mode === 'full') {
-				var newM = $CL.newMatOrReuseMat(mat1.rows + mat2.rows - 1, mat1.cols + mat2.cols - 1, output);
+				var newM = $M.newMatOrReuseMat(mat1.rows + mat2.rows - 1, mat1.cols + mat2.cols - 1, output);
 				var offset_row = mat2.rows - 1;
 				var offset_col = mat2.cols - 1;
 			} else if (mode === 'same') {
-				var newM = $CL.newMatOrReuseMat(mat1.rows, mat1.cols, output);
+				var newM = $M.newMatOrReuseMat(mat1.rows, mat1.cols, output);
 				var offset_row = Math.floor((mat2.rows - 1) / 2);
 				var offset_col = Math.floor((mat2.cols - 1) / 2);
 			} else {
@@ -487,7 +474,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var kernel2 = createSumEachRowKernel('(col) * rows + (row)');
 		
 		return function(mat1, output) {
-			var newM = $CL.newMatOrReuseMat(mat1.rows, 1, output);
+			var newM = $M.newMatOrReuseMat(mat1.rows, 1, output);
 			$CL.executeKernel(
 				mat1.row_wise ? kernel1 : kernel2,
 				[
@@ -522,7 +509,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var kernel2 = createSumEachColKernel('(col) * rows + (row)');
 		
 		return function(mat1, output) {
-			var newM = $CL.newMatOrReuseMat(1, mat1.cols, output);
+			var newM = $M.newMatOrReuseMat(1, mat1.cols, output);
 			$CL.executeKernel(
 				mat1.row_wise ? kernel1 : kernel2,
 				[
@@ -557,7 +544,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var kernel2 = createMaxEachRowKernel('(col) * rows + (row)');
 		
 		return function(mat1, output) {
-			var newM = $CL.newMatOrReuseMat(mat1.rows, 1, output);
+			var newM = $M.newMatOrReuseMat(mat1.rows, 1, output);
 			$CL.executeKernel(
 				mat1.row_wise ? kernel1 : kernel2,
 				[
@@ -592,7 +579,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var kernel2 = createMaxEachColKernel('(col) * rows + (row)');
 		
 		return function(mat1, output) {
-			var newM = $CL.newMatOrReuseMat(1, mat1.cols, output);
+			var newM = $M.newMatOrReuseMat(1, mat1.cols, output);
 			$CL.executeKernel(
 				mat1.row_wise ? kernel1 : kernel2,
 				[
@@ -626,7 +613,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				"}                                                                           "].join('\r\n')
 			);
 		return function(mat, output) {
-			var newM = $CL.newMatOrReuseMat(mat.rows, mat.cols, output);
+			var newM = $M.newMatOrReuseMat(mat.rows, mat.cols, output);
 			newM.copyPropertyFrom(mat);
 			$CL.executeKernel(
 					kernel,
@@ -662,7 +649,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			if ((mat.rows < rows + offset_row) || (mat.cols < cols + offset_col)) {
 				throw new Error('out of bounds');
 			}
-			var newM = $CL.newMatOrReuseMat(rows, cols, output);
+			var newM = $M.newMatOrReuseMat(rows, cols, output);
 			if (mat.row_wise) {
 				var kernel_to_use = kernel1;
 			} else {
@@ -751,7 +738,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeDivEach = function(mat) { $CL.divEach(this, mat); return this; };
 		$P.largeMul = function(mat, output) { return $CL.mul(this, mat, output); };
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
-		$P.largeClone = function() { return $CL.clone(this); };
+		$P.largeClone = function(output) { return $CL.clone(this, output); };
 		$P.largeZeros = function(num) { return $CL.zeros(this, num); };
 		
 		$M.largeAdd = function(mat1, mat2) { return mat1.largeClone().largeAdd(mat2); };

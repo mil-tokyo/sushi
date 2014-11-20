@@ -6,7 +6,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.length = rows * cols;
 	this.datum_type = Float32Array;
 	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
-	if (data === void 0) {
+	if (!data) {
 		this.data = null;
 	} else {
 		this.data = data;
@@ -29,9 +29,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.destruct = function() { this.data = void 0; };
 	
 	$M.newMatOrReuseMat = function(rows, cols, mat) {
-		if (mat === void 0) {
+		if (!mat) {
 			return new $M(rows, cols);
-		} else if (mat.length !== rows * cols) {
+		} else if (mat.rows !== rows || mat.cols !== cols) {
 			throw new Error('The shape of the matrix to reuse does not match');
 		} else {
 			mat.rows = rows;
@@ -153,6 +153,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.clone = function(output) {
 		this.syncData();
 		var newM = $M.newMatOrReuseMat(this.rows, this.cols, output);
+		newM.syncData();
 		newM.copyPropertyFrom(this);
 		newM.data = new this.datum_type(this.data);
 		return newM;
