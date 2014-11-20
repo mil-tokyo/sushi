@@ -7,7 +7,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.datum_type = Float32Array;
 	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
 	if (data === void 0) {
-		this.data = new this.datum_type(this.length);
+		this.data = null;
 	} else {
 		this.data = data;
 	}
@@ -20,7 +20,11 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	/* ##### utilities ##### */
 	
-	$P.syncData = function() { };
+	$P.syncData = function() {
+		if (!this.data) {
+			this.data = new this.datum_type(this.length);
+		}
+	};
 	
 	$P.destruct = function() { this.data = void 0; };
 	
@@ -567,6 +571,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			throw new Error('shape does not match');
 		}
 		var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);
+		newM.syncData();
 		var tmp = 0;
 		for (var row = 0; row < newM.rows; row++) {
 			for (var col = 0; col < newM.cols; col++) {

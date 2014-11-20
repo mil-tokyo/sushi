@@ -90,10 +90,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		
 		$P.syncData = function() {
 			// there being buffer means data is obsolete
+			if (this.data === null) {
+				this.data = new this.datum_type(this.length);
+			}
 			if (this.buffer) {
-				if (this.data === null) {
-					this.data = new this.datum_type(this.length);
-				}
 				// console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
 				this.buffer.release();
@@ -156,7 +156,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.newMatOrReuseMat = function(rows, cols, mat) {
 		if (mat === void 0) {
-			return new $M(rows, cols, null);
+			return new $M(rows, cols);
 		} else if (mat.length !== rows * cols) {
 			throw new Error('The shape of the matrix to reuse does not match');
 		} else {

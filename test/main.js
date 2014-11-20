@@ -20,6 +20,8 @@
 					test :function() {
 						var a = new $M(3, 7);
 						var b = new $M(3, 7);
+						a.syncData();
+						b.syncData();
 						for (var i = 0; i < a.length; i++) {
 							var tmp = Math.random();
 							a.data[i] = tmp;
@@ -858,7 +860,6 @@
 				} catch (exception) {
 					console.log('exception catched');
 					console.error(exception);
-					throw exception;
 				} finally {
 					if (result === void 0) {
 						console.log('benchmark');
