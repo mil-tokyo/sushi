@@ -24,6 +24,19 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	$P.destruct = function() { this.data = void 0; };
 	
+	$M.newMatOrReuseMat = function(rows, cols, mat) {
+		if (mat === void 0) {
+			return new $M(rows, cols);
+		} else if (mat.length !== rows * cols) {
+			throw new Error('The shape of the matrix to reuse does not match');
+		} else {
+			mat.rows = rows;
+			mat.cols = cols;
+			mat.row_wise = true;
+			return mat;
+		}
+	};
+	
 	$P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
 		this.cols = original.cols;
@@ -133,9 +146,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return write_buf;
 	};
 	
-	$P.clone = function() {
+	$P.clone = function(output) {
 		this.syncData();
-		var newM = new $M(this.rows, this.cols);
+		var newM = $M.newMatOrReuseMat(this.rows, this.cols, output);
 		newM.copyPropertyFrom(this);
 		newM.data = new this.datum_type(this.data);
 		return newM;
@@ -225,14 +238,14 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	$M.fromColVectors = function(original_vectors) {
+	$M.fromColVectors = function(original_vectors, output) {
 		if (!(original_vectors instanceof Array)) {
 			throw new Error('input must be an array');
 		}
 		if (original_vectors[0].cols !== 1) {
 			throw new Error('vectors must be col vectors');
 		}
-		var newM = new $M(original_vectors[0].length, original_vectors.length);
+		var newM = $M.newMatOrReuseMat(original_vectors[0].length, original_vectors.length, output);
 		newM.setEach(function(row, col) {
 			return original_vectors[col].get(row, 0);
 		});
@@ -377,9 +390,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return sum;
 	};
 	
-	$M.sumEachRow = function(mat) {
+	$M.sumEachRow = function(mat, output) {
 		mat.syncData();
-		var newM = new $M(mat.rows, 1);
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
 		for (var row = 0; row < mat.rows; row++) {
 			var tmp = 0;
 			for (var col = 0; col < mat.cols; col++) {
@@ -390,9 +403,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
-	$M.sumEachCol = function(mat) {
+	$M.sumEachCol = function(mat, output) {
 		mat.syncData();
-		var newM = new $M(1, mat.cols);
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
 		for (var col = 0; col < mat.cols; col++) {
 			var tmp = 0;
 			for (var row = 0; row < mat.rows; row++) {
@@ -403,9 +416,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
-	$M.maxEachRow = function(mat) {
+	$M.maxEachRow = function(mat, output) {
 		mat.syncData();
-		var newM = new $M(mat.rows, 1);
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
 		for (var row = 0; row < mat.rows; row++) {
 			var tmp = mat.get(row, 0);
 			for (var col = 0; col < mat.cols; col++) {
@@ -416,9 +429,9 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
-	$M.maxEachCol = function(mat) {
+	$M.maxEachCol = function(mat, output) {
 		mat.syncData();
-		var newM = new $M(1, mat.cols);
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
 		for (var col = 0; col < mat.cols; col++) {
 			var tmp = mat.get(0, col);
 			for (var row = 0; row < mat.rows; row++) {
@@ -543,17 +556,17 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return mat1.dot(mat2);
 	};
 	
-	$P.mul = function(mat) {
-		return $M.mul(this, mat);
+	$P.mul = function(mat, output) {
+		return $M.mul(this, mat, output);
 	};
 	
-	$M.mul = function(mat1, mat2) {
+	$M.mul = function(mat1, mat2, output) {
 		mat1.syncData();
 		mat2.syncData();
 		if (mat1.cols !== mat2.rows) {
 			throw new Error('shape does not match');
 		}
-		var newM = new $M(mat1.rows, mat2.cols);
+		var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);
 		var tmp = 0;
 		for (var row = 0; row < newM.rows; row++) {
 			for (var col = 0; col < newM.cols; col++) {
@@ -567,7 +580,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
-	$M.convolve = function(mat1, mat2, mode) {
+	$M.convolve = function(mat1, mat2, mode, output) {
 		throw new Error('not implemented');
 	};
 
