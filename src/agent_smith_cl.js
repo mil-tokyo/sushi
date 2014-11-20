@@ -128,7 +128,9 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 							params[i].datum.buffer = $CL.context.createBuffer(WebCL.MEM_READ_WRITE, params[i].datum.byte_length);
 							$CL.buffers++;
 							if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
-								queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
+								if (params[i].datum.data) {
+									queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
+								}
 							}
 						}
 						$CL.kernelSetArg(kernel, i, params[i].datum.buffer);
@@ -421,7 +423,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	$CL.times = function() {
 		var kernel_to_use = $CL.createKernel([
-				"__kernel void kernel_func(__global float *a, float b, uint iNumElements)   ",
+				"__kernel void kernel_func(__global float *a, float b, uint iNumElements)    ",
 				"{                                                                           ",
 				"    size_t i =  get_global_id(0);                                           ",
 				"    if(i >= iNumElements) return;                                           ",
@@ -434,6 +436,30 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				[
 					{ access : WebCL.MEM_READ_WRITE, datum : mat1 },
 					{ datum : times, type : WebCL.type.FLOAT}, 
+					{ datum : mat1.length, type : WebCL.type.UINT }
+				],
+				mat1.length
+			);
+			return mat1;
+		};
+	}();
+	
+	$CL.zeros = function() {
+		var kernel_to_use = $CL.createKernel([
+				"__kernel void kernel_func(__global float *a, float b, uint iNumElements)    ",
+				"{                                                                           ",
+				"    size_t i =  get_global_id(0);                                           ",
+				"    if(i >= iNumElements) return;                                           ",
+				"    a[i] = b;                                                               ",
+				"}                                                                           "].join('\r\n')
+			);
+		return function(mat1, num) {
+			if (!num) { var num = 0; }
+			$CL.executeKernel(
+				kernel_to_use,
+				[
+					{ access : WebCL.MEM_READ_WRITE, datum : mat1 },
+					{ datum : num, type : WebCL.type.FLOAT}, 
 					{ datum : mat1.length, type : WebCL.type.UINT }
 				],
 				mat1.length
@@ -726,6 +752,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeMul = function(mat, output) { return $CL.mul(this, mat, output); };
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
 		$P.largeClone = function() { return $CL.clone(this); };
+		$P.largeZeros = function(num) { return $CL.zeros(this, num); };
 		
 		$M.largeAdd = function(mat1, mat2) { return mat1.largeClone().largeAdd(mat2); };
 		$M.largeSub = function(mat1, mat2) { return mat1.largeClone().largeSub(mat2); };

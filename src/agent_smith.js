@@ -598,6 +598,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$P.largeMul = $P.mul;
 	$P.largeTimes = $P.times;
 	$P.largeClone = $P.clone;
+	$P.largeZeros = $P.zeros;
 	
 	$M.largeAdd = $M.add;
 	$M.largeSub = $M.sub;

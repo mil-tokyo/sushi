@@ -690,6 +690,16 @@
 					}
 				},
 				{
+					name : "checkZerosLarge",
+					test : function() {
+						var a = new $M(10, 20);
+						a.random();
+						var b = new $M(10, 20);
+						b.random();
+						return a.zeros().equals(a.largeZeros()) && a.zeros(5).equals(a.largeZeros(5));
+					}
+				},
+				{
 					name : "checkMapGenerator",
 					test : function() {
 						if (!$M.CL) {
