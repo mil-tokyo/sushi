@@ -151,6 +151,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			};
 		}();
 		
+		$CL.flush = function() {
+			queue.flush();
+		}
+		
 		$CL.finish = function() {
 			queue.finish();
 		}
