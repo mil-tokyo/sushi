@@ -454,6 +454,10 @@
 						b.random();
 						var b2 = new $M(9, 7);
 						b2.random();
+						console.log($M.largeAdd(a, b).nearlyEquals($M.add(a, b)));
+						console.log($M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)));
+						console.log($M.largeAdd(a, b2.t()).nearlyEquals($M.add(a, b2.t())));
+						console.log($M.largeAdd(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t())));
 						return (
 							$M.largeAdd(a, b).nearlyEquals($M.add(a, b)) &&
 							$M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&

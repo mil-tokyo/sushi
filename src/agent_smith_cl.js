@@ -31,9 +31,27 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	// Prepare WebCL and functions
 	(function () {
-		var platformList = WebCL.getPlatforms();
-		$CL.platform = platformList[0];
-		$CL.platform_info = $CL.platform.getInfo(WebCL.PLATFORM_NAME);
+		// decide platform to use
+		var platform_list = WebCL.getPlatforms();
+		var platform_priority = ['CUDA', 'Apple', 'OpenCL'];
+		var priority = platform_priority.length + 1;
+		var includeIndexOf = function(array, search) {
+			for (var i = 0; i < array.length; i++) {
+				if (array[i].indexOf(search) !== -1) {
+					return i;
+				}
+			}
+			return array.length;
+		};
+		for (var i = 0; i < platform_list.length; i++) {
+			var platform_tmp = platform_list[i];
+			var platform_info_tmp = platform_tmp.getInfo(WebCL.PLATFORM_NAME);
+			var priority_tmp = includeIndexOf(platform_priority, platform_info_tmp);
+			if (priority_tmp < priority) {
+				$CL.platform = platform_tmp;
+				$CL.platform_info = platform_info_tmp;
+			}
+		}
 		$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_DEFAULT);
 		$CL.device_info = $CL.devices[0].getInfo(WebCL.DEVICE_NAME);
 		
@@ -160,8 +178,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		}
 	})();
 
-	$CL.eachOperationGenerator = function(operator) {
-		var createEachOperationGeneratorKernel = function(a_i_to_idx, b_i_to_idx) {
+	$CL.eachOperationPGenerator = function(operator) {
+		var createEachOperationPGeneratorKernel = function(a_i_to_idx, b_i_to_idx) {
 			return $CL.createKernel([
 				"#define OPERATOR " + operator + "                                                                         ",
 				"#define A_I_TO_IDX(i) (" + a_i_to_idx + ")                                                                ",
@@ -175,11 +193,11 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			);
 		};
 		// (row-wiss - row-wise) or (col-wise - col-wise)
-		var kernel1 = createEachOperationGeneratorKernel('(i)', '(i)');
+		var kernel1 = createEachOperationPGeneratorKernel('(i)', '(i)');
 		// row-wise - col-wise
-		var kernel2 = createEachOperationGeneratorKernel('(i)', '((i) % cols) * rows + (i) / cols');
+		var kernel2 = createEachOperationPGeneratorKernel('(i)', '((i) % cols) * rows + (i) / cols');
 		// col-wise - row-wise
-		var kernel3 = createEachOperationGeneratorKernel('((i) % cols) * rows + (i) / cols', '(i)');
+		var kernel3 = createEachOperationPGeneratorKernel('((i) % cols) * rows + (i) / cols', '(i)');
 		
 		// broadcast 1
 		var kernel4 = $CL.createKernel([
@@ -245,6 +263,112 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	};
 	
+	$CL.eachOperationMGenerator = function(operator) {
+		var createEachOperationMGeneratorKernel = function(a_i_to_idx, b_i_to_idx) {
+			return $CL.createKernel([
+				"#define OPERATOR " + operator + "                                                                         ",
+				"#define A_I_TO_IDX(i) (" + a_i_to_idx + ")                                                                ",
+				"#define B_I_TO_IDX(i) (" + b_i_to_idx + ")                                                                ",
+				"__kernel void kernel_func(__global float *output, __global float *a, __global float *b, uint iNumElements, uint rows, uint cols)  ",
+				"{                                                                                                         ",
+				"    size_t i =  get_global_id(0);                                                                         ",
+				"    if(i >= iNumElements) return;                                                                         ",
+				"    output[i] = a[A_I_TO_IDX(i)] OPERATOR b[B_I_TO_IDX(i)];                                               ",
+				"}                                                                                                         "].join('\r\n')
+			);
+		};
+		
+		var createEachOperationMGeneratorBroadcastKernel1 = function(a_b_i_to_idx) {
+			return $CL.createKernel([
+				"#define OPERATOR " + operator + "                                                                 ",
+				"#define A_B_I_TO_IDX(i) (" + a_b_i_to_idx + ")                                                    ",
+				"__kernel void kernel_func(__global float *output, __global float *a, __global float *b, uint iNumElements, uint rows, uint cols, uint b_length) ",
+				"{                                                                                                 ",
+				"    size_t i =  get_global_id(0);                                                                 ",
+				"    if(i >= iNumElements) return;                                                                 ",
+				"    output[i] = a[A_B_I_TO_IDX(i)] OPERATOR b[A_B_I_TO_IDX(i) % b_length];                        ",
+				"}                                                                                                 "].join('\r\n')
+			);
+		};
+		
+		var createEachOperationMGeneratorBroadcastKernel2 = function(a_b_i_to_idx) {
+			return $CL.createKernel([
+				"#define OPERATOR " + operator + "                                                                 ",
+				"#define A_B_I_TO_IDX(i) (" + a_b_i_to_idx + ")                                                    ",
+				"__kernel void kernel_func(__global float *output, __global float *a, __global float *b, uint iNumElements, uint rows, uint cols, uint b_skip) ",
+				"{                                                                                                 ",
+				"    size_t i =  get_global_id(0);                                                                 ",
+				"    if(i >= iNumElements) return;                                                                 ",
+				"    output[i] = a[A_B_I_TO_IDX(i)] OPERATOR b[A_B_I_TO_IDX(i) / b_skip];                           ",
+				"}                                                                                                 "].join('\r\n')
+			);
+		};
+		
+		// row-wiss - row-wise
+		var kernel1 = createEachOperationMGeneratorKernel('(i)', '(i)');
+		// row-wise - col-wise
+		var kernel2 = createEachOperationMGeneratorKernel('(i)', '((i) % cols) * rows + (i) / cols');
+		// col-wise - row-wise
+		var kernel3 = createEachOperationMGeneratorKernel('((i) % cols) * rows + (i) / cols', '(i)');
+		// col-wise - col-wise
+		var kernel4 = createEachOperationMGeneratorKernel('((i) % cols) * rows + (i) / cols', '((i) % cols) * rows + (i) / cols');
+		
+		// broadcast 1
+		var kernel5 = createEachOperationMGeneratorBroadcastKernel1('(i)');
+		var kernel6 = createEachOperationMGeneratorBroadcastKernel1('((i) % cols) * rows + (i) / cols');
+		
+		// broadcast 2
+		var kernel7 = createEachOperationMGeneratorBroadcastKernel2('(i)');
+		var kernel8 = createEachOperationMGeneratorBroadcastKernel2('((i) % cols) * rows + (i) / cols');
+		
+		return function(mat1, mat2, output) {
+			if (!(
+				(mat1.rows === mat2.rows && mat1.cols === mat2.cols) ||
+				(mat1.rows === mat2.rows && mat2.cols === 1) ||
+				(mat1.cols === mat2.cols && mat2.rows === 1) ) ) {
+					throw new Error('shape does not match');
+			}
+			var newM = $M.newMatOrReuseMat(mat1.rows, mat1.cols, output);
+			var kernel_to_use = null;
+			if (mat1.rows === mat2.rows && mat1.cols === mat2.cols) {
+				if (mat1.row_wise && mat2.row_wise) {
+					kernel_to_use = kernel1;
+				} else if (mat1.row_wise && !mat2.row_wise) {
+					kernel_to_use = kernel2;
+				} else if (!mat1.row_wise && mat2.row_wise) {
+					kernel_to_use = kernel3;
+				} else {
+					kernel_to_use = kernel4;
+				}
+			} else if ((mat1.row_wise && mat2.rows === 1) || (!mat1.row_wise && mat2.cols === 1)) {
+				// broadcast 1
+				kernel_to_use = mat1.row_wise ? kernel5 : kernel6;
+			} else {
+				// broadcast 2
+				kernel_to_use = mat1.row_wise ? kernel7 : kernel8;
+			}
+			
+			var params = [
+				{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+				{ access : WebCL.MEM_READ_WRITE, datum : mat1 },
+				{ access : WebCL.MEM_READ_ONLY, datum : mat2 },
+				{ datum : mat1.length, type : WebCL.type.UINT },
+				{ datum : mat1.rows, type : WebCL.type.UINT },
+				{ datum : mat1.cols, type : WebCL.type.UINT }
+			];
+				
+			if (kernel_to_use === kernel5 || kernel_to_use === kernel6) {
+				params.push({ datum : mat2.length, type : WebCL.type.UINT });
+			} else if (kernel_to_use === kernel7 || kernel_to_use === kernel8) {
+				params.push({ datum : mat1.length / mat2.length, type : WebCL.type.UINT });
+			}
+			
+			$CL.executeKernel(kernel_to_use, params, mat1.length);
+			
+			return newM;
+		};
+	};
+	
 	$CL.mapGenerator = function(expression_ai) {
 		// if the wises are same
 		var kernel = $CL.createKernel([
@@ -265,13 +389,21 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	};
 	
-	$CL.add = $CL.eachOperationGenerator('+');
+	$CL.addP = $CL.eachOperationPGenerator('+');
 	
-	$CL.sub = $CL.eachOperationGenerator('-');
+	$CL.subP = $CL.eachOperationPGenerator('-');
 	
-	$CL.mulEach = $CL.eachOperationGenerator('*');
+	$CL.mulEachP = $CL.eachOperationPGenerator('*');
 	
-	$CL.divEach = $CL.eachOperationGenerator('/');
+	$CL.divEachP = $CL.eachOperationPGenerator('/');
+	
+	$CL.addM = $CL.eachOperationMGenerator('+');
+	
+	$CL.subM = $CL.eachOperationMGenerator('-');
+	
+	$CL.mulEachM = $CL.eachOperationMGenerator('*');
+	
+	$CL.divEachM = $CL.eachOperationMGenerator('/');
 	
 	$CL.mul = function() {
 		var createMulKernel = function(a_row_col_to_idx, b_row_col_to_idx) {
@@ -736,19 +868,19 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 	
 	// alter large matrix calculation
 	(function() {
-		$P.largeAdd = function(mat) { $CL.add(this, mat); return this; };
-		$P.largeSub = function(mat) { $CL.sub(this, mat); return this; };
-		$P.largeMulEach = function(mat) { $CL.mulEach(this, mat); return this; };
-		$P.largeDivEach = function(mat) { $CL.divEach(this, mat); return this; };
+		$P.largeAdd = function(mat) { $CL.addP(this, mat); return this; };
+		$P.largeSub = function(mat) { $CL.subP(this, mat); return this; };
+		$P.largeMulEach = function(mat) { $CL.mulEachP(this, mat); return this; };
+		$P.largeDivEach = function(mat) { $CL.divEachM(this, mat); return this; };
 		$P.largeMul = function(mat, output) { return $CL.mul(this, mat, output); };
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
 		$P.largeClone = function(output) { return $CL.clone(this, output); };
 		$P.largeZeros = function(num) { return $CL.zeros(this, num); };
 		
-		$M.largeAdd = function(mat1, mat2) { return mat1.largeClone().largeAdd(mat2); };
-		$M.largeSub = function(mat1, mat2) { return mat1.largeClone().largeSub(mat2); };
-		$M.largeMulEach = function(mat1, mat2) { return mat1.largeClone().largeMulEach(mat2); };
-		$M.largeDivEach = function(mat1, mat2) { return mat1.largeClone().largeDivEach(mat2); };
+		$M.largeAdd = $CL.addM;
+		$M.largeSub = $CL.subM;
+		$M.largeMulEach = $CL.mulEachM;
+		$M.largeDivEach = $CL.divEachM;
 		$M.largeMul = $CL.mul;
 		$M.largeSum = function(mat) {
 			var row_sum = $CL.sumEachRow(mat);
