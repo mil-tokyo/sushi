@@ -871,7 +871,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.largeAdd = function(mat) { $CL.addP(this, mat); return this; };
 		$P.largeSub = function(mat) { $CL.subP(this, mat); return this; };
 		$P.largeMulEach = function(mat) { $CL.mulEachP(this, mat); return this; };
-		$P.largeDivEach = function(mat) { $CL.divEachM(this, mat); return this; };
+		$P.largeDivEach = function(mat) { $CL.divEachP(this, mat); return this; };
 		$P.largeMul = function(mat, output) { return $CL.mul(this, mat, output); };
 		$P.largeTimes = function(times) { return $CL.times(this, times); };
 		$P.largeClone = function(output) { return $CL.clone(this, output); };
