@@ -626,26 +626,65 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return $M.mul(this, mat, output);
 	};
 	
-	$M.mul = function(mat1, mat2, output) {
-		mat1.syncData();
-		mat2.syncData();
-		if (mat1.cols !== mat2.rows) {
-			throw new Error('shape does not match');
-		}
-		var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);
-		newM.syncData();
-		var tmp = 0;
-		for (var row = 0; row < newM.rows; row++) {
-			for (var col = 0; col < newM.cols; col++) {
-				var tmp = 0.0;
-				for (var i = 0; i < mat1.cols; i++) {
-					tmp += mat1.get(row, i) * mat2.get(i, col);
-				}
-				newM.data[row * newM.cols + col] = tmp;
+	$M.mul = function() {
+		var mulGenerator = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
+			return eval([
+				"(function(mat1, mat2, output) {														",
+				"	mat1.syncData();																	",
+				"	mat2.syncData();																	",
+				"	if (mat1.cols !== mat2.rows) {														",
+				"		throw new Error('shape does not match');										",
+				"	}																					",
+				"	var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);						",
+				"	newM.syncData();																	",
+				"	var tmp = 0;																		",
+				"	var newM_data = newM.data; var mat1_data = mat1.data; var mat2_data = mat2.data;	",
+				"	var newM_cols = newM.cols; var mat1_cols = mat1.cols; var mat2_cols = mat2.cols;	",
+				"	var newM_rows = newM.rows; var mat1_rows = mat1.rows; var mat2_rows = mat2.rows;	",
+				"	for (var row = 0; row < newM_rows; row++) {											",
+				"		for (var col = 0; col < newM_cols; col++) {										",
+				"			var tmp = 0.0;																",
+				"			for (var i = 0; i < mat1_cols; i++) {										",
+				"				tmp += mat1_data[" + mat1_row_col_to_idx('row', 'i') + "] *				",
+				"					mat2_data[" + mat2_row_col_to_idx('i', 'col') + "];					",
+				"			}																			",
+				"			newM_data[row * newM_cols + col] = tmp;										",
+				"		}																				",
+				"	}																					",
+				"	return newM;																		",
+				"});																					"
+			].join('\r\n'));
+		};
+		var mulRowRow = mulGenerator(
+			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
+			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+		);
+		var mulRowCol = mulGenerator(
+			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
+			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+			);
+		var mulColRow = mulGenerator(
+			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
+			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+			);
+		var mulColCol = mulGenerator(
+			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
+			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+		);
+		return function(mat1, mat2, output) {
+			if (mat1.row_wise && mat2.row_wise) {
+				return mulRowRow(mat1, mat2, output);
+			} else if (mat1.row_wise && !mat2.row_wise) {
+				return mulRowCol(mat1, mat2, output);
+			} else if (!mat1.row_wise && mat2.row_wise) {
+				return mulColRow(mat1, mat2, output);
+			} else if (!mat1.row_wise && !mat2.row_wise) {
+				return mulColCol(mat1, mat2, output);
+			} else {
+				throw new Error('mysterous error')
 			}
-		}
-		return newM;
-	};
+		};
+	}();
 	
 	$M.convolve = function(mat1, mat2, mode, output) {
 		throw new Error('not implemented');
