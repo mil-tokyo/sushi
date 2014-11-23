@@ -64,7 +64,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				kernel.setArg(idx, param, type);
 			};
 		} else {
-			$CL.context = WebCL.createContext();
+			$CL.context = WebCL.createContext($CL.platform);
 			WebCL.type = {
 				CHAR: 0,
 				UCHAR: 1,
