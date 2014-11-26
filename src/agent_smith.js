@@ -447,6 +447,42 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
+	$M.argmaxEachRow = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
+		for (var row = 0; row < mat.rows; row++) {
+			var max = mat.get(row, 0);
+			var arg = 0;
+			for (var col = 0; col < mat.cols; col++) {
+				var tmp = mat.get(row, col);
+				if (max < tmp) {
+					arg = col;
+					max = tmp;
+				}
+			}
+			newM.set(row, 0, arg);
+		}
+		return newM;
+	};
+	
+	$M.argmaxEachCol = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
+		for (var col = 0; col < mat.cols; col++) {
+			var max = mat.get(0, col);
+			var arg = 0;
+			for (var row = 0; row < mat.rows; row++) {
+				var tmp = mat.get(row, col);
+				if (max < tmp) {
+					arg = row;
+					max = tmp;
+				}
+			}
+			newM.set(0, col, arg);
+		}
+		return newM;
+	};
+	
 
 	/* ##### basic calculation ##### */
 	
@@ -712,6 +748,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.largeSumEachCol = $M.sumEachCol;
 	$M.largeMaxEachRow = $M.maxEachRow;
 	$M.largeMaxEachCol = $M.maxEachCol;
+	$M.largeArgmaxEachRow = $M.argmaxEachRow;
+	$M.largeArgmaxEachCol = $M.argmaxEachCol;
 	$M.largeConvolve = $M.convolve;
 	$M.largeExtract = $M.extract;
 	$M.largeWriteSubmat = $M.writeSubmat;

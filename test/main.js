@@ -359,6 +359,35 @@
 					}
 				},
 				{
+					name : "checkArgmaxEachRow",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[7, 8, 5, 6]
+						]);
+						return $M.argmaxEachRow(a).equals(
+							$M.fromArray([
+								[3],
+								[1]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachCol",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 7, 8],
+							[5, 6, 3, 4]
+						]);
+						return $M.argmaxEachCol(a).equals(
+							$M.fromArray([
+								[1, 1, 0, 0]
+							])
+						);
+					}
+				},
+				{
 					name : "checkHasNaN",
 					test : function() {
 						var a = new $M(10, 10);
@@ -679,6 +708,45 @@
 						) && $M.largeMaxEachCol(a.t()).nearlyEquals(
 							$M.fromArray([
 								[3, 6]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachRowLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 5, 3],
+							[6, 2, 4]
+						]);
+						return $M.largeArgmaxEachRow(a).nearlyEquals(
+							$M.fromArray([
+								[1],
+								[0]
+							])
+						) && $M.largeArgmaxEachRow(a.t()).nearlyEquals(
+							$M.fromArray([
+								[1],
+								[0],
+								[1]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachColLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 5, 3],
+							[6, 2, 4]
+						]);
+						return $M.largeArgmaxEachCol(a).nearlyEquals(
+							$M.fromArray([
+								[1, 0, 1]
+							])
+						) && $M.largeArgmaxEachCol(a.t()).nearlyEquals(
+							$M.fromArray([
+								[1, 0]
 							])
 						);
 					}

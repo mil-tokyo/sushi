@@ -695,6 +695,46 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			return newM;
 		};
 	}();
+
+	$CL.argmaxEachRow = function() {
+		var createArgmaxEachRowKernel = function(row_col_to_idx) {
+			return $CL.createKernel([
+				"#define ROW_COL_TO_IDX(row, col) (" + row_col_to_idx +")													",
+  				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)	",
+  				"{																											",
+  				"	size_t i =  get_global_id(0);																			",
+  				"	if(i >= iNumElements) return;																			",
+  				"	float max_val = b[ROW_COL_TO_IDX(i, 0)];															 	",
+  				"	a[i] = 0;																								",
+  				"	for (uint j = 0; j < cols; j++) {																		",
+  				"		float tmp = b[ROW_COL_TO_IDX(i, j)];																",
+  				"		if (tmp > max_val) {																				",
+  				"			a[i] = j;																						",
+  				"			max_val = tmp;																					",
+  				"		}																									",
+  				"	}																										",
+  				"}																											"].join('\r\n')
+  			);
+		};
+		var kernel1 = createArgmaxEachRowKernel('(row) * cols + (col)');
+		var kernel2 = createArgmaxEachRowKernel('(col) * rows + (row)');
+		
+		return function(mat1, output) {
+			var newM = $M.newMatOrReuseMat(mat1.rows, 1, output);
+			$CL.executeKernel(
+				mat1.row_wise ? kernel1 : kernel2,
+				[
+					{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+					{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+					{ datum : mat1.rows, type : WebCL.type.UINT},
+					{ datum : mat1.cols, type : WebCL.type.UINT},
+					{ datum : newM.length, type : WebCL.type.UINT }
+				],
+				newM.length
+			);
+			return newM;
+		};
+	}();
 	
 	$CL.maxEachCol = function() {
 		var createMaxEachColKernel = function(row_col_to_idx) {
@@ -713,6 +753,46 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 		var kernel1 = createMaxEachColKernel('(row) * cols + (col)');
 		var kernel2 = createMaxEachColKernel('(col) * rows + (row)');
+		
+		return function(mat1, output) {
+			var newM = $M.newMatOrReuseMat(1, mat1.cols, output);
+			$CL.executeKernel(
+				mat1.row_wise ? kernel1 : kernel2,
+				[
+					{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+					{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+					{ datum : mat1.rows, type : WebCL.type.UINT},
+					{ datum : mat1.cols, type : WebCL.type.UINT},
+					{ datum : newM.length, type : WebCL.type.UINT }
+				],
+				newM.length
+			);
+			return newM;
+		};
+	}();
+	
+	$CL.argmaxEachCol = function() {
+		var createArgmaxEachColKernel = function(row_col_to_idx) {
+			return $CL.createKernel([
+				"#define ROW_COL_TO_IDX(row, col) (" + row_col_to_idx +")													",
+  				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)	",
+  				"{																											",
+  				"	size_t i =  get_global_id(0);																			",
+  				"	if(i >= iNumElements) return;																			",
+  				"	float max_val = b[ROW_COL_TO_IDX(0, i)];																",
+  				"	a[i] = 0;																								",
+  				"	for (uint j = 0; j < rows; j++) {																		",
+  				"		float tmp = b[ROW_COL_TO_IDX(j, i)];																",
+  				"		if (tmp > max_val) {																				",
+  				"			a[i] = j;																						",
+  				"			max_val = tmp;																					",
+  				"		}																									",
+  				"	}																										",
+  				"}																											"].join('\r\n')
+  			);
+		};
+		var kernel1 = createArgmaxEachColKernel('(row) * cols + (col)');
+		var kernel2 = createArgmaxEachColKernel('(col) * rows + (row)');
 		
 		return function(mat1, output) {
 			var newM = $M.newMatOrReuseMat(1, mat1.cols, output);
@@ -895,6 +975,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$M.largeSumEachCol = $CL.sumEachCol;
 		$M.largeMaxEachRow = $CL.maxEachRow;
 		$M.largeMaxEachCol = $CL.maxEachCol;
+		$M.largeArgmaxEachRow = $CL.argmaxEachRow;
+		$M.largeArgmaxEachCol = $CL.argmaxEachCol;
 		$M.largeConvolve = $CL.convolve;
 		$M.largeExtract = $CL.extract;
 		$M.largeWriteSubmat = $CL.writeSubmat;
