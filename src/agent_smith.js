@@ -6,8 +6,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	this.length = rows * cols;
 	this.datum_type = Float32Array;
 	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
-	if (data === void 0) {
-		this.data = new this.datum_type(this.length);
+	if (!data) {
+		this.data = null;
 	} else {
 		this.data = data;
 	}
@@ -20,9 +20,26 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	/* ##### utilities ##### */
 	
-	$P.syncData = function() { };
+	$P.syncData = function() {
+		if (!this.data) {
+			this.data = new this.datum_type(this.length);
+		}
+	};
 	
 	$P.destruct = function() { this.data = void 0; };
+	
+	$M.newMatOrReuseMat = function(rows, cols, mat) {
+		if (!mat) {
+			return new $M(rows, cols);
+		} else if (mat.rows !== rows || mat.cols !== cols) {
+			throw new Error('The shape of the matrix to reuse does not match');
+		} else {
+			mat.rows = rows;
+			mat.cols = cols;
+			mat.row_wise = true;
+			return mat;
+		}
+	};
 	
 	$P.copyPropertyFrom = function(original) {
 		this.rows = original.rows;
@@ -91,6 +108,24 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		console.log(this.toString());
 	};
 	
+	$P.saveString = function(filename, async) {
+		if (async) {
+			async = true;
+		} else {
+			async = false;
+		}
+		var fs = require('fs');
+		if (async) {
+			fs.writeFile(filename, this.toString() , function (err) {
+				if (err) {
+					throw new Error(err);
+				}
+			});
+		} else {
+			fs.writeFileSync(filename, this.toString());
+		}
+	};
+	
 	$P.toString = function() {
 		this.syncData();
 		var formatWidth = function(str, width) {
@@ -104,19 +139,21 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		}
 		var write_buf = '-- Matrix (' + this.rows + ' x ' + this.cols + ') --';
 		write_buf += '\r\n';
+		var digit = Math.max(1, Math.floor(Math.LOG10E * Math.log(Math.max($M.max(this), -$M.min(this)))));
 		for (var row = 0; row < this.rows; row++) {
 			for (var col = 0; col < this.cols; col++) {
 				var tmp = this.get(row, col);
-				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10);
+				write_buf += formatWidth(isInt(tmp) ? String(tmp) : tmp.toFixed(6), 10 + digit);
 			}
 			if (row != this.rows - 1) { write_buf += '\r\n'; }
 		}
 		return write_buf;
 	};
 	
-	$P.clone = function() {
+	$P.clone = function(output) {
 		this.syncData();
-		var newM = new $M(this.rows, this.cols);
+		var newM = $M.newMatOrReuseMat(this.rows, this.cols, output);
+		newM.syncData();
 		newM.copyPropertyFrom(this);
 		newM.data = new this.datum_type(this.data);
 		return newM;
@@ -124,18 +161,29 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	
 	$P.alias = function() {
 		this.syncData();
-		var newM = new $M(this.rows, this.cols);
+		var newM = new $M(this.rows, this.cols, null);
 		newM.copyPropertyFrom(this);
 		newM.data = this.data;
 		return newM;
 	};
+	
+	$M.hasNaN = function(mat) {
+		mat.syncData();
+		for (var i = 0; i < mat.length; i++) {
+			if (isNaN(mat.data[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/* #####initializer ##### */
 	
-	$P.zeros = function() {
+	$P.zeros = function(num) {
+		if (!num) { var num = 0; }
 		this.syncData();
 		for (var i = 0; i < this.length; i++) {
-			this.data[i] = 0;
+			this.data[i] = num;
 		}
 		return this;
 	};
@@ -154,11 +202,32 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
+	$P.gaussRandom = function() {
+		var getGauss = function(mu, std) {
+			var a = 1 - Math.random();
+			var b = 1 - Math.random();
+			var c = Math.sqrt(-2 * Math.log(a));
+			if (0.5 - Math.random() > 0) {
+				return c * Math.sin(Math.PI * 2 * b) * std + mu;
+			} else {
+				return c * Math.cos(Math.PI * 2 * b) * std + mu;
+			}
+		};
+		return function(mu, std) {
+			this.syncData();
+			for (var i = 0; i < this.length; i++) {
+				this.data[i] = getGauss(mu, std);
+			}
+			return this;
+		}
+	}();
+	
 	$P.range = function() {
 		this.syncData();
 		for (var i = 0; i < this.data.length; i++) {
 			this.data[i] = i;
 		}
+		return this;
 	};
 	
 	$M.fromArray = function(original_array) {
@@ -174,18 +243,26 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	$M.fromColVectors = function(original_vectors) {
+	$M.fromColVectors = function(original_vectors, output) {
 		if (!(original_vectors instanceof Array)) {
 			throw new Error('input must be an array');
 		}
 		if (original_vectors[0].cols !== 1) {
 			throw new Error('vectors must be col vectors');
 		}
-		var newM = new $M(original_vectors[0].length, original_vectors.length);
+		var newM = $M.newMatOrReuseMat(original_vectors[0].length, original_vectors.length, output);
 		newM.setEach(function(row, col) {
 			return original_vectors[col].get(row, 0);
 		});
 		return newM;
+	};
+	
+	$M.extract = function(mat, offest_row, offset_col, rows, cols) {
+		throw new Error('not implemented');
+	};
+	
+	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {
+		throw new Error('not implemented');
 	};
 
 	/* ##### general manipulation ##### */
@@ -267,15 +344,40 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 
 	/* ##### statistics ##### */
+	$M.max = function(mat) {
+		mat.syncData();
+		var max_val = mat.data[0];
+		for (var row = 0; row < mat.rows; row++) {
+			for (var col = 0; col < mat.cols; col++) {
+				if (mat.get(row, col) > max_val) {
+					max_val = mat.get(row, col);
+				}		
+			}
+		}
+		return max_val;
+	};
 	
-	$P.argmax = function() {
-		this.syncData();
-		var max_val = this.data[0];
+	$M.min = function(mat) {
+		mat.syncData();
+		var min_val = mat.data[0];
+		for (var row = 0; row < mat.rows; row++) {
+			for (var col = 0; col < mat.cols; col++) {
+				if (mat.get(row, col) < min_val) {
+					min_val = mat.get(row, col);
+				}		
+			}
+		}
+		return min_val;
+	};
+	
+	$M.argmax = function(mat) {
+		mat.syncData();
+		var max_val = mat.data[0];
 		var arg = { row : 0, col : 0 };
-		for (var row = 0; row < this.rows; row++) {
-			for (var col = 0; col < this.cols; col++) {
-				if (this.get(row, col) > max_val) {
-					max_val = this.get(row, col);
+		for (var row = 0; row < mat.rows; row++) {
+			for (var col = 0; col < mat.cols; col++) {
+				if (mat.get(row, col) > max_val) {
+					max_val = mat.get(row, col);
 					arg.row = row;
 					arg.col = col;
 				}		
@@ -284,44 +386,107 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return arg;
 	};
 	
-	$P.sum = function() {
-		this.syncData();
+	$M.sum = function(mat) {
+		mat.syncData();
 		var sum = 0.0;
-		for (var i = 0; i < this.length; i++) {
-			sum += this.data[i];
+		for (var i = 0; i < mat.length; i++) {
+			sum += mat.data[i];
 		}
 		return sum;
 	};
 	
-	$P.sumEachRow = function() {
-		this.syncData();
-		var newM = new $M(this.rows, 1);
-		for (var row = 0; row < this.rows; row++) {
+	$M.sumEachRow = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
+		for (var row = 0; row < mat.rows; row++) {
 			var tmp = 0;
-			for (var col = 0; col < this.cols; col++) {
-				tmp += this.get(row, col);
+			for (var col = 0; col < mat.cols; col++) {
+				tmp += mat.get(row, col);
 			}
 			newM.set(row, 0, tmp);
 		}
 		return newM;
 	};
 	
-	$P.sumEachCol = function() {
-		this.syncData();
-		var newM = new $M(1, this.cols);
-		for (var col = 0; col < this.cols; col++) {
+	$M.sumEachCol = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
+		for (var col = 0; col < mat.cols; col++) {
 			var tmp = 0;
-			for (var row = 0; row < this.rows; row++) {
-				tmp += this.get(row, col);
+			for (var row = 0; row < mat.rows; row++) {
+				tmp += mat.get(row, col);
 			}
 			newM.set(0, col, tmp);
 		}
 		return newM;
 	};
+	
+	$M.maxEachRow = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
+		for (var row = 0; row < mat.rows; row++) {
+			var tmp = mat.get(row, 0);
+			for (var col = 0; col < mat.cols; col++) {
+				tmp = Math.max(tmp, mat.get(row, col));
+			}
+			newM.set(row, 0, tmp);
+		}
+		return newM;
+	};
+	
+	$M.maxEachCol = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
+		for (var col = 0; col < mat.cols; col++) {
+			var tmp = mat.get(0, col);
+			for (var row = 0; row < mat.rows; row++) {
+				tmp = Math.max(tmp, mat.get(row, col));
+			}
+			newM.set(0, col, tmp);
+		}
+		return newM;
+	};
+	
+	$M.argmaxEachRow = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
+		for (var row = 0; row < mat.rows; row++) {
+			var max = mat.get(row, 0);
+			var arg = 0;
+			for (var col = 0; col < mat.cols; col++) {
+				var tmp = mat.get(row, col);
+				if (max < tmp) {
+					arg = col;
+					max = tmp;
+				}
+			}
+			newM.set(row, 0, arg);
+		}
+		return newM;
+	};
+	
+	$M.argmaxEachCol = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
+		for (var col = 0; col < mat.cols; col++) {
+			var max = mat.get(0, col);
+			var arg = 0;
+			for (var row = 0; row < mat.rows; row++) {
+				var tmp = mat.get(row, col);
+				if (max < tmp) {
+					arg = row;
+					max = tmp;
+				}
+			}
+			newM.set(0, col, arg);
+		}
+		return newM;
+	};
+	
 
 	/* ##### basic calculation ##### */
 	
-	var eachOperationGenerator = function(op) {
+	var eachOperationPGenerator = function(op) {
 		return eval(
 			[
 			"	(function(mat) {																			",
@@ -332,10 +497,12 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			"			   (this.cols === mat.cols && mat.rows === 1) ) ) {									",
 			"			throw new Error('shape does not match');											",
 			"		}																						",
+			"		var this_data = this.data;														",
+			"		var mat_data = mat.data;														",
 			"		if (this.rows === mat.rows && this.cols === mat.cols) {									",
 			"			if (this.row_wise == mat.row_wise) {												",
 			"				for (var i = 0; i < this.length; i++) {											",
-			"					this.data[i] " + op + "= mat.data[i];										",
+			"					this_data[i] " + op + "= mat_data[i];										",
 			"				}																				",
 			"			} else {																			",
 			"				this.forEach(function(row, col) {												",
@@ -346,13 +513,13 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			"			if (mat.cols ===1) {																",
 			"				for (var row = 0; row < mat.rows; row++) {										",
 			"					for (var col = 0; col < this.cols; col++) {									",
-			"						this.data[row * this.cols + col] " + op + "= mat.data[row];				",
+			"						this_data[row * this.cols + col] " + op + "= mat_data[row];				",
 			"					}																			",
 			"				}																				",
 			"			} else {																			",
 			"				for (var col = 0; col < mat.cols; col++) {										",
 			"					for (var row = 0; row < this.rows; row++) {									",
-			"						this.data[row * this.cols + col] " + op + "= mat.data[col];				",
+			"						this_data[row * this.cols + col] " + op + "= mat_data[col];				",
 			"					}																			",
 			"				}																				",
 			"			}																					",
@@ -360,18 +527,85 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			"			if (mat.cols ===1) {																",
 			"				for (var row = 0; row < mat.rows; row++) {										",
 			"					for (var col = 0; col < this.cols; col++) {									",
-			"						this.data[col * this.rows + row] " + op + "= mat.data[row];				",
+			"						this_data[col * this.rows + row] " + op + "= mat_data[row];				",
 			"					}																			",
 			"				}																				",
 			"			} else {																			",
 			"				for (var col = 0; col < mat.cols; col++) {										",
 			"					for (var row = 0; row < this.rows; row++) {									",
-			"						this.data[col * this.rows + row] " + op + "= mat.data[col];				",
+			"						this_data[col * this.rows + row] " + op + "= mat_data[col];				",
 			"					}																			",
 			"				}																				",
 			"			}																					",
 			"		}																						",
 			"		return this;																			",
+			"	});																							"
+			].join('\r\n')
+		);
+	};
+	
+	var eachOperationMGenerator = function(op) {
+		return eval(
+			[
+			"	(function(mat1, mat2, output) {																",
+			"		mat1.syncData();																		",
+			"		mat2.syncData();																		",
+			"		if (!( (mat1.rows === mat2.rows && mat1.cols === mat2.cols) || 							",
+			"			   (mat1.rows === mat2.rows && mat2.cols === 1) ||									",
+			"			   (mat1.cols === mat2.cols && mat2.rows === 1) ) ) {								",
+			"			throw new Error('shape does not match');											",
+			"		}																						",
+			"		var newM = $M.newMatOrReuseMat(mat1.rows, mat1.cols, output);							",
+			"		newM.syncData();																		",
+			"		var newM_data = newM.data;																",
+			"		var mat1_data = mat1.data;																",
+			"		var mat2_data = mat2.data;																",
+			"		if (mat1.rows === mat2.rows && mat1.cols === mat2.cols) {								",
+			"			if (mat1.row_wise && mat2.row_wise) {												",
+			"				for (var i = 0; i < newM.length; i++) {											",
+			"					newM_data[i] = mat1_data[i] " + op + " mat2_data[i];						",
+			"				}																				",
+			"			} else {																			",
+			"				for (var row = 0; row < mat1.rows; row++) {										",
+			"					for (var col = 0; col < mat1.cols; col++) {									",
+			"						newM.set(row, col, mat1.get(row, col) " + op + " mat2.get(row, col));	",
+			"					}																			",
+			"				}																				",
+			"			}																					",
+			"		} else if (mat1.row_wise) {																",
+			"			if (mat2.cols ===1) {																",
+			"				for (var row = 0; row < mat1.rows; row++) {										",
+			"					for (var col = 0; col < mat1.cols; col++) {									",
+			"						newM_data[row * newM.cols + col] = 										",
+			"							mat1_data[row * mat1.cols + col] " + op + " mat2_data[row];			",
+			"					}																			",
+			"				}																				",
+			"			} else {																			",
+			"				for (var col = 0; col < mat1.cols; col++) {										",
+			"					for (var row = 0; row < mat1.rows; row++) {									",
+			"						newM_data[row * newM.cols + col] = 										",
+			"							mat1_data[row * mat1.cols + col] " + op + " mat2_data[col];			",
+			"					}																			",
+			"				}																				",
+			"			}																					",
+			"		} else {																				",
+			"			if (mat2.cols ===1) {																",
+			"				for (var row = 0; row < mat1.rows; row++) {										",
+			"					for (var col = 0; col < mat1.cols; col++) {									",
+			"						newM_data[row * newM.cols + col] =										",
+			"							mat1_data[col * mat1.rows + row] " + op + " mat2_data[row];			",
+			"					}																			",
+			"				}																				",
+			"			} else {																			",
+			"				for (var col = 0; col < mat1.cols; col++) {										",
+			"					for (var row = 0; row < mat1.rows; row++) {									",
+			"						newM_data[row * newM.cols + col] = 										",
+			"							mat1_data[col * mat1.rows + row] " + op + " mat2_data[col];			",
+			"					}																			",
+			"				}																				",
+			"			}																					",
+			"		}																						",
+			"		return newM;																			",
 			"	});																							"
 			].join('\r\n')
 		);
@@ -385,29 +619,21 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return this;
 	};
 	
-	$P.add = eachOperationGenerator("+");
+	$P.add = eachOperationPGenerator("+");
 	
-	$M.add = function(mat1, mat2) {
-		return mat1.clone().add(mat2);
-	};
+	$M.add = eachOperationMGenerator("+");
 	
-	$P.sub = eachOperationGenerator("-");
+	$P.sub = eachOperationPGenerator("-");
 	
-	$M.sub = function(mat1, mat2) {
-		return mat1.clone().sub(mat2);
-	};
+	$M.sub = eachOperationMGenerator("-");
 	
-	$P.mulEach = eachOperationGenerator("*");
+	$P.mulEach = eachOperationPGenerator("*");
 	
-	$M.mulEach = function(mat1, mat2) {
-		return mat1.clone().mulEach(mat2);
-	};
+	$M.mulEach = eachOperationMGenerator("*");
 	
-	$P.divEach = eachOperationGenerator("/");
+	$P.divEach = eachOperationPGenerator("/");
 	
-	$M.divEach = function(mat1, mat2) {
-		return mat1.clone().divEach(mat2);
-	};
+	$M.divEach = eachOperationMGenerator("/");
 	
 	$P.dot = function(mat) {
 		this.syncData();
@@ -432,48 +658,101 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return mat1.dot(mat2);
 	};
 	
-	$P.mul = function(mat) {
-		return $M.mul(this, mat);
+	$P.mul = function(mat, output) {
+		return $M.mul(this, mat, output);
 	};
 	
-	$M.mul = function(mat1, mat2) {
-		mat1.syncData();
-		mat2.syncData();
-		if (mat1.cols !== mat2.rows) {
-			throw new Error('shape does not match');
-		}
-		var newM = new $M(mat1.rows, mat2.cols);
-		var tmp = 0;
-		for (var row = 0; row < newM.rows; row++) {
-			for (var col = 0; col < newM.cols; col++) {
-				var tmp = 0.0;
-				for (var i = 0; i < mat1.cols; i++) {
-					tmp += mat1.get(row, i) * mat2.get(i, col);
-				}
-				newM.data[row * newM.cols + col] = tmp;
+	$M.mul = function() {
+		var mulGenerator = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
+			return eval([
+				"(function(mat1, mat2, output) {														",
+				"	mat1.syncData();																	",
+				"	mat2.syncData();																	",
+				"	if (mat1.cols !== mat2.rows) {														",
+				"		throw new Error('shape does not match');										",
+				"	}																					",
+				"	var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);						",
+				"	newM.syncData();																	",
+				"	var tmp = 0;																		",
+				"	var newM_data = newM.data; var mat1_data = mat1.data; var mat2_data = mat2.data;	",
+				"	var newM_cols = newM.cols; var mat1_cols = mat1.cols; var mat2_cols = mat2.cols;	",
+				"	var newM_rows = newM.rows; var mat1_rows = mat1.rows; var mat2_rows = mat2.rows;	",
+				"	for (var row = 0; row < newM_rows; row++) {											",
+				"		for (var col = 0; col < newM_cols; col++) {										",
+				"			var tmp = 0.0;																",
+				"			for (var i = 0; i < mat1_cols; i++) {										",
+				"				tmp += mat1_data[" + mat1_row_col_to_idx('row', 'i') + "] *				",
+				"					mat2_data[" + mat2_row_col_to_idx('i', 'col') + "];					",
+				"			}																			",
+				"			newM_data[row * newM_cols + col] = tmp;										",
+				"		}																				",
+				"	}																					",
+				"	return newM;																		",
+				"});																					"
+			].join('\r\n'));
+		};
+		var mulRowRow = mulGenerator(
+			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
+			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+		);
+		var mulRowCol = mulGenerator(
+			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
+			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+			);
+		var mulColRow = mulGenerator(
+			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
+			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+			);
+		var mulColCol = mulGenerator(
+			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
+			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+		);
+		return function(mat1, mat2, output) {
+			if (mat1.row_wise && mat2.row_wise) {
+				return mulRowRow(mat1, mat2, output);
+			} else if (mat1.row_wise && !mat2.row_wise) {
+				return mulRowCol(mat1, mat2, output);
+			} else if (!mat1.row_wise && mat2.row_wise) {
+				return mulColRow(mat1, mat2, output);
+			} else if (!mat1.row_wise && !mat2.row_wise) {
+				return mulColCol(mat1, mat2, output);
+			} else {
+				throw new Error('mysterous error')
 			}
-		}
-		return newM;
+		};
+	}();
+	
+	$M.convolve = function(mat1, mat2, mode, output) {
+		throw new Error('not implemented');
 	};
 
 	/* ##### large matrix calculation ##### */
 	
 	$P.largeAdd = $P.add;
-	$M.largeAdd = $M.add;
 	$P.largeSub = $P.sub;
-	$M.largeSub = $M.sub;
-	$P.largeSum = $P.sum;
 	$P.largeMulEach = $P.mulEach;
-	$M.largeMulEach = $M.mulEach;
 	$P.largeDivEach = $P.divEach;
-	$M.largeDivEach = $M.divEach;
 	$P.largeMul = $P.mul;
-	$M.largeMul = $M.mul;
 	$P.largeTimes = $P.times;
 	$P.largeClone = $P.clone;
-	$P.largeSum = $P.sum;
-	$P.largeSumEachRow = $P.sumEachRow;
-	$P.largeSumEachCol = $P.sumEachCol;
+	$P.largeZeros = $P.zeros;
+	
+	$M.largeAdd = $M.add;
+	$M.largeSub = $M.sub;
+	$M.largeMulEach = $M.mulEach;
+	$M.largeDivEach = $M.divEach;
+	$M.largeMul = $M.mul;
+	$M.largeSum = $M.sum;
+	
+	$M.largeSumEachRow = $M.sumEachRow;
+	$M.largeSumEachCol = $M.sumEachCol;
+	$M.largeMaxEachRow = $M.maxEachRow;
+	$M.largeMaxEachCol = $M.maxEachCol;
+	$M.largeArgmaxEachRow = $M.argmaxEachRow;
+	$M.largeArgmaxEachCol = $M.argmaxEachCol;
+	$M.largeConvolve = $M.convolve;
+	$M.largeExtract = $M.extract;
+	$M.largeWriteSubmat = $M.writeSubmat;
 })();
 
 var nodejs = (typeof window === 'undefined');

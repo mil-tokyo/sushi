@@ -20,6 +20,8 @@
 					test :function() {
 						var a = new $M(3, 7);
 						var b = new $M(3, 7);
+						a.syncData();
+						b.syncData();
 						for (var i = 0; i < a.length; i++) {
 							var tmp = Math.random();
 							a.data[i] = tmp;
@@ -305,7 +307,7 @@
 							[1, 2, 3, 4],
 							[5, 6, 7, 8]
 						]);
-						return a.sumEachRow().equals(
+						return $M.sumEachRow(a).equals(
 							$M.fromArray([
 								[10],
 								[26]
@@ -320,11 +322,80 @@
 							[1, 2, 3, 4],
 							[5, 6, 7, 8]
 						]);
-						return a.sumEachCol().equals(
+						return $M.sumEachCol(a).equals(
 							$M.fromArray([
 								[6, 8, 10, 12]
 							])
 						);
+					}
+				},
+				{
+					name : "checkMaxEachRow",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[5, 6, 7, 8]
+						]);
+						return $M.maxEachRow(a).equals(
+							$M.fromArray([
+								[4],
+								[8]
+							])
+						);
+					}
+				},
+				{
+					name : "checkMaxEachCol",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[5, 6, 7, 8]
+						]);
+						return $M.maxEachCol(a).equals(
+							$M.fromArray([
+								[5, 6, 7, 8]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachRow",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[7, 8, 5, 6]
+						]);
+						return $M.argmaxEachRow(a).equals(
+							$M.fromArray([
+								[3],
+								[1]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachCol",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 7, 8],
+							[5, 6, 3, 4]
+						]);
+						return $M.argmaxEachCol(a).equals(
+							$M.fromArray([
+								[1, 1, 0, 0]
+							])
+						);
+					}
+				},
+				{
+					name : "checkHasNaN",
+					test : function() {
+						var a = new $M(10, 10);
+						a.random();
+						var b = new $M(10, 10);
+						b.random();
+						b.set(5, 5, 0 / 0)
+						return !$M.hasNaN(a) && $M.hasNaN(b);
 					}
 				},
 			],
@@ -333,7 +404,7 @@
 			name : "Large",
 			tests : [
 				{
-					name : "checkClone",
+					name : "checkCloneLarge",
 					test : function() {
 						var a = new $M(7, 9);
 						a.random();
@@ -346,6 +417,64 @@
 					}
 				},
 				{
+					name : "checkExtractLarge",
+					test : function() {
+						var a = new $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						return (
+							$M.largeExtract(a, 1, 1, 3, 1).equals($M.fromArray([[5], [8], [11]])) &&
+							$M.largeExtract(a, 2, 0, 1, 3).equals($M.fromArray([[7, 8, 9]])) &&
+							$M.largeExtract(a.t(), 1, 1, 1, 3).equals($M.fromArray([[5, 8, 11]])) &&
+							$M.largeExtract(a.t(), 0, 2, 3, 1).equals($M.fromArray([[7], [8], [9]]))
+							);
+					}
+				},
+				{
+					name : "checkWriteSubmatLarge",
+					test : function() {
+						var a = new $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						var b = new $M.fromArray([
+							[-1, -2],
+							[-3, -4],
+							[-5, -6]
+							]);
+						return (
+							$M.largeWriteSubmat(a.clone(), b, 1, 1).equals($M.fromArray([
+								[ 1,  2,  3],
+								[ 4, -1, -2],
+								[ 7, -3, -4],
+								[10, -5, -6],
+							])) &&
+							$M.largeWriteSubmat(a.t().clone(), b, 0, 1).equals($M.fromArray([
+								[ 1, -1, -2, 10],
+								[ 2, -3, -4, 11],
+								[ 3, -5, -6, 12],
+							])) &&
+							$M.largeWriteSubmat(a.clone(), b.t(), 1, 0).equals($M.fromArray([
+								[ 1,  2,  3],
+								[-1, -3, -5],
+								[-2, -4, -6],
+								[10, 11, 12],
+							])) &&
+							$M.largeWriteSubmat(a.t().clone(), b.t(), 1, 1).equals($M.fromArray([
+								[ 1,  2,  3],
+								[ 4, -1, -2],
+								[ 7, -3, -4],
+								[10, -5, -6],
+							]).t())
+							);
+					}
+				},
+				{
 					name : "checkAddLarge",
 					test : function() {
 						var a = new $M(7, 9);
@@ -354,6 +483,10 @@
 						b.random();
 						var b2 = new $M(9, 7);
 						b2.random();
+						console.log($M.largeAdd(a, b).nearlyEquals($M.add(a, b)));
+						console.log($M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)));
+						console.log($M.largeAdd(a, b2.t()).nearlyEquals($M.add(a, b2.t())));
+						console.log($M.largeAdd(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t())));
 						return (
 							$M.largeAdd(a, b).nearlyEquals($M.add(a, b)) &&
 							$M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
@@ -508,12 +641,12 @@
 							[1, 2, 3],
 							[4, 5, 6]
 						]);
-						return a.largeSumEachRow().nearlyEquals(
+						return $M.largeSumEachRow(a).nearlyEquals(
 							$M.fromArray([
 								[6],
 								[15]
 							])
-						) && a.t().largeSumEachRow().nearlyEquals(
+						) && $M.largeSumEachRow(a.t()).nearlyEquals(
 							$M.fromArray([
 								[5],
 								[7],
@@ -529,13 +662,91 @@
 							[1, 2, 3],
 							[4, 5, 6]
 						]);
-						return a.largeSumEachCol().nearlyEquals(
+						return $M.largeSumEachCol(a).nearlyEquals(
 							$M.fromArray([
 								[5, 7, 9]
 							])
-						) && a.t().largeSumEachCol().nearlyEquals(
+						) && $M.largeSumEachCol(a.t()).nearlyEquals(
 							$M.fromArray([
 								[6, 15]
+							])
+						);
+					}
+				},
+				{
+					name : "checkMaxEachRowLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3],
+							[4, 5, 6]
+						]);
+						return $M.largeMaxEachRow(a).nearlyEquals(
+							$M.fromArray([
+								[3],
+								[6]
+							])
+						) && $M.largeMaxEachRow(a.t()).nearlyEquals(
+							$M.fromArray([
+								[4],
+								[5],
+								[6]
+							])
+						);
+					}
+				},
+				{
+					name : "checkMaxEachColLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3],
+							[4, 5, 6]
+						]);
+						return $M.largeMaxEachCol(a).nearlyEquals(
+							$M.fromArray([
+								[4, 5, 6]
+							])
+						) && $M.largeMaxEachCol(a.t()).nearlyEquals(
+							$M.fromArray([
+								[3, 6]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachRowLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 5, 3],
+							[6, 2, 4]
+						]);
+						return $M.largeArgmaxEachRow(a).nearlyEquals(
+							$M.fromArray([
+								[1],
+								[0]
+							])
+						) && $M.largeArgmaxEachRow(a.t()).nearlyEquals(
+							$M.fromArray([
+								[1],
+								[0],
+								[1]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgmaxEachColLarge",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 5, 3],
+							[6, 2, 4]
+						]);
+						return $M.largeArgmaxEachCol(a).nearlyEquals(
+							$M.fromArray([
+								[1, 0, 1]
+							])
+						) && $M.largeArgmaxEachCol(a.t()).nearlyEquals(
+							$M.fromArray([
+								[1, 0]
 							])
 						);
 					}
@@ -547,7 +758,17 @@
 							[1, 2, 3],
 							[4, 5, 6]
 						]);
-						return a.largeSum() === 21;
+						return $M.largeSum(a) === 21;
+					}
+				},
+				{
+					name : "checkZerosLarge",
+					test : function() {
+						var a = new $M(10, 20);
+						a.random();
+						var b = new $M(10, 20);
+						b.random();
+						return a.zeros().equals(a.largeZeros()) && a.zeros(5).equals(a.largeZeros(5));
 					}
 				},
 				{
@@ -556,7 +777,7 @@
 						if (!$M.CL) {
 							return null;
 						}
-						var exp = $M.CL.mapGenerator('exp', 'exp(a[i])');
+						var exp = $M.CL.mapGenerator('exp(a[i])');
 						var a = $M.fromArray([
 							[1, 2]
 						]);
@@ -564,6 +785,42 @@
 						exp(a);
 						b.map(Math.exp);
 						return a.nearlyEquals(b);
+					}
+				},
+				{
+					name : "checkConvolveLarge",
+					test : function() {
+						if (!$M.CL) {
+							return null;
+						}
+						var a = $M.fromArray([
+							[1, 2, 3],
+							[4, 5, 6],
+							[7, 8, 9]
+						]);
+						var at = $M.fromArray([
+							[1, 4, 7],
+							[2, 5, 8],
+							[3, 6, 9]
+						]);
+						var b = $M.fromArray([
+							[1, 2],
+							[3, 4]
+						]);
+						var bt = $M.fromArray([
+							[1, 3],
+							[2, 4]
+						]);
+						var c = $M.fromArray([
+							[ 4, 11, 18,  9],
+							[18, 37, 47, 21],
+							[36, 67, 77, 33],
+							[14, 23, 26,  9]
+						]);
+						return $M.largeConvolve(a, b, 'full').equals(c) &&
+						       $M.largeConvolve(at.t(), b, 'full').equals(c) &&
+						       $M.largeConvolve(a, bt.t(), 'full').equals(c) &&
+						       $M.largeConvolve(at.t(), bt.t(), 'full').equals(c);
 					}
 				},
 				{
@@ -684,7 +941,7 @@
 					var result = test[idx].test();
 				} catch (exception) {
 					console.log('exception catched');
-					console.log(exception);
+					console.error(exception);
 				} finally {
 					if (result === void 0) {
 						console.log('benchmark');
