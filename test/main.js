@@ -6,6 +6,10 @@
 	}
 	var $M = AgentSmith.Matrix;
 	
+	if ($M.CL) {
+		console.log('using device : ' + $M.CL.device_info + ' (' + $M.CL.platform_info + ')');
+	}
+	
 	var nearlyEquals = function(a, b) {
 		var tmp = a - b;
 		return -0.01 < tmp && tmp < 0.01;

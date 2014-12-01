@@ -7,16 +7,33 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 }
 
 (function() {
-	var nodejs = (typeof window === 'undefined');
-	if (nodejs) {
-		var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
-		try {
-			WebCL = require(node_webcl_root + '/webcl');
-		} catch (e) {
-			WebCL = void 0;
-		}
+	// check environment
+	if (typeof window === 'undefined') {
+		var env = 'node';
+	} else if (typeof window !== 'undefined' && window.webcl !== void 0) {
+		var env = 'ff';
+	} else if (typeof WebCL === 'function') {
+		var env = 'chromium';
 	} else {
-		WebCL = window.webcl;
+		var env = void 0;
+	}
+	
+	// create WebCL object
+	switch (env) {
+		case 'node':
+			var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
+			try {
+				WebCL = require(node_webcl_root + '/webcl');
+			} catch (e) {
+				WebCL = void 0;
+			}
+			break;
+		case 'chromium':
+			WebCL = new WebCL();
+			break;
+		case 'ff':
+			WebCL = window.webcl;
+			break;
 	}
 	
 	if (WebCL === void 0) {
@@ -37,7 +54,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var priority = platform_priority.length + 1;
 		var includeIndexOf = function(array, search) {
 			for (var i = 0; i < array.length; i++) {
-				if (array[i].indexOf(search) !== -1) {
+				if (search.indexOf(array[i]) !== -1) {
 					return i;
 				}
 			}
@@ -48,63 +65,88 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			var platform_info_tmp = platform_tmp.getInfo(WebCL.PLATFORM_NAME);
 			var priority_tmp = includeIndexOf(platform_priority, platform_info_tmp);
 			if (priority_tmp < priority) {
+				priority = priority_tmp;
 				$CL.platform = platform_tmp;
 				$CL.platform_info = platform_info_tmp;
 			}
 		}
-		$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_DEFAULT);
+		$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_GPU);
+		if ($CL.devices[0] === void 0) {
+			$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_CPU);
+		}
 		$CL.device_info = $CL.devices[0].getInfo(WebCL.DEVICE_NAME);
 		
-		if (nodejs) {
-			$CL.context = WebCL.createContext({
-				deviceType : WebCL.DEVICE_TYPE_DEFAULT,
-				platform : $CL.platform
-			});
-			$CL.kernelSetArg = function(kernel, idx, param, type) {
-				kernel.setArg(idx, param, type);
-			};
-		} else {
-			$CL.context = WebCL.createContext($CL.platform);
-			WebCL.type = {
-				CHAR: 0,
-				UCHAR: 1,
-				SHORT: 2,
-				USHORT: 3,
-				INT: 4,
-				UINT: 5,
-				LONG: 6,
-				ULONG: 7,
-				FLOAT: 8,
-				HALF: 9,
-				DOUBLE: 10,
-				QUAD: 11,
-				LONG_LONG: 12,
-				VEC2: 65536,
-				VEC3: 131072,
-				VEC4: 262144,
-				VEC8: 524288,
-				VEC16: 1048576,
-				LOCAL_MEMORY_SIZE: 255
-			};
-			$CL.kernelSetArg = function(kernel, idx, param, type) {
-				if (type !== void 0) {
-					switch (type) {
-						case WebCL.type.UINT:
-							param = new Uint32Array([param]);
-							break;
-						case WebCL.type.INT:
-							param = new Int32Array([param]);
-							break;
-						case WebCL.type.FLOAT:
-							param = new Float32Array([param]);
-							break;
-					}
+		// initialize methods dependent on implementation
+		switch(env) {
+			case 'node':
+				$CL.context = WebCL.createContext({
+					deviceType : WebCL.DEVICE_TYPE_DEFAULT,
+					platform : $CL.platform
+				});
+				$CL.kernelSetArg = function(kernel, idx, param, type) {
+					kernel.setArg(idx, param, type);
+				};
+				break;
+			case 'ff':
+			case 'chromium':
+				if (env === 'chromium') {
+					var property = new WebCLContextProperties();
+					property.platform = $CL.platform;
+					property.devices = $CL.devices;
+					property.shareGroup = 1;
+					$CL.context = WebCL.createContext(property);
+				} else {
+					$CL.context = WebCL.createContext($CL.platform);
 				}
-				kernel.setArg(idx, param);
-			};
+				WebCL.type = {
+					CHAR: 0,
+					UCHAR: 1,
+					SHORT: 2,
+					USHORT: 3,
+					INT: 4,
+					UINT: 5,
+					LONG: 6,
+					ULONG: 7,
+					FLOAT: 8,
+					HALF: 9,
+					DOUBLE: 10,
+					QUAD: 11,
+					LONG_LONG: 12,
+					VEC2: 65536,
+					VEC3: 131072,
+					VEC4: 262144,
+					VEC8: 524288,
+					VEC16: 1048576,
+					LOCAL_MEMORY_SIZE: 255
+				};
+				$CL.kernelSetArg = function(kernel, idx, param, type) {
+					if (type !== void 0) {
+						switch (type) {
+							case WebCL.type.UINT:
+								param = new Uint32Array([param]);
+								break;
+							case WebCL.type.INT:
+								param = new Int32Array([param]);
+								break;
+							case WebCL.type.FLOAT:
+								param = new Float32Array([param]);
+								break;
+						}
+					}
+					kernel.setArg(idx, param);
+				};
+				break;
 		}
 		
-		var queue = $CL.context.createCommandQueue($CL.devices[0], 0);
+		switch(env) {
+			case 'node':
+			case 'ff':
+				var queue = $CL.context.createCommandQueue($CL.devices[0], 0);
+				break;
+			case 'chromium':
+				var queue = $CL.context.createCommandQueue($CL.devices, null);
+				break;
+		}
 		
 		$P.syncData = function() {
 			// there being buffer means data is obsolete
@@ -161,7 +203,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				var globalWS = [Math.ceil(parallelization / localWS) * localWS];
 	
 				// Execute kernel
-				if (nodejs) {
+				if (env === 'node') {
 					queue.enqueueNDRangeKernel(kernel, null, globalWS, localWS);
 				} else {
 					queue.enqueueNDRangeKernel(kernel, globalWS.length, null, globalWS, localWS);
