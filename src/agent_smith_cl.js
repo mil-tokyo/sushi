@@ -70,17 +70,19 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				$CL.platform_info = platform_info_tmp;
 			}
 		}
+		var device_type = WebCL.DEVICE_TYPE_GPU;
 		$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_GPU);
-		if ($CL.devices[0] === void 0) {
+		if ($CL.devices.length === 0) {
+			device_type = WebCL.DEVICE_TYPE_CPU;
 			$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_CPU);
 		}
 		$CL.device_info = $CL.devices[0].getInfo(WebCL.DEVICE_NAME);
-		
+
 		// initialize methods dependent on implementation
 		switch(env) {
 			case 'node':
 				$CL.context = WebCL.createContext({
-					deviceType : WebCL.DEVICE_TYPE_DEFAULT,
+					deviceType : device_type,
 					platform : $CL.platform
 				});
 				$CL.kernelSetArg = function(kernel, idx, param, type) {
@@ -88,16 +90,53 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				};
 				break;
 			case 'ff':
+				$CL.context = WebCL.createContext($CL.platform, device_type);
+				$CL.kernelSetArg = function(kernel, idx, param, type) {
+					if (type !== void 0) {
+						switch (type) {
+							case WebCL.type.UINT:
+								param = new Uint32Array([param]);
+								break;
+							case WebCL.type.INT:
+								param = new Int32Array([param]);
+								break;
+							case WebCL.type.FLOAT:
+								param = new Float32Array([param]);
+								break;
+						}
+					}
+					kernel.setArg(idx, param);
+				};
+				break;
 			case 'chromium':
-				if (env === 'chromium') {
-					var property = new WebCLContextProperties();
-					property.platform = $CL.platform;
-					property.devices = $CL.devices;
-					property.shareGroup = 1;
-					$CL.context = WebCL.createContext(property);
-				} else {
-					$CL.context = WebCL.createContext($CL.platform);
-				}
+					var properties = new WebCLContextProperties();
+					properties.platform = $CL.platform;
+					properties.devices = $CL.devices;
+					properties.shareGroup = 1;
+					$CL.context = WebCL.createContext(properties);
+					$CL.kernelSetArg = function(kernel, idx, param, type) {
+					if (type !== void 0) {
+						switch (type) {
+							case WebCL.type.UINT:
+								var type_tmp = WebCL.KERNEL_ARG_UINT;
+								break;
+							case WebCL.type.INT:
+								var type_tmp = WebCL.KERNEL_ARG_INT;
+								break;
+							case WebCL.type.FLOAT:
+								var type_tmp = WebCL.KERNEL_ARG_FLOAT;
+								break;
+						}
+						kernel.setKernelArg(idx, param, type_tmp);
+					} else {
+						kernel.setKernelArgGlobal(idx, param);
+					}
+				};
+				break;
+		}
+		switch(env) {
+			case 'ff':
+			case 'chromium':
 				WebCL.type = {
 					CHAR: 0,
 					UCHAR: 1,
@@ -119,25 +158,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 					VEC16: 1048576,
 					LOCAL_MEMORY_SIZE: 255
 				};
-				$CL.kernelSetArg = function(kernel, idx, param, type) {
-					if (type !== void 0) {
-						switch (type) {
-							case WebCL.type.UINT:
-								param = new Uint32Array([param]);
-								break;
-							case WebCL.type.INT:
-								param = new Int32Array([param]);
-								break;
-							case WebCL.type.FLOAT:
-								param = new Float32Array([param]);
-								break;
-						}
-					}
-					kernel.setArg(idx, param);
-				};
 				break;
 		}
-		
 		switch(env) {
 			case 'node':
 			case 'ff':
@@ -156,7 +178,15 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			if (this.buffer) {
 				// console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
-				this.buffer.release();
+				switch(env) {
+					case 'node':
+					case 'ff':
+						this.buffer.release();
+						break;
+					case 'chromium':
+						this.buffer.releaseCL();
+						break;
+				}
 				$CL.buffers--;
 				this.buffer = null;
 			}
@@ -165,7 +195,15 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.destruct = function() {
 			this.data = void 0;
 			if (this.buffer) {
-				this.buffer.release();
+				switch(env) {
+					case 'node':
+					case 'ff':
+						this.buffer.release();
+						break;
+					case 'chromium':
+						this.buffer.releaseCL();
+						break;
+				}
 				$CL.buffers--;
 				this.buffer = void 0;
 			}
@@ -173,12 +211,20 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		
 		$CL.createKernel = function(code) {
 			var program = $CL.context.createProgram(code);
-			program.build($CL.devices);
+			switch(env) {
+				case 'node':
+				case 'ff':
+					program.build($CL.devices);
+					break;
+				case 'chromium':
+					program.buildProgram(null, null, null);
+					break;
+			}
 			return program.createKernel('kernel_func');
 		};
 		
 		$CL.executeKernel = function() {
-			var localWS = [12];
+			var localWS = [24];
 			
 			return function(kernel, params, parallelization) {
 				for (var i = 0; i < params.length; i++) {
@@ -189,7 +235,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 							$CL.buffers++;
 							if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
 								if (params[i].datum.data) {
-									queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
+									queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data); // second parameter might have to be true for chromium
 								}
 							}
 						}
@@ -201,12 +247,19 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				};
 
 				var globalWS = [Math.ceil(parallelization / localWS) * localWS];
-	
 				// Execute kernel
-				if (env === 'node') {
-					queue.enqueueNDRangeKernel(kernel, null, globalWS, localWS);
-				} else {
-					queue.enqueueNDRangeKernel(kernel, globalWS.length, null, globalWS, localWS);
+				switch(env) {
+					case 'node':
+						queue.enqueueNDRangeKernel(kernel, null, globalWS, localWS);
+						break;
+					case 'ff':
+						queue.enqueueNDRangeKernel(kernel, globalWS.length, null, globalWS, localWS);
+						break;
+					case 'chromium':
+						globalWS = new Int32Array(globalWS);
+						queue.enqueueNDRangeKernel(kernel, null, globalWS, null);
+						queue.finish();
+						break;
 				}
 			};
 		}();
