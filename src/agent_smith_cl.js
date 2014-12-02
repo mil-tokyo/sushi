@@ -36,7 +36,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			break;
 	}
 	
-	if (WebCL === void 0) {
+	if (typeof WebCL === 'undefined') {
 		console.error('WebCL is not supported in this environment');
 		return;
 	}
