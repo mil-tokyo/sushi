@@ -111,6 +111,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			case 'chromium':
 					var properties = new WebCLContextProperties();
 					properties.platform = $CL.platform;
+					properties.deviceType = device_type;
 					properties.devices = $CL.devices;
 					properties.shareGroup = 1;
 					$CL.context = WebCL.createContext(properties);
