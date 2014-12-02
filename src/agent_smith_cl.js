@@ -178,32 +178,30 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			if (this.buffer) {
 				// console.trace("Write Back!! This may cause the slower calculation.");
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
-				switch(env) {
-					case 'node':
-					case 'ff':
-						this.buffer.release();
-						break;
-					case 'chromium':
-						this.buffer.releaseCL();
-						break;
-				}
+				$M.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = null;
 			}
 		};
 		
+		switch(env) {
+			case 'node':
+			case 'ff':
+				$M.releaseBuffer = function(buffer) {
+					buffer.release();
+				};
+				break;
+			case 'chromium':
+				$M.releaseBuffer = function(buffer) {
+					buffer.releaseCL();
+				};
+				break;
+		}
+		
 		$P.destruct = function() {
 			this.data = void 0;
 			if (this.buffer) {
-				switch(env) {
-					case 'node':
-					case 'ff':
-						this.buffer.release();
-						break;
-					case 'chromium':
-						this.buffer.releaseCL();
-						break;
-				}
+				$M.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = void 0;
 			}
