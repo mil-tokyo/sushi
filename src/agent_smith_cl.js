@@ -203,6 +203,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.destruct = function() {
 			this.data = void 0;
 			if (this.buffer) {
+				queue.finish();
 				$CL.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = void 0;
@@ -261,6 +262,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 						queue.finish();
 						break;
 				}
+				queue.flush();
 			};
 		}();
 		
