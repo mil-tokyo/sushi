@@ -178,8 +178,9 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			}
 			if (this.buffer) {
 				// console.trace("Write Back!! This may cause the slower calculation.");
+				queue.finish();
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
-				$M.releaseBuffer(this.buffer);
+				$CL.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = null;
 			}
@@ -188,12 +189,12 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		switch(env) {
 			case 'node':
 			case 'ff':
-				$M.releaseBuffer = function(buffer) {
+				$CL.releaseBuffer = function(buffer) {
 					buffer.release();
 				};
 				break;
 			case 'chromium':
-				$M.releaseBuffer = function(buffer) {
+				$CL.releaseBuffer = function(buffer) {
 					buffer.releaseCL();
 				};
 				break;
@@ -202,7 +203,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$P.destruct = function() {
 			this.data = void 0;
 			if (this.buffer) {
-				$M.releaseBuffer(this.buffer);
+				$CL.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = void 0;
 			}
@@ -223,7 +224,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 		
 		$CL.executeKernel = function() {
-			var localWS = [24];
+			var localWS = [64];
 			
 			return function(kernel, params, parallelization) {
 				for (var i = 0; i < params.length; i++) {
@@ -234,7 +235,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 							$CL.buffers++;
 							if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
 								if (params[i].datum.data) {
-									queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data); // second parameter might have to be true for chromium
+									queue.enqueueWriteBuffer(params[i].datum.buffer, env === "chromium", 0, params[i].datum.byte_length, params[i].datum.data); // second parameter might have to be true for chromium
 								}
 							}
 						}
