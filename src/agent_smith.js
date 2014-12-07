@@ -264,6 +264,72 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {
 		throw new Error('not implemented');
 	};
+	
+	$P.toJSON = function() {
+		this.syncData();
+		var bytes = new Uint8Array(this.data.buffer);
+		if (nodejs) {
+			var base64 = (new Buffer(bytes)).toString("base64");
+		} else {
+			var bin = '';
+			var len = bytes.byteLength;
+			for (var i = 0; i < len; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+			var base64 = window.btoa(binary);
+		}
+		
+		return {
+			rows : this.rows,
+			cols : this.cols,
+			data : base64,
+			row_wise : this.row_wise
+		};
+	};
+	
+	$M.fromJSON = function(data) {
+		var newM = new $M(data.rows, data.cols, null);
+		newM.row_wise = data.row_wise;
+		newM.syncData();
+		var ab = newM.data.buffer;
+		var base64 = data.data;
+		if (nodejs) {
+			var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+			var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+			if (base64[base64.length - 1] === "=") {
+				bufferLength--;
+				if (base64[base64.length - 2] === "=") {
+					bufferLength--;
+				}
+			}
+			if (bufferLength !== ab.byteLength) {
+				throw new Error('length does not match');
+			}
+
+			var bytes = new Uint8Array(ab);
+
+			for (i = 0; i < len; i += 4) {
+				encoded1 = chars.indexOf(base64[i]);
+				encoded2 = chars.indexOf(base64[i + 1]);
+				encoded3 = chars.indexOf(base64[i + 2]);
+				encoded4 = chars.indexOf(base64[i + 3]);
+
+				bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+				bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+				bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+			}
+		} else {
+			var binary = window.atob(base64);
+			var len = binary.length;
+			if (len !== ab.byteLength) {
+				throw new Error('length does not match');
+			}
+			for (var i = 0; i < len; i++) {
+				ab[i] = binary.charCodeAt(i);
+			}
+		}
+		return newM;
+	};
 
 	/* ##### general manipulation ##### */
 	$P.get = function(row, col) {

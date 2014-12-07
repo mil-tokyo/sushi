@@ -402,6 +402,16 @@
 						return !$M.hasNaN(a) && $M.hasNaN(b);
 					}
 				},
+				{
+					name : "toAndFromJSON",
+					test : function() {
+						var a = (new $M(100, 10)).t();
+						a.random();
+						var json = a.toJSON();
+						var b = $M.fromJSON(json);
+						return a.equals(b);
+					}
+				},
 			],
 		},
 		{
