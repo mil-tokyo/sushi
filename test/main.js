@@ -392,6 +392,35 @@
 					}
 				},
 				{
+					name : "checkArgminEachRow",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[7, 8, 5, 6]
+						]);
+						return $M.argminEachRow(a).equals(
+							$M.fromArray([
+								[0],
+								[2]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgminEachCol",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 7, 8],
+							[5, 6, 3, 4]
+						]);
+						return $M.argminEachCol(a).equals(
+							$M.fromArray([
+								[0, 0, 1, 1]
+							])
+						);
+					}
+				},
+				{
 					name : "checkHasNaN",
 					test : function() {
 						var a = new $M(10, 10);
