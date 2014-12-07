@@ -271,7 +271,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		if (nodejs) {
 			var base64 = (new Buffer(bytes)).toString("base64");
 		} else {
-			var bin = '';
+			var binary = '';
 			var len = bytes.byteLength;
 			for (var i = 0; i < len; i++) {
 				binary += String.fromCharCode(bytes[i]);
@@ -292,6 +292,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		newM.row_wise = data.row_wise;
 		newM.syncData();
 		var ab = newM.data.buffer;
+		var bytes = new Uint8Array(ab);
 		var base64 = data.data;
 		if (nodejs) {
 			var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -305,8 +306,6 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			if (bufferLength !== ab.byteLength) {
 				throw new Error('length does not match');
 			}
-
-			var bytes = new Uint8Array(ab);
 
 			for (i = 0; i < len; i += 4) {
 				encoded1 = chars.indexOf(base64[i]);
@@ -325,7 +324,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 				throw new Error('length does not match');
 			}
 			for (var i = 0; i < len; i++) {
-				ab[i] = binary.charCodeAt(i);
+				bytes[i] = binary.charCodeAt(i);
 			}
 		}
 		return newM;
