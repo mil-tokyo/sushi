@@ -1,20 +1,23 @@
-var AgentSmith = {};
-
-AgentSmith.Matrix = function(rows, cols, data) {
-	this.rows = rows;
-	this.cols = cols;
-	this.length = rows * cols;
-	this.datum_type = Float32Array;
-	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
-	if (!data) {
-		this.data = null;
-	} else {
-		this.data = data;
-	}
-	this.row_wise = true;
-};
-
 (function() {
+	if (typeof AgentSmith !== 'undefined' && typeof AgentSmith.Matrix !== 'undefined') {
+		return;
+	}
+	AgentSmith = {};
+	
+	AgentSmith.Matrix = function(rows, cols, data) {
+		this.rows = rows;
+		this.cols = cols;
+		this.length = rows * cols;
+		this.datum_type = Float32Array;
+		this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
+		if (!data) {
+			this.data = null;
+		} else {
+			this.data = data;
+		}
+		this.row_wise = true;
+	};
+	
 	var $M = AgentSmith.Matrix;
 	var $P = AgentSmith.Matrix.prototype;
 	

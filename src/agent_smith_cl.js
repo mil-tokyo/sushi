@@ -7,6 +7,10 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 }
 
 (function() {
+	if (typeof AgentSmith.Matrix.CL !== 'undefined') {
+		return;
+	}
+
 	// check environment
 	if (typeof window === 'undefined') {
 		var env = 'node';
