@@ -767,7 +767,7 @@
 	};
 	
 	$M.mul = function() {
-		var mulGenerator = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
+		var mulGenerator = function(mat1_row_zero_to_idx, mat1_idx_skip, mat2_zero_col_to_idx, mat2_idx_skip) {
 			return eval([
 				"(function(mat1, mat2, output) {														",
 				"	mat1.syncData();																	",
@@ -781,14 +781,18 @@
 				"	var newM_data = newM.data; var mat1_data = mat1.data; var mat2_data = mat2.data;	",
 				"	var newM_cols = newM.cols; var mat1_cols = mat1.cols; var mat2_cols = mat2.cols;	",
 				"	var newM_rows = newM.rows; var mat1_rows = mat1.rows; var mat2_rows = mat2.rows;	",
+				"	var newM_idx = 0;																	",
 				"	for (var row = 0; row < newM_rows; row++) {											",
 				"		for (var col = 0; col < newM_cols; col++) {										",
 				"			var tmp = 0.0;																",
+				"			var mat1_idx = " + mat1_row_zero_to_idx('row') + ";							",
+				"			var mat2_idx = " + mat2_zero_col_to_idx('col') + ";							",
 				"			for (var i = 0; i < mat1_cols; i++) {										",
-				"				tmp += mat1_data[" + mat1_row_col_to_idx('row', 'i') + "] *				",
-				"					mat2_data[" + mat2_row_col_to_idx('i', 'col') + "];					",
+				"				tmp += mat1_data[mat1_idx] * mat2_data[mat2_idx];						",
+				"				mat1_idx += " + mat1_idx_skip + ";										",
+				"				mat2_idx += " + mat2_idx_skip + ";										",
 				"			}																			",
-				"			newM_data[row * newM_cols + col] = tmp;										",
+				"			newM_data[newM_idx++] = tmp;												",
 				"		}																				",
 				"	}																					",
 				"	return newM;																		",
@@ -796,20 +800,20 @@
 			].join('\r\n'));
 		};
 		var mulRowRow = mulGenerator(
-			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
-			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+			function(row) { return [row,' * mat1_cols'].join('') }, 1,
+			function(col) { return [col].join('') }, 'mat2_cols'
 		);
 		var mulRowCol = mulGenerator(
-			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
-			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+			function(row) { return [row,' * mat1_cols'].join('') }, 1,
+			function(col) { return [col,' * mat2_rows'].join('') }, 1
 			);
 		var mulColRow = mulGenerator(
-			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
-			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+			function(row) { return [row].join('') }, 'mat1_rows',
+			function(col) { return [col].join('') }, 'mat2_cols'
 			);
 		var mulColCol = mulGenerator(
-			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
-			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+			function(row) { return [row].join('') }, 'mat1_rows',
+			function(col) { return [col,' * mat2_rows'].join('') }, 1
 		);
 		return function(mat1, mat2, output) {
 			if (mat1.row_wise && mat2.row_wise) {
@@ -821,7 +825,7 @@
 			} else if (!mat1.row_wise && !mat2.row_wise) {
 				return mulColCol(mat1, mat2, output);
 			} else {
-				throw new Error('mysterous error')
+				throw new Error('mysterious error')
 			}
 		};
 	}();
