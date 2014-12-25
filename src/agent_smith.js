@@ -1,20 +1,23 @@
-var AgentSmith = {};
-
-AgentSmith.Matrix = function(rows, cols, data) {
-	this.rows = rows;
-	this.cols = cols;
-	this.length = rows * cols;
-	this.datum_type = Float32Array;
-	this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
-	if (!data) {
-		this.data = null;
-	} else {
-		this.data = data;
-	}
-	this.row_wise = true;
-};
-
 (function() {
+	if (typeof AgentSmith !== 'undefined' && typeof AgentSmith.Matrix !== 'undefined') {
+		return;
+	}
+	AgentSmith = {};
+	
+	AgentSmith.Matrix = function(rows, cols, data) {
+		this.rows = rows;
+		this.cols = cols;
+		this.length = rows * cols;
+		this.datum_type = Float32Array;
+		this.byte_length = this.length * this.datum_type.BYTES_PER_ELEMENT;
+		if (!data) {
+			this.data = null;
+		} else {
+			this.data = data;
+		}
+		this.row_wise = true;
+	};
+	
 	var $M = AgentSmith.Matrix;
 	var $P = AgentSmith.Matrix.prototype;
 	
@@ -264,6 +267,71 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {
 		throw new Error('not implemented');
 	};
+	
+	$P.toJSON = function() {
+		this.syncData();
+		var bytes = new Uint8Array(this.data.buffer);
+		if (nodejs) {
+			var base64 = (new Buffer(bytes)).toString("base64");
+		} else {
+			var binary = '';
+			var len = bytes.byteLength;
+			for (var i = 0; i < len; i++) {
+				binary += String.fromCharCode(bytes[i]);
+			}
+			var base64 = window.btoa(binary);
+		}
+		
+		return {
+			rows : this.rows,
+			cols : this.cols,
+			data : base64,
+			row_wise : this.row_wise
+		};
+	};
+	
+	$M.fromJSON = function(data) {
+		var newM = new $M(data.rows, data.cols, null);
+		newM.row_wise = data.row_wise;
+		newM.syncData();
+		var ab = newM.data.buffer;
+		var bytes = new Uint8Array(ab);
+		var base64 = data.data;
+		if (nodejs) {
+			var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+			var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+			if (base64[base64.length - 1] === "=") {
+				bufferLength--;
+				if (base64[base64.length - 2] === "=") {
+					bufferLength--;
+				}
+			}
+			if (bufferLength !== ab.byteLength) {
+				throw new Error('length does not match');
+			}
+
+			for (i = 0; i < len; i += 4) {
+				encoded1 = chars.indexOf(base64[i]);
+				encoded2 = chars.indexOf(base64[i + 1]);
+				encoded3 = chars.indexOf(base64[i + 2]);
+				encoded4 = chars.indexOf(base64[i + 3]);
+
+				bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+				bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+				bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+			}
+		} else {
+			var binary = window.atob(base64);
+			var len = binary.length;
+			if (len !== ab.byteLength) {
+				throw new Error('length does not match');
+			}
+			for (var i = 0; i < len; i++) {
+				bytes[i] = binary.charCodeAt(i);
+			}
+		}
+		return newM;
+	};
 
 	/* ##### general manipulation ##### */
 	$P.get = function(row, col) {
@@ -483,6 +551,42 @@ AgentSmith.Matrix = function(rows, cols, data) {
 		return newM;
 	};
 	
+	$M.argminEachRow = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(mat.rows, 1, output);
+		for (var row = 0; row < mat.rows; row++) {
+			var max = mat.get(row, 0);
+			var arg = 0;
+			for (var col = 0; col < mat.cols; col++) {
+				var tmp = mat.get(row, col);
+				if (max > tmp) {
+					arg = col;
+					max = tmp;
+				}
+			}
+			newM.set(row, 0, arg);
+		}
+		return newM;
+	};
+	
+	$M.argminEachCol = function(mat, output) {
+		mat.syncData();
+		var newM = $M.newMatOrReuseMat(1, mat.cols, output);
+		for (var col = 0; col < mat.cols; col++) {
+			var max = mat.get(0, col);
+			var arg = 0;
+			for (var row = 0; row < mat.rows; row++) {
+				var tmp = mat.get(row, col);
+				if (max > tmp) {
+					arg = row;
+					max = tmp;
+				}
+			}
+			newM.set(0, col, arg);
+		}
+		return newM;
+	};
+	
 
 	/* ##### basic calculation ##### */
 	
@@ -663,7 +767,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	};
 	
 	$M.mul = function() {
-		var mulGenerator = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
+		var mulGenerator = function(mat1_row_zero_to_idx, mat1_idx_skip, mat2_zero_col_to_idx, mat2_idx_skip) {
 			return eval([
 				"(function(mat1, mat2, output) {														",
 				"	mat1.syncData();																	",
@@ -677,14 +781,18 @@ AgentSmith.Matrix = function(rows, cols, data) {
 				"	var newM_data = newM.data; var mat1_data = mat1.data; var mat2_data = mat2.data;	",
 				"	var newM_cols = newM.cols; var mat1_cols = mat1.cols; var mat2_cols = mat2.cols;	",
 				"	var newM_rows = newM.rows; var mat1_rows = mat1.rows; var mat2_rows = mat2.rows;	",
+				"	var newM_idx = 0;																	",
 				"	for (var row = 0; row < newM_rows; row++) {											",
 				"		for (var col = 0; col < newM_cols; col++) {										",
 				"			var tmp = 0.0;																",
+				"			var mat1_idx = " + mat1_row_zero_to_idx('row') + ";							",
+				"			var mat2_idx = " + mat2_zero_col_to_idx('col') + ";							",
 				"			for (var i = 0; i < mat1_cols; i++) {										",
-				"				tmp += mat1_data[" + mat1_row_col_to_idx('row', 'i') + "] *				",
-				"					mat2_data[" + mat2_row_col_to_idx('i', 'col') + "];					",
+				"				tmp += mat1_data[mat1_idx] * mat2_data[mat2_idx];						",
+				"				mat1_idx += " + mat1_idx_skip + ";										",
+				"				mat2_idx += " + mat2_idx_skip + ";										",
 				"			}																			",
-				"			newM_data[row * newM_cols + col] = tmp;										",
+				"			newM_data[newM_idx++] = tmp;												",
 				"		}																				",
 				"	}																					",
 				"	return newM;																		",
@@ -692,20 +800,20 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			].join('\r\n'));
 		};
 		var mulRowRow = mulGenerator(
-			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
-			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+			function(row) { return [row,' * mat1_cols'].join('') }, 1,
+			function(col) { return [col].join('') }, 'mat2_cols'
 		);
 		var mulRowCol = mulGenerator(
-			function(row, col) { return [row,' * mat1_cols + ',col].join('') },
-			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+			function(row) { return [row,' * mat1_cols'].join('') }, 1,
+			function(col) { return [col,' * mat2_rows'].join('') }, 1
 			);
 		var mulColRow = mulGenerator(
-			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
-			function(row, col) { return [row,' * mat2_cols + ',col].join('') }
+			function(row) { return [row].join('') }, 'mat1_rows',
+			function(col) { return [col].join('') }, 'mat2_cols'
 			);
 		var mulColCol = mulGenerator(
-			function(row, col) { return [col,' * mat1_rows + ',row].join('') },
-			function(row, col) { return [col,' * mat2_rows + ',row].join('') }
+			function(row) { return [row].join('') }, 'mat1_rows',
+			function(col) { return [col,' * mat2_rows'].join('') }, 1
 		);
 		return function(mat1, mat2, output) {
 			if (mat1.row_wise && mat2.row_wise) {
@@ -717,7 +825,7 @@ AgentSmith.Matrix = function(rows, cols, data) {
 			} else if (!mat1.row_wise && !mat2.row_wise) {
 				return mulColCol(mat1, mat2, output);
 			} else {
-				throw new Error('mysterous error')
+				throw new Error('mysterious error')
 			}
 		};
 	}();
@@ -750,6 +858,8 @@ AgentSmith.Matrix = function(rows, cols, data) {
 	$M.largeMaxEachCol = $M.maxEachCol;
 	$M.largeArgmaxEachRow = $M.argmaxEachRow;
 	$M.largeArgmaxEachCol = $M.argmaxEachCol;
+	$M.largeArgminEachRow = $M.argminEachRow;
+	$M.largeArgminEachCol = $M.argminEachCol;
 	$M.largeConvolve = $M.convolve;
 	$M.largeExtract = $M.extract;
 	$M.largeWriteSubmat = $M.writeSubmat;

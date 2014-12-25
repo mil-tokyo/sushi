@@ -7,19 +7,40 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 }
 
 (function() {
-	var nodejs = (typeof window === 'undefined');
-	if (nodejs) {
-		var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
-		try {
-			WebCL = require(node_webcl_root + '/webcl');
-		} catch (e) {
-			WebCL = void 0;
-		}
+	if (typeof AgentSmith.Matrix.CL !== 'undefined') {
+		return;
+	}
+
+	// check environment
+	if (typeof window === 'undefined') {
+		var env = 'node';
+	} else if (typeof window !== 'undefined' && window.webcl !== void 0) {
+		var env = 'ff';
+	} else if (typeof WebCL === 'function') {
+		var env = 'chromium';
 	} else {
-		WebCL = window.webcl;
+		var env = void 0;
 	}
 	
-	if (WebCL === void 0) {
+	// create WebCL object
+	switch (env) {
+		case 'node':
+			var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
+			try {
+				WebCL = require(node_webcl_root + '/webcl');
+			} catch (e) {
+				WebCL = void 0;
+			}
+			break;
+		case 'chromium':
+			WebCL = new WebCL();
+			break;
+		case 'ff':
+			WebCL = window.webcl;
+			break;
+	}
+	
+	if (typeof WebCL === 'undefined') {
 		console.error('WebCL is not supported in this environment');
 		return;
 	}
@@ -37,7 +58,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		var priority = platform_priority.length + 1;
 		var includeIndexOf = function(array, search) {
 			for (var i = 0; i < array.length; i++) {
-				if (array[i].indexOf(search) !== -1) {
+				if (search.indexOf(array[i]) !== -1) {
 					return i;
 				}
 			}
@@ -48,63 +69,111 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			var platform_info_tmp = platform_tmp.getInfo(WebCL.PLATFORM_NAME);
 			var priority_tmp = includeIndexOf(platform_priority, platform_info_tmp);
 			if (priority_tmp < priority) {
+				priority = priority_tmp;
 				$CL.platform = platform_tmp;
 				$CL.platform_info = platform_info_tmp;
 			}
 		}
-		$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_DEFAULT);
-		$CL.device_info = $CL.devices[0].getInfo(WebCL.DEVICE_NAME);
-		
-		if (nodejs) {
-			$CL.context = WebCL.createContext({
-				deviceType : WebCL.DEVICE_TYPE_DEFAULT,
-				platform : $CL.platform
-			});
-			$CL.kernelSetArg = function(kernel, idx, param, type) {
-				kernel.setArg(idx, param, type);
-			};
-		} else {
-			$CL.context = WebCL.createContext($CL.platform);
-			WebCL.type = {
-				CHAR: 0,
-				UCHAR: 1,
-				SHORT: 2,
-				USHORT: 3,
-				INT: 4,
-				UINT: 5,
-				LONG: 6,
-				ULONG: 7,
-				FLOAT: 8,
-				HALF: 9,
-				DOUBLE: 10,
-				QUAD: 11,
-				LONG_LONG: 12,
-				VEC2: 65536,
-				VEC3: 131072,
-				VEC4: 262144,
-				VEC8: 524288,
-				VEC16: 1048576,
-				LOCAL_MEMORY_SIZE: 255
-			};
-			$CL.kernelSetArg = function(kernel, idx, param, type) {
-				if (type !== void 0) {
-					switch (type) {
-						case WebCL.type.UINT:
-							param = new Uint32Array([param]);
-							break;
-						case WebCL.type.INT:
-							param = new Int32Array([param]);
-							break;
-						case WebCL.type.FLOAT:
-							param = new Float32Array([param]);
-							break;
-					}
-				}
-				kernel.setArg(idx, param);
-			};
+		var device_type = WebCL.DEVICE_TYPE_GPU;
+		$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_GPU);
+		if ($CL.devices.length === 0) {
+			device_type = WebCL.DEVICE_TYPE_CPU;
+			$CL.devices = $CL.platform.getDevices(WebCL.DEVICE_TYPE_CPU);
 		}
-		
-		var queue = $CL.context.createCommandQueue($CL.devices[0], 0);
+		$CL.device_info = $CL.devices[0].getInfo(WebCL.DEVICE_NAME);
+
+		// initialize methods dependent on implementation
+		switch(env) {
+			case 'node':
+				$CL.context = WebCL.createContext({
+					deviceType : device_type,
+					platform : $CL.platform
+				});
+				$CL.kernelSetArg = function(kernel, idx, param, type) {
+					kernel.setArg(idx, param, type);
+				};
+				break;
+			case 'ff':
+				$CL.context = WebCL.createContext($CL.platform, device_type);
+				$CL.kernelSetArg = function(kernel, idx, param, type) {
+					if (type !== void 0) {
+						switch (type) {
+							case WebCL.type.UINT:
+								param = new Uint32Array([param]);
+								break;
+							case WebCL.type.INT:
+								param = new Int32Array([param]);
+								break;
+							case WebCL.type.FLOAT:
+								param = new Float32Array([param]);
+								break;
+						}
+					}
+					kernel.setArg(idx, param);
+				};
+				break;
+			case 'chromium':
+					var properties = new WebCLContextProperties();
+					properties.platform = $CL.platform;
+					properties.deviceType = device_type;
+					properties.devices = $CL.devices;
+					properties.shareGroup = 1;
+					$CL.context = WebCL.createContext(properties);
+					$CL.kernelSetArg = function(kernel, idx, param, type) {
+					if (type !== void 0) {
+						switch (type) {
+							case WebCL.type.UINT:
+								var type_tmp = WebCL.KERNEL_ARG_UINT;
+								break;
+							case WebCL.type.INT:
+								var type_tmp = WebCL.KERNEL_ARG_INT;
+								break;
+							case WebCL.type.FLOAT:
+								var type_tmp = WebCL.KERNEL_ARG_FLOAT;
+								break;
+						}
+						kernel.setKernelArg(idx, param, type_tmp);
+					} else {
+						kernel.setKernelArgGlobal(idx, param);
+					}
+				};
+				break;
+		}
+		switch(env) {
+			case 'ff':
+			case 'chromium':
+				WebCL.type = {
+					CHAR: 0,
+					UCHAR: 1,
+					SHORT: 2,
+					USHORT: 3,
+					INT: 4,
+					UINT: 5,
+					LONG: 6,
+					ULONG: 7,
+					FLOAT: 8,
+					HALF: 9,
+					DOUBLE: 10,
+					QUAD: 11,
+					LONG_LONG: 12,
+					VEC2: 65536,
+					VEC3: 131072,
+					VEC4: 262144,
+					VEC8: 524288,
+					VEC16: 1048576,
+					LOCAL_MEMORY_SIZE: 255
+				};
+				break;
+		}
+		switch(env) {
+			case 'node':
+			case 'ff':
+				var queue = $CL.context.createCommandQueue($CL.devices[0], 0);
+				break;
+			case 'chromium':
+				var queue = $CL.context.createCommandQueue($CL.devices, null);
+				break;
+		}
 		
 		$P.syncData = function() {
 			// there being buffer means data is obsolete
@@ -113,17 +182,33 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 			}
 			if (this.buffer) {
 				// console.trace("Write Back!! This may cause the slower calculation.");
+				queue.finish();
 				queue.enqueueReadBuffer(this.buffer, true, 0, this.byte_length, this.data);
-				this.buffer.release();
+				$CL.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = null;
 			}
 		};
 		
+		switch(env) {
+			case 'node':
+			case 'ff':
+				$CL.releaseBuffer = function(buffer) {
+					buffer.release();
+				};
+				break;
+			case 'chromium':
+				$CL.releaseBuffer = function(buffer) {
+					buffer.releaseCL();
+				};
+				break;
+		}
+		
 		$P.destruct = function() {
 			this.data = void 0;
 			if (this.buffer) {
-				this.buffer.release();
+				queue.finish();
+				$CL.releaseBuffer(this.buffer);
 				$CL.buffers--;
 				this.buffer = void 0;
 			}
@@ -131,12 +216,20 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		
 		$CL.createKernel = function(code) {
 			var program = $CL.context.createProgram(code);
-			program.build($CL.devices);
+			switch(env) {
+				case 'node':
+				case 'ff':
+					program.build($CL.devices);
+					break;
+				case 'chromium':
+					program.buildProgram(null, null, null);
+					break;
+			}
 			return program.createKernel('kernel_func');
 		};
 		
 		$CL.executeKernel = function() {
-			var localWS = [12];
+			var localWS = [64];
 			
 			return function(kernel, params, parallelization) {
 				for (var i = 0; i < params.length; i++) {
@@ -147,7 +240,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 							$CL.buffers++;
 							if (params[i].access !== WebCL.MEM_WRITE_ONLY) {
 								if (params[i].datum.data) {
-									queue.enqueueWriteBuffer(params[i].datum.buffer, false, 0, params[i].datum.byte_length, params[i].datum.data);
+									queue.enqueueWriteBuffer(params[i].datum.buffer, env === "chromium", 0, params[i].datum.byte_length, params[i].datum.data); // second parameter might have to be true for chromium
 								}
 							}
 						}
@@ -159,13 +252,21 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				};
 
 				var globalWS = [Math.ceil(parallelization / localWS) * localWS];
-	
 				// Execute kernel
-				if (nodejs) {
-					queue.enqueueNDRangeKernel(kernel, null, globalWS, localWS);
-				} else {
-					queue.enqueueNDRangeKernel(kernel, globalWS.length, null, globalWS, localWS);
+				switch(env) {
+					case 'node':
+						queue.enqueueNDRangeKernel(kernel, null, globalWS, localWS);
+						break;
+					case 'ff':
+						queue.enqueueNDRangeKernel(kernel, globalWS.length, null, globalWS, localWS);
+						break;
+					case 'chromium':
+						globalWS = new Int32Array(globalWS);
+						queue.enqueueNDRangeKernel(kernel, null, globalWS, null);
+						queue.finish();
+						break;
 				}
+				queue.flush();
 			};
 		}();
 		
@@ -736,6 +837,46 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 	}();
 	
+	$CL.argminEachRow = function() {
+		var createArgminEachRowKernel = function(row_col_to_idx) {
+			return $CL.createKernel([
+				"#define ROW_COL_TO_IDX(row, col) (" + row_col_to_idx +")													",
+  				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)	",
+  				"{																											",
+  				"	size_t i =  get_global_id(0);																			",
+  				"	if(i >= iNumElements) return;																			",
+  				"	float min_val = b[ROW_COL_TO_IDX(i, 0)];															 	",
+  				"	a[i] = 0;																								",
+  				"	for (uint j = 0; j < cols; j++) {																		",
+  				"		float tmp = b[ROW_COL_TO_IDX(i, j)];																",
+  				"		if (tmp < min_val) {																				",
+  				"			a[i] = j;																						",
+  				"			min_val = tmp;																					",
+  				"		}																									",
+  				"	}																										",
+  				"}																											"].join('\r\n')
+  			);
+		};
+		var kernel1 = createArgminEachRowKernel('(row) * cols + (col)');
+		var kernel2 = createArgminEachRowKernel('(col) * rows + (row)');
+		
+		return function(mat1, output) {
+			var newM = $M.newMatOrReuseMat(mat1.rows, 1, output);
+			$CL.executeKernel(
+				mat1.row_wise ? kernel1 : kernel2,
+				[
+					{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+					{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+					{ datum : mat1.rows, type : WebCL.type.UINT},
+					{ datum : mat1.cols, type : WebCL.type.UINT},
+					{ datum : newM.length, type : WebCL.type.UINT }
+				],
+				newM.length
+			);
+			return newM;
+		};
+	}();
+	
 	$CL.maxEachCol = function() {
 		var createMaxEachColKernel = function(row_col_to_idx) {
 			return $CL.createKernel([
@@ -793,6 +934,46 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		};
 		var kernel1 = createArgmaxEachColKernel('(row) * cols + (col)');
 		var kernel2 = createArgmaxEachColKernel('(col) * rows + (row)');
+		
+		return function(mat1, output) {
+			var newM = $M.newMatOrReuseMat(1, mat1.cols, output);
+			$CL.executeKernel(
+				mat1.row_wise ? kernel1 : kernel2,
+				[
+					{ access : WebCL.MEM_WRITE_ONLY, datum : newM },
+					{ access : WebCL.MEM_READ_ONLY, datum : mat1 },
+					{ datum : mat1.rows, type : WebCL.type.UINT},
+					{ datum : mat1.cols, type : WebCL.type.UINT},
+					{ datum : newM.length, type : WebCL.type.UINT }
+				],
+				newM.length
+			);
+			return newM;
+		};
+	}();
+
+	$CL.argminEachCol = function() {
+		var createArgminEachColKernel = function(row_col_to_idx) {
+			return $CL.createKernel([
+				"#define ROW_COL_TO_IDX(row, col) (" + row_col_to_idx +")													",
+  				"__kernel void kernel_func(__global float *a, __global float *b, uint rows, uint cols, uint iNumElements)	",
+  				"{																											",
+  				"	size_t i =  get_global_id(0);																			",
+  				"	if(i >= iNumElements) return;																			",
+  				"	float min_val = b[ROW_COL_TO_IDX(0, i)];																",
+  				"	a[i] = 0;																								",
+  				"	for (uint j = 0; j < rows; j++) {																		",
+  				"		float tmp = b[ROW_COL_TO_IDX(j, i)];																",
+  				"		if (tmp < min_val) {																				",
+  				"			a[i] = j;																						",
+  				"			min_val = tmp;																					",
+  				"		}																									",
+  				"	}																										",
+  				"}																											"].join('\r\n')
+  			);
+		};
+		var kernel1 = createArgminEachColKernel('(row) * cols + (col)');
+		var kernel2 = createArgminEachColKernel('(col) * rows + (row)');
 		
 		return function(mat1, output) {
 			var newM = $M.newMatOrReuseMat(1, mat1.cols, output);
@@ -977,6 +1158,8 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		$M.largeMaxEachCol = $CL.maxEachCol;
 		$M.largeArgmaxEachRow = $CL.argmaxEachRow;
 		$M.largeArgmaxEachCol = $CL.argmaxEachCol;
+		$M.largeArgminEachRow = $CL.argminEachRow;
+		$M.largeArgminEachCol = $CL.argminEachCol;
 		$M.largeConvolve = $CL.convolve;
 		$M.largeExtract = $CL.extract;
 		$M.largeWriteSubmat = $CL.writeSubmat;

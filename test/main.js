@@ -6,6 +6,10 @@
 	}
 	var $M = AgentSmith.Matrix;
 	
+	if ($M.CL) {
+		console.log('using device : ' + $M.CL.device_info + ' (' + $M.CL.platform_info + ')');
+	}
+	
 	var nearlyEquals = function(a, b) {
 		var tmp = a - b;
 		return -0.01 < tmp && tmp < 0.01;
@@ -388,6 +392,35 @@
 					}
 				},
 				{
+					name : "checkArgminEachRow",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 3, 4],
+							[7, 8, 5, 6]
+						]);
+						return $M.argminEachRow(a).equals(
+							$M.fromArray([
+								[0],
+								[2]
+							])
+						);
+					}
+				},
+				{
+					name : "checkArgminEachCol",
+					test : function() {
+						var a = $M.fromArray([
+							[1, 2, 7, 8],
+							[5, 6, 3, 4]
+						]);
+						return $M.argminEachCol(a).equals(
+							$M.fromArray([
+								[0, 0, 1, 1]
+							])
+						);
+					}
+				},
+				{
 					name : "checkHasNaN",
 					test : function() {
 						var a = new $M(10, 10);
@@ -396,6 +429,16 @@
 						b.random();
 						b.set(5, 5, 0 / 0)
 						return !$M.hasNaN(a) && $M.hasNaN(b);
+					}
+				},
+				{
+					name : "toAndFromJSON",
+					test : function() {
+						var a = (new $M(100, 10)).t();
+						a.range();
+						var json = a.toJSON();
+						var b = $M.fromJSON(json);
+						return a.equals(b);
 					}
 				},
 			],
@@ -483,10 +526,6 @@
 						b.random();
 						var b2 = new $M(9, 7);
 						b2.random();
-						console.log($M.largeAdd(a, b).nearlyEquals($M.add(a, b)));
-						console.log($M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)));
-						console.log($M.largeAdd(a, b2.t()).nearlyEquals($M.add(a, b2.t())));
-						console.log($M.largeAdd(a.t(), b.t()).nearlyEquals($M.add(a.t(), b.t())));
 						return (
 							$M.largeAdd(a, b).nearlyEquals($M.add(a, b)) &&
 							$M.largeAdd(a.t(), b2).nearlyEquals($M.add(a.t(), b2)) &&
