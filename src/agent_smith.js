@@ -830,8 +830,149 @@
 		};
 	}();
 	
+	/* ##### advanced calculation ##### */
+	
 	$M.convolve = function(mat1, mat2, mode, output) {
 		throw new Error('not implemented');
+	};
+	
+	$M.upperTriangular = function(mat, output) {
+		var newM = mat.clone(output);
+		var rows = newM.rows;
+		var cols = newM.cols;
+		newM.syncData();
+		var newM_data = newM.data;
+		if (mat.row_wise) {
+			for (var col = 0; col < cols; col++) {
+				if (newM_data[col + cols * col] === 0) {
+					for (var row = col + 1; row < rows; row++) {
+						if (newM_data[col + cols * row] !== 0) {
+							for (var i = col; i < cols; i++) {
+								newM_data[i + cols * col] += newM_data[i + cols * row];
+							}
+							break;
+						}
+					}
+				}
+				if (newM_data[col + cols * col] !== 0) {
+					for (var row = col + 1; row < rows; row++) {
+						var multiplier = newM_data[col + cols * row] / newM_data[col + cols * col];
+						newM_data[col + cols * row] = 0;
+						for (var i = col + 1; i < cols; i++) {
+							newM_data[i + cols * row] -= newM_data[i + cols * col] * multiplier;
+						}
+					}
+				}
+			}
+		} else {
+			for (var col = 0; col < cols; col++) {
+				if (newM_data[col + cols * col] === 0) {
+					for (var row = col + 1; row < rows; row++) {
+						if (newM_data[rows * col + row] !== 0) {
+							for (var i = col; i < cols; i++) {
+								newM_data[rows * i + col] += newM_data[rows * i + row];
+							}
+							break;
+						}
+					}
+				}
+				if (newM_data[col + cols * col] !== 0) {
+					for (var row = col + 1; row < rows; row++) {
+						var multiplier = newM_data[rows * col + row] / newM_data[rows * col + col];
+						newM_data[rows * col + row] = 0;
+						for (var i = col + 1; i < cols; i++) {
+							newM_data[rows * i + row] -= newM_data[rows * i + col] * multiplier;
+						}
+					}
+				}
+			}
+		}
+		return newM;
+	};
+	
+	$P.det = function() {
+		if (this.rows !== this.cols) {
+			throw new Error('the matrix must be square');
+		}
+		this.syncData();
+		if (this.rows === 2) {
+			return this.data[0] * this.data[3] - this.data[1] * this.data[2];
+		} else {
+			var ut = $M.upperTriangular(this);
+			ut.syncData();
+			var det = ut.data[0];
+			for (var i = 0; i < ut.rows; i++) {
+				det *= ut.data[i * (ut.rows + 1)];
+			}
+			return det;
+		}
+	};
+	
+	$P.inverse = function() {
+		if (this.rows !== this.cols) {
+			throw new Error('the matrix must be square');
+		}
+		var rows = this.rows;
+		var cols = this.cols;
+		
+		// make jointed upper triangular matrix
+		var tmp_mat = new $M(rows, cols * 2);
+		this.syncData();
+		tmp_mat.syncData();
+		this_data = this.data;
+		tmp_mat_data = tmp_mat.data;
+		if (this.row_wise) {
+			for (var row = 0; row < rows; row++) {
+				for (var col = 0; col < cols; col++) {
+					tmp_mat_data[col + (cols * 2) * row] = this_data[col + cols * row];
+					tmp_mat_data[col + cols + (cols * 2) * row] = (row === col ? 1 : 0);
+				}
+			}
+		} else {
+			for (var row = 0; row < rows; row++) {
+				for (var col = 0; col < cols; col++) {
+					tmp_mat_data[col + (cols * 2) * row] = this_data[row + rows * col];
+					tmp_mat_data[col + cols + (cols * 2) * row] = (row === col ? 1 : 0);
+				}
+			}
+		}
+		var tri_mat = $M.upperTriangular(tmp_mat);
+		tri_mat.syncData();
+		var tri_mat_data = tri_mat.data;
+		
+		// normalize
+		for (var i = 0; i < rows; i++) {
+			var multiply = tri_mat_data[i + (cols * 2) * i];
+			if (multiply === 0) {
+				throw new Error('the matrix is singular');
+			}
+			tri_mat_data[i + (cols * 2) * i] = 1;
+			for (var j = 0; j < cols; j++) {
+				tri_mat_data[j + i + 1 + (cols * 2) * i] /= multiply;
+			}
+		}
+		
+		// inverse
+		for (var row_p = rows - 1; row_p >= 0; row_p--) {
+			for (var row = row_p - 1; row >= 0; row--) {
+				for (var col = 0; col < cols; col++) {
+					tri_mat_data[cols + col + (cols * 2) * row] -=
+						tri_mat_data[cols + col + (cols * 2) * row_p] * tri_mat_data[row_p + (cols * 2) * row];
+				}
+			}
+		}
+		var return_mat = new $M(rows, cols);
+		return_mat.syncData();
+		var return_mat_data = return_mat.data;
+		for (var row = 0; row < rows; row++) {
+			for (var col = 0; col < cols; col++) {
+				return_mat_data[col + cols * row] = tri_mat_data[cols + col + (cols * 2) * row];
+			}
+		}
+		
+		tri_mat.destruct();
+		tmp_mat.destruct();
+		return return_mat;
 	};
 
 	/* ##### large matrix calculation ##### */
