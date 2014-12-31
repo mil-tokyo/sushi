@@ -260,6 +260,15 @@
 		return newM;
 	};
 	
+	$M.eye = function(size, output) {
+		var newM = $M.newMatOrReuseMat(size, size, output);
+		newM.syncData();
+		for (var i = 0; i < size; i++) {
+			newM.data[i * (size + 1)] = 1;
+		}
+		return newM;
+	};
+	
 	$M.extract = function(mat, offest_row, offset_col, rows, cols) {
 		throw new Error('not implemented');
 	};

@@ -42,6 +42,18 @@
 					}
 				},
 				{
+					name : "checkEye",
+					test :function() {
+						var eye_1 = $M.eye(10);
+						var eye_2 = new $M(10, 10);
+						eye_2.setEach(function(row, col) {
+							return row === col ? 1 : 0
+						});
+						eye_1.print();
+						return eye_1.equals(eye_2);
+					}
+				},
+				{
 					name : "checkMap",
 					test : function() {
 						var a = $M.fromArray([
@@ -1010,10 +1022,7 @@
 					test : function() {
 						var a = new $M(10, 10);
 						a.random();
-						var e = new $M(a.rows, a.cols);
-						e.setEach(function(row, col) {
-							return row === col ? 1 : 0
-						});
+						var e = $M.eye(a.rows);
 						var e_candidate_1 = a.mul(a.inverse());
 						var e_candidate_2 = a.inverse().mul(a);
 						return e_candidate_1.nearlyEquals(e) && e_candidate_2.nearlyEquals(e);
@@ -1069,7 +1078,7 @@
 	}();
 
 	var test_each_test = function() {
-		var idx = 2;
+		var idx = 0;
 		var success = 0;
 		var all = 0;
 		var na = 0;
