@@ -833,6 +833,60 @@
 	$M.convolve = function(mat1, mat2, mode, output) {
 		throw new Error('not implemented');
 	};
+	
+	$M.upperTriangular = function(mat, output) {
+		var newM = mat.clone(output);
+		var rows = newM.rows;
+		var cols = newM.cols;
+		newM.syncData();
+		var newM_data = newM.data;
+		if (mat.row_wise) {
+			for (var col = 0; col < cols; col++) {
+				if (newM_data[col + cols * col] === 0) {
+					for (var row = col + 1; row < rows; row++) {
+						if (newM_data[col + cols * row] !== 0) {
+							for (var i = col; i < cols; i++) {
+								newM_data[i + cols * col] += newM_data[i + cols * row];
+							}
+							break;
+						}
+					}
+				}
+				if (newM_data[col + cols * col] !== 0) {
+					for (var row = col + 1; row < rows; row++) {
+						var multiplier = newM_data[col + cols * row] / newM_data[col + cols * col];
+						newM_data[col + cols * row] = 0;
+						for (var i = col + 1; i < cols; i++) {
+							newM_data[i + cols * row] -= newM_data[i + cols * col] * multiplier;
+						}
+					}
+				}
+			}
+		} else {
+			for (var col = 0; col < cols; col++) {
+				if (newM_data[col + cols * col] === 0) {
+					for (var row = col + 1; row < rows; row++) {
+						if (newM_data[rows * col + row] !== 0) {
+							for (var i = col; i < cols; i++) {
+								newM_data[rows * i + col] += newM_data[rows * i + row];
+							}
+							break;
+						}
+					}
+				}
+				if (newM_data[col + cols * col] !== 0) {
+					for (var row = col + 1; row < rows; row++) {
+						var multiplier = newM_data[rows * col + row] / newM_data[rows * col + col];
+						newM_data[rows * col + row] = 0;
+						for (var i = col + 1; i < cols; i++) {
+							newM_data[rows * i + row] -= newM_data[rows * i + col] * multiplier;
+						}
+					}
+				}
+			}
+		}
+		return newM;
+	};
 
 	/* ##### large matrix calculation ##### */
 	
