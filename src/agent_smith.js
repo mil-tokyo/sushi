@@ -830,6 +830,8 @@
 		};
 	}();
 	
+	/* ##### advanced calculation ##### */
+	
 	$M.convolve = function(mat1, mat2, mode, output) {
 		throw new Error('not implemented');
 	};
@@ -886,6 +888,24 @@
 			}
 		}
 		return newM;
+	};
+	
+	$P.det = function() {
+		if (this.rows !== this.cols) {
+			throw new Error('the matrix must be square');
+		}
+		this.syncData();
+		if (this.rows === 2) {
+			return this.data[0] * this.data[3] - this.data[1] * this.data[2];
+		} else {
+			var ut = $M.upperTriangular(this);
+			ut.syncData();
+			var det = ut.data[0];
+			for (var i = 0; i < ut.rows; i++) {
+				det *= ut.data[i * (ut.rows + 1)];
+			}
+			return det;
+		}
 	};
 
 	/* ##### large matrix calculation ##### */
