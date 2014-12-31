@@ -907,6 +907,73 @@
 			return det;
 		}
 	};
+	
+	$P.inverse = function() {
+		if (this.rows !== this.cols) {
+			throw new Error('the matrix must be square');
+		}
+		var rows = this.rows;
+		var cols = this.cols;
+		
+		// make jointed upper triangular matrix
+		var tmp_mat = new $M(rows, cols * 2);
+		this.syncData();
+		tmp_mat.syncData();
+		this_data = this.data;
+		tmp_mat_data = tmp_mat.data;
+		if (this.row_wise) {
+			for (var row = 0; row < rows; row++) {
+				for (var col = 0; col < cols; col++) {
+					tmp_mat_data[col + (cols * 2) * row] = this_data[col + cols * row];
+					tmp_mat_data[col + cols + (cols * 2) * row] = (row === col ? 1 : 0);
+				}
+			}
+		} else {
+			for (var row = 0; row < rows; row++) {
+				for (var col = 0; col < cols; col++) {
+					tmp_mat_data[col + (cols * 2) * row] = this_data[row + rows * col];
+					tmp_mat_data[col + cols + (cols * 2) * row] = (row === col ? 1 : 0);
+				}
+			}
+		}
+		var tri_mat = $M.upperTriangular(tmp_mat);
+		tri_mat.syncData();
+		var tri_mat_data = tri_mat.data;
+		
+		// normalize
+		for (var i = 0; i < rows; i++) {
+			var multiply = tri_mat_data[i + (cols * 2) * i];
+			if (multiply === 0) {
+				throw new Error('the matrix is singular');
+			}
+			tri_mat_data[i + (cols * 2) * i] = 1;
+			for (var j = 0; j < cols; j++) {
+				tri_mat_data[j + i + 1 + (cols * 2) * i] /= multiply;
+			}
+		}
+		
+		// inverse
+		for (var row_p = rows - 1; row_p >= 0; row_p--) {
+			for (var row = row_p - 1; row >= 0; row--) {
+				for (var col = 0; col < cols; col++) {
+					tri_mat_data[cols + col + (cols * 2) * row] -=
+						tri_mat_data[cols + col + (cols * 2) * row_p] * tri_mat_data[row_p + (cols * 2) * row];
+				}
+			}
+		}
+		var return_mat = new $M(rows, cols);
+		return_mat.syncData();
+		var return_mat_data = return_mat.data;
+		for (var row = 0; row < rows; row++) {
+			for (var col = 0; col < cols; col++) {
+				return_mat_data[col + cols * row] = tri_mat_data[cols + col + (cols * 2) * row];
+			}
+		}
+		
+		tri_mat.destruct();
+		tmp_mat.destruct();
+		return return_mat;
+	};
 
 	/* ##### large matrix calculation ##### */
 	

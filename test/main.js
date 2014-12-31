@@ -1004,7 +1004,21 @@
 						]);
 						return a.det() === 10 && b.det() === -180;
 					}
-				}
+				},
+				{
+					name : "inverse",
+					test : function() {
+						var a = new $M(10, 10);
+						a.random();
+						var e = new $M(a.rows, a.cols);
+						e.setEach(function(row, col) {
+							return row === col ? 1 : 0
+						});
+						var e_candidate_1 = a.mul(a.inverse());
+						var e_candidate_2 = a.inverse().mul(a);
+						return e_candidate_1.nearlyEquals(e) && e_candidate_2.nearlyEquals(e);
+					}
+				},
 			]
 		}
 	];
@@ -1055,7 +1069,7 @@
 	}();
 
 	var test_each_test = function() {
-		var idx = 0;
+		var idx = 2;
 		var success = 0;
 		var all = 0;
 		var na = 0;
