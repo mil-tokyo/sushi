@@ -1028,6 +1028,32 @@
 						return e_candidate_1.nearlyEquals(e) && e_candidate_2.nearlyEquals(e);
 					}
 				},
+				{
+					name : "qr",
+					test : function() {
+						var a = new $M(10, 10);
+						a.random();
+						var a_qr = $M.qr(a);
+						var b = new $M(12, 10);
+						b.random();
+						var b_qr = $M.qr(b);
+						return true &&
+							a_qr.Q.mul(a_qr.Q.t()).nearlyEquals($M.eye(10)) &&
+							b_qr.Q.mul(b_qr.Q.t()).nearlyEquals($M.eye(12)) &&
+							a_qr.Q.mul(a_qr.R).nearlyEquals(a) &&
+							b_qr.Q.mul(b_qr.R).nearlyEquals(b);
+					}
+				},
+				{
+					name : "eig",
+					test : function() {
+						var a = new $M(3, 3);
+						a.random();
+						a.print();
+						var b = $M.eig(a);
+						return false;
+					}
+				}
 			]
 		}
 	];

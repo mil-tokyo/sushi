@@ -983,6 +983,156 @@
 		tmp_mat.destruct();
 		return return_mat;
 	};
+	
+	$M.qr = function(A) {
+		// http://www.riken.jp/brict/Ijiri/study/QRfactorization.htm
+		var n = A.rows;
+		var m = A.cols;
+		if (n < m) {
+			throw new Error('rows must be equal to or greater than cols');
+		}
+		
+		// Gram-Schmidt orthonormalization
+		var B = A.clone();
+		A.syncData();
+		B.syncData();
+		var X = new $M(m, m);
+		X.syncData();
+		var calcXij = function(i, j) {
+			// A and B have the same "row_wise"
+			var offset_A = A.row_wise ? j : j * A.rows;
+			var offset_B = A.row_wise ? i : i * A.rows;
+			var skip = A.row_wise ? A.cols : 1;
+			var dividend = 0;
+			var divisor = 0;
+			for (var k = 0; k < A.rows; k++) {
+				dividend += A.data[offset_A] * B.data[offset_B];
+				divisor += B.data[offset_B] * B.data[offset_B];
+				offset_A += skip;
+				offset_B += skip;
+			}
+			return dividend / divisor;
+		};
+		
+		for (var i = 0; i < m; i++) {
+			for (var j = 0; j < i; j++) {
+				var xji = calcXij(j, i);
+				var offset_Bi = B.row_wise ? i : i * B.rows;
+				var offset_Bj = B.row_wise ? j : j * B.rows;
+				var skip = B.row_wise ? B.cols : 1;
+				for (var row = 0; row < n; row++) {
+					B.data[offset_Bi] -= xji * B.data[offset_Bj];
+					offset_Bi += skip;
+					offset_Bj += skip;					
+				}
+				X.data[i + X.cols * j] = xji;
+			}
+			X.data[i + X.cols * i] = 1;
+		}
+		
+		// normalization
+		var Q = new $M(n, n);
+		Q.syncData();
+		for (var row = 0; row < n; row++) {
+			var offset = B.row_wise ? B.cols * row : row;
+			var skip = B.row_wise ? 1 : B.rows;
+			for (var col = 0; col < m; col++) {
+				Q.data[col + Q.cols * row] = B.data[offset];
+				offset += skip;
+			}
+		}
+		for (var col = 0; col < m; col++) {
+			var sum = 0;
+			for (var row = 0; row < n; row++) {
+				sum += Q.data[col + row * n] * Q.data[col + row * n]
+			}
+			sum = Math.sqrt(sum);
+			for (var row = 0; row < n; row++) {
+				Q.data[col + row * n] /= sum;
+			}
+			for (var i = 0; i < m; i++) {
+				X.data[i + col * m] *= sum;
+			}			
+		}
+		
+		// expansion
+		for (var i = m; i < n; i++) {
+			Q.data[i + i * n] = 1;
+			for (var j = 0; j < i; j++) {
+				// calcXij
+				var dividend = Q.data[j + i * n];
+				var divisor = 0;
+				for (var k = 0; k < n; k++) {
+					divisor += Q.data[j + k * n] * Q.data[j + k * n];
+				}
+				var multiplier = dividend / divisor;
+				for (var row = 0; row < n; row++) {
+					Q.data[i + row * n] -= multiplier * Q.data[j + row * n];
+				}
+			}
+			var sum = 0;
+			for (var row = 0; row < n; row++) {
+				sum += Q.data[i + row * n] * Q.data[i + row * n]
+			}
+			sum = Math.sqrt(sum);
+			for (var row = 0; row < n; row++) {
+				Q.data[i + row * n] /= sum;
+			}
+		}
+		var R = new $M(n, m);
+		R.syncData();
+		for (var i = 0; i < X.length; i++) {
+			R.data[i] = X.data[i];
+		}
+		
+		return { Q : Q, R : R };
+	}
+	
+	$M.eig = function(A, tolerance) {
+		// http://na-inet.jp/nasoft/chap11.pdf
+		if (A.rows !== A.cols) {
+			throw new Error('the matrix must be square');
+		}
+		if (!tolerance) {
+			tolerance = 0.01;
+		}
+		// calculate eigenvalue using qr decomposition
+		var converged = function(mat) {
+			mat.syncData();
+			var max_diff = 0;
+			for (var row = 0; row < mat.rows; row++) {
+				for (var col = 0; col < row; col++) {
+					max_diff = Math.max(max_diff, Math.abs(mat.data[col + row * mat.cols]));
+				}
+			}
+			return max_diff < tolerance;
+		};
+		for (var i = 0; i < 1000; i++) {
+			var qr = $M.qr(A);
+			var Q = qr.Q;
+			var R = qr.R;
+			A = R.mul(Q);
+			if (converged(A)) { break; }
+		}
+		
+		var eigen_values = [];
+		A.syncData();
+		for (var i = 0; i < A.cols; i++) {
+			eigen_values.push(A.data[i * (A.cols + 1)]);
+		}
+		console.log(eigen_values);
+		
+		// calculate eigenvector using inverse iteration method
+		// http://okwave.jp/qa/q712683.html
+		for (var i = 0; i < eigen_values.length; i++) {
+			
+		}
+		
+		return {
+			eigen_values : eigen_values,
+			eigen_vectors : [] 
+		};
+	};
 
 	/* ##### large matrix calculation ##### */
 	
