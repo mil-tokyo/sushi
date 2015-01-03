@@ -49,8 +49,33 @@
 						eye_2.setEach(function(row, col) {
 							return row === col ? 1 : 0
 						});
-						eye_1.print();
 						return eye_1.equals(eye_2);
+					}
+				},
+				{
+					name : "checkDiag",
+					test : function() {
+						var a = $M.diag([1, 2, 3]);
+						var b = $M.diag((new $M(1, 3)).range());
+						return a.equals($M.fromArray([
+							[1, 0, 0],
+							[0, 2, 0],
+							[0, 0, 3]
+						])) && b.equals($M.fromArray([
+							[0, 0, 0],
+							[0, 1, 0],
+							[0, 0, 2]
+						]));
+					}
+				},
+				{
+					name : "checkToRowWise",
+					test :function() {
+						var a = (new $M(7, 5)).t();
+						a.range();
+						var b = a.clone();
+						a.toRowWise();
+						return a.equals(b);
 					}
 				},
 				{
@@ -1028,6 +1053,31 @@
 						return e_candidate_1.nearlyEquals(e) && e_candidate_2.nearlyEquals(e);
 					}
 				},
+				{
+					name : "qr",
+					test : function() {
+						var a = new $M(10, 10);
+						a.random();
+						var a_qr = $M.qr(a);
+						var b = new $M(12, 10);
+						b.random();
+						var b_qr = $M.qr(b);
+						return true &&
+							a_qr.Q.mul(a_qr.Q.t()).nearlyEquals($M.eye(10)) &&
+							b_qr.Q.mul(b_qr.Q.t()).nearlyEquals($M.eye(12)) &&
+							a_qr.Q.mul(a_qr.R).nearlyEquals(a) &&
+							b_qr.Q.mul(b_qr.R).nearlyEquals(b);
+					}
+				},
+				{
+					name : "svd",
+					test : function() {
+						var a = new $M(15, 7);
+						a.random();
+						var usv = $M.svd(a);
+						return $M.mul($M.mul(usv.U, $M.diag(usv.S)), usv.V.t()).nearlyEquals(a);
+					}
+				}
 			]
 		}
 	];
