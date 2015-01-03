@@ -49,8 +49,33 @@
 						eye_2.setEach(function(row, col) {
 							return row === col ? 1 : 0
 						});
-						eye_1.print();
 						return eye_1.equals(eye_2);
+					}
+				},
+				{
+					name : "checkDiag",
+					test : function() {
+						var a = $M.diag([1, 2, 3]);
+						var b = $M.diag((new $M(1, 3)).range());
+						return a.equals($M.fromArray([
+							[1, 0, 0],
+							[0, 2, 0],
+							[0, 0, 3]
+						])) && b.equals($M.fromArray([
+							[0, 0, 0],
+							[0, 1, 0],
+							[0, 0, 2]
+						]));
+					}
+				},
+				{
+					name : "checkToRowWise",
+					test :function() {
+						var a = (new $M(7, 5)).t();
+						a.range();
+						var b = a.clone();
+						a.toRowWise();
+						return a.equals(b);
 					}
 				},
 				{
@@ -1045,13 +1070,12 @@
 					}
 				},
 				{
-					name : "eig",
+					name : "svd",
 					test : function() {
-						var a = new $M(3, 3);
+						var a = new $M(15, 7);
 						a.random();
-						a.print();
-						var b = $M.eig(a);
-						return false;
+						var usv = $M.svd(a);
+						return $M.mul($M.mul(usv.U, $M.diag(usv.S)), usv.V.t()).nearlyEquals(a);
 					}
 				}
 			]
