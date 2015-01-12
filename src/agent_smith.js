@@ -321,8 +321,28 @@
 		return newM;
 	};
 	
-	$M.extract = function(mat, offest_row, offset_col, rows, cols) {
-		throw new Error('not implemented');
+	$M.extract = function(mat, offset_row, offset_col, rows, cols, output) {
+		var newM = $M.newMatOrReuseMat(rows, cols, output);
+		newM.syncData();
+		var newM_data = newM.data;
+		mat.syncData();
+		var mat_data = mat.data;
+		if (mat.row_wise) {
+			var original_cols = mat.cols;
+			for (var row = 0; row < rows; row++) {
+				for (var col = 0; col < cols; col++) {
+					newM_data[row * cols + col] = mat_data[(offset_row + row) * original_cols + offset_col + col];
+				}
+			}
+		} else {
+			var original_rows = mat.rows;
+			for (var row = 0; row < rows; row++) {
+				for (var col = 0; col < cols; col++) {
+					newM_data[row * cols + col] = mat_data[offset_row + row + (offset_col + col) * original_rows];
+				}
+			}			
+		}
+		return newM;
 	};
 	
 	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {

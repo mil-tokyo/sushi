@@ -478,6 +478,23 @@
 						return a.equals(b);
 					}
 				},
+				{
+					name : "checkExtract",
+					test : function() {
+						var a = new $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						return (
+							$M.extract(a, 1, 1, 3, 1).equals($M.fromArray([[5], [8], [11]])) &&
+							$M.extract(a, 2, 0, 1, 3).equals($M.fromArray([[7, 8, 9]])) &&
+							$M.extract(a.t(), 1, 1, 1, 3).equals($M.fromArray([[5, 8, 11]])) &&
+							$M.extract(a.t(), 0, 2, 3, 1).equals($M.fromArray([[7], [8], [9]]))
+							);
+					}
+				},
 			],
 		},
 		{
