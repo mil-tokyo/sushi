@@ -345,6 +345,105 @@
 		return newM;
 	};
 	
+	$M.getRow = function(mat, row, output) {
+		var cols = mat.cols;
+		
+		var newM = $M.newMatOrReuseMat(1, cols, output);
+		newM.syncData();
+		var newM_data = newM.data;
+		
+		mat.syncData();
+		var mat_data = mat.data;
+		
+		var base = mat.row_wise ? row * cols : row;
+		var skip = mat.row_wise ? 1 : mat.rows;
+		for (var i = 0; i < cols; i++) {
+			newM_data[i] = mat_data[base];
+			base += skip;
+		}
+		return newM;
+	};
+	
+	$M.getCol = function(mat, col, output) {
+		var rows = mat.rows;
+		
+		var newM = $M.newMatOrReuseMat(rows, 1, output);
+		newM.syncData();
+		var newM_data = newM.data;
+		
+		mat.syncData();
+		var mat_data = mat.data;
+		
+		var base = mat.row_wise ? col : rows * col;
+		var skip = mat.row_wise ? mat.cols : 1;
+		for (var i = 0; i < rows; i++) {
+			newM_data[i] = mat_data[base];
+			base += skip;
+		}
+		return newM;
+	};
+	
+	$M.vstack = function(mats, output) {
+		var rows = mats[0].rows;
+		var cols = mats[0].cols;
+		for (var i = 1; i < mats.length; i++) {
+			if (mats[i].cols !== cols) {
+				throw new Error('the cols does not match');
+			}
+			rows += mats[i].rows;
+		}
+		
+		var newM = $M.newMatOrReuseMat(rows, cols, output);
+		newM.syncData();
+		var newM_data = newM.data;
+		var newM_offset = 0;
+		for (var i = 0; i < mats.length; i++) {
+			for (var row = 0; row < mats[i].rows; row++) {
+				var base = mats[i].row_wise ? row * cols : row;
+				var skip = mats[i].row_wise ? 1 : mats[i].rows;
+				mats[i].syncData();
+				var matsi_data = mats[i].data;
+				for (var col = 0; col < cols; col++) {
+					newM_data[newM_offset++] = matsi_data[base];
+					base += skip;
+				}
+			}
+		}
+		return newM;
+	}
+	
+
+	$M.hstack = function(mats, output) {
+		var rows = mats[0].rows;
+		var cols = mats[0].cols;
+		for (var i = 1; i < mats.length; i++) {
+			if (mats[i].rows !== rows) {
+				throw new Error('the rows does not match');
+			}
+			cols += mats[i].cols;
+		}
+		
+		var newM = $M.newMatOrReuseMat(rows, cols, output);
+		newM.syncData();
+		var newM_data = newM.data;
+		var newM_offset = 0;
+		for (var i = 0; i < mats.length; i++) {
+			for (var col = 0; col < mats[i].cols; col++) {
+				var base = mats[i].row_wise ? col : col * rows;
+				var skip = mats[i].row_wise ? mats[i].cols : 1;
+				mats[i].syncData();
+				var matsi_data = mats[i].data;
+				for (var row = 0; row < rows; row++) {
+					newM_data[newM_offset] = matsi_data[base];
+					newM_offset += cols;
+					base += skip;
+				}
+				newM_offset -= cols * rows - 1;
+			}
+		}
+		return newM;
+	}
+	
 	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {
 		throw new Error('not implemented');
 	};
