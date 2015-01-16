@@ -481,7 +481,7 @@
 				{
 					name : "checkExtract",
 					test : function() {
-						var a = new $M.fromArray([
+						var a = $M.fromArray([
 							[ 1,  2,  3],
 							[ 4,  5,  6],
 							[ 7,  8,  9],
@@ -493,6 +493,89 @@
 							$M.extract(a.t(), 1, 1, 1, 3).equals($M.fromArray([[5, 8, 11]])) &&
 							$M.extract(a.t(), 0, 2, 3, 1).equals($M.fromArray([[7], [8], [9]]))
 							);
+					}
+				},
+				{
+					name : "checkGetRow",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						return (
+							$M.getRow(a, 1).equals($M.fromArray([[4, 5, 6]])) &&
+							$M.getRow(a, 2).equals($M.fromArray([[7, 8, 9]])) &&
+							$M.getRow(a.t(), 1).equals($M.fromArray([[2, 5, 8, 11]])) &&
+							$M.getRow(a.t(), 2).equals($M.fromArray([[3, 6, 9, 12]]))
+							);
+					}
+				},
+				{
+					name : "checkGetCol",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						return (
+							$M.getCol(a, 1).equals($M.fromArray([[2], [5], [8], [11]])) &&
+							$M.getCol(a, 2).equals($M.fromArray([[3], [6], [9], [12]])) &&
+							$M.getCol(a.t(), 1).equals($M.fromArray([[4], [5], [6]])) &&
+							$M.getCol(a.t(), 2).equals($M.fromArray([[7], [8], [9]]))
+							);
+					}
+				},
+				{
+					name : "checkVstack",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6]
+							]);
+						var b = $M.fromArray([
+							[ 7,  8,  9]
+						]);
+						var c = $M.fromArray([
+							[ 10,  13],
+							[ 11,  14],
+							[ 12,  15]
+							]).t();
+						return $M.vstack([a, b, c]).equals($M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							[13, 14, 15]
+						]));
+					}
+				},
+
+				{
+					name : "checkHstack",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6]
+							]).t();
+						var b = $M.fromArray([
+							[ 7,  8,  9]
+						]).t();
+						var c = $M.fromArray([
+							[ 10,  13],
+							[ 11,  14],
+							[ 12,  15]
+							]);
+						return $M.hstack([a, b, c]).equals($M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							[13, 14, 15]
+						]).t());
 					}
 				},
 			],
