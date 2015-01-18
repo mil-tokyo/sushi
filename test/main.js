@@ -190,6 +190,14 @@
 							[2],
 							[3]
 						]);
+						var g = $M.fromArray([
+							[1]
+						]);
+						var h = $M.fromArray([
+							[2],
+							[3],
+							[4]
+						]);
 						return 	$M.add(a, b).equals(
 							$M.fromArray([
 								[2, 4, 6],
@@ -212,7 +220,7 @@
 							$M.add(a, b).t()
 						) && $M.add(a.t(), c.t()).equals(
 							$M.add(a, c).t()
-						);
+						) && $M.add(f, g).equals(h) && $M.add(b, g).equals(h.t());
 					}
 				},
 				{
@@ -553,7 +561,6 @@
 						]));
 					}
 				},
-
 				{
 					name : "checkHstack",
 					test : function() {
@@ -749,6 +756,14 @@
 							[2],
 							[3]
 						]);
+						var g = $M.fromArray([
+							[1]
+						]);
+						var h = $M.fromArray([
+							[2],
+							[3],
+							[4]
+						]);
 						return 	$M.largeAdd(a, b).equals(
 							$M.fromArray([
 								[2, 4, 6],
@@ -771,7 +786,7 @@
 							$M.add(a, b).t()
 						) && $M.largeAdd(a.t(), c.t()).equals(
 							$M.add(a, c).t()
-						);
+						) && $M.largeAdd(f, g).equals(h) && $M.largeAdd(b, g).equals(h.t());
 					}
 				},
 				{
