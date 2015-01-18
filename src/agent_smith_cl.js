@@ -338,7 +338,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				} else {
 					kernel_to_use = kernel3;
 				}
-			} else if ((mat1.row_wise && mat2.rows === 1) || (!mat1.row_wise && mat2.cols === 1)) {
+			} else if ((mat1.row_wise && mat1.cols === mat2.cols) || (!mat1.row_wise && mat1.rows === mat2.rows)) {
 				// broadcast 1
 				kernel_to_use = kernel4;
 			} else {
@@ -441,7 +441,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 				} else {
 					kernel_to_use = kernel4;
 				}
-			} else if ((mat1.row_wise && mat2.rows === 1) || (!mat1.row_wise && mat2.cols === 1)) {
+			} else if ((mat1.row_wise && mat1.cols === mat2.cols) || (!mat1.row_wise && mat1.rows === mat2.rows)) {
 				// broadcast 1
 				kernel_to_use = mat1.row_wise ? kernel5 : kernel6;
 			} else {

@@ -58,7 +58,7 @@
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			return false;
 		}
-		if (this.row_wise == mat.row_wise) {
+		if (this.row_wise === mat.row_wise) {
 			for (var i = 0; i < this.length; i++) {
 				if (this.data[i] !== mat.data[i]) {
 					return false;
@@ -89,7 +89,7 @@
 		if (this.rows !== mat.rows || this.cols !== mat.cols) {
 			return false;
 		}
-		if (this.row_wise == mat.row_wise) {
+		if (this.row_wise === mat.row_wise) {
 			for (var i = 0; i < this.length; i++) {
 				if (!nearlyEquals(this.data[i], mat.data[i])) {
 					return false;
@@ -784,7 +784,7 @@
 			"		var this_data = this.data;														",
 			"		var mat_data = mat.data;														",
 			"		if (this.rows === mat.rows && this.cols === mat.cols) {									",
-			"			if (this.row_wise == mat.row_wise) {												",
+			"			if (this.row_wise === mat.row_wise) {												",
 			"				for (var i = 0; i < this.length; i++) {											",
 			"					this_data[i] " + op + "= mat_data[i];										",
 			"				}																				",
@@ -794,7 +794,7 @@
 			"				}.bind(this));																	",
 			"			}																					",
 			"		} else if (this.row_wise) {																",
-			"			if (mat.cols ===1) {																",
+			"			if (this.rows === mat.rows) {														",
 			"				for (var row = 0; row < mat.rows; row++) {										",
 			"					for (var col = 0; col < this.cols; col++) {									",
 			"						this_data[row * this.cols + col] " + op + "= mat_data[row];				",
@@ -808,7 +808,7 @@
 			"				}																				",
 			"			}																					",
 			"		} else {																				",
-			"			if (mat.cols ===1) {																",
+			"			if (this.rows === mat.rows) {														",
 			"				for (var row = 0; row < mat.rows; row++) {										",
 			"					for (var col = 0; col < this.cols; col++) {									",
 			"						this_data[col * this.rows + row] " + op + "= mat_data[row];				",
@@ -857,7 +857,7 @@
 			"				}																				",
 			"			}																					",
 			"		} else if (mat1.row_wise) {																",
-			"			if (mat2.cols ===1) {																",
+			"			if (mat1.rows === mat2.rows) {														",
 			"				for (var row = 0; row < mat1.rows; row++) {										",
 			"					for (var col = 0; col < mat1.cols; col++) {									",
 			"						newM_data[row * newM.cols + col] = 										",
@@ -873,7 +873,7 @@
 			"				}																				",
 			"			}																					",
 			"		} else {																				",
-			"			if (mat2.cols ===1) {																",
+			"			if (mat1.rows === mat2.rows) {														",
 			"				for (var row = 0; row < mat1.rows; row++) {										",
 			"					for (var col = 0; col < mat1.cols; col++) {									",
 			"						newM_data[row * newM.cols + col] =										",
@@ -926,7 +926,7 @@
 			throw new Error('shape does not match');
 		}
 		var sum = 0.0;
-		if (this.row_wise == mat.row_wise) {
+		if (this.row_wise === mat.row_wise) {
 			for (var i = 0; i < this.length; i++) {
 				sum += this.data[i] * mat.data[i];
 			}
@@ -1299,7 +1299,7 @@
 			b = Math.abs(b)
 			if (a > b)
 				return a * Math.sqrt(1.0 + (b * b / a / a))
-			else if (b == 0.0)
+			else if (b === 0.0)
 				return a
 			return b * Math.sqrt(1.0 + (a * a / b / b))
 		}
@@ -1452,7 +1452,7 @@
 				}
 				// test f convergence
 				z = q[k]
-				if (l == k) { // convergence
+				if (l === k) { // convergence
 					if (z < 0.0) { // q[k] is made non-negative
 						q[k] = -z
 						for (j = 0; j < n; j++)
