@@ -538,6 +538,60 @@
 					}
 				},
 				{
+					name : "checkSetRow",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						var b = $M.fromArray([[100, 200, 300]]);
+						var c = $M.fromArray([[100, 200, 300, 400]]);
+						return (
+							a.clone().setRow(1, b).equals($M.fromArray([
+								[  1,   2,   3],
+								[100, 200, 300],
+								[  7,   8,   9],
+								[ 10,  11,  12]
+							])) &&
+							a.clone().t().setRow(1, c).equals($M.fromArray([
+     								[  1, 100,   3],
+    								[  4, 200,   6],
+    								[  7, 300,   9],
+    								[ 10, 400,  12]
+    							]).t())
+						);
+					}
+				},
+				{
+					name : "checkSetCol",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6],
+							[ 7,  8,  9],
+							[10, 11, 12],
+							]);
+						var b = $M.fromArray([[100, 200, 300]]);
+						var c = $M.fromArray([[100, 200, 300, 400]]);
+						return (
+							a.clone().t().setCol(1, b.t()).equals($M.fromArray([
+								[  1,   2,   3],
+								[100, 200, 300],
+								[  7,   8,   9],
+								[ 10,  11,  12]
+							]).t()) &&
+							a.clone().setCol(1, c.t()).equals($M.fromArray([
+     								[  1, 100,   3],
+    								[  4, 200,   6],
+    								[  7, 300,   9],
+    								[ 10, 400,  12]
+    							]))
+						);
+					}
+				},
+				{
 					name : "checkVstack",
 					test : function() {
 						var a = $M.fromArray([
