@@ -1,0 +1,7 @@
+This software uses the following open source software / codes inside.
+
+Numerics
+	in AgentSmith.Matrix.svd
+	Copyright (c) Sébastien Loisel
+	https://github.com/sloisel/numeric/blob/master/src/svd.js
+	MIT License : http://opensource.org/licenses/mit-license.php
