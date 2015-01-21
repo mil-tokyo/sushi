@@ -383,6 +383,56 @@
 		return newM;
 	};
 	
+	$P.setRow = function(row, mat) {
+		if (this.cols !== mat.cols) {
+			throw new Error('the cols does not match');
+		}
+		if (mat.rows !== 1) {
+			throw new Error('mat to write must be row vector');
+		}
+		var cols = mat.cols;
+		
+		this.syncData();
+		var this_data = this.data;
+		
+		mat.syncData();
+		var mat_data = mat.data;
+		
+		var base_this = this.row_wise ? cols * row : row;
+		var skip_this = this.row_wise ? 1 : this.rows;
+		
+		for (var i = 0; i < cols; i++) {
+			this_data[base_this] = mat_data[i];
+			base_this += skip_this;
+		}
+		return this;
+	};
+	
+	$P.setCol = function(col, mat) {
+		if (this.rows !== mat.rows) {
+			throw new Error('the rows does not match');
+		}
+		if (mat.cols !== 1) {
+			throw new Error('mat to write must be col vector');
+		}
+		var rows = mat.rows;
+		
+		this.syncData();
+		var this_data = this.data;
+		
+		mat.syncData();
+		var mat_data = mat.data;
+		
+		var base_this = this.row_wise ? col : rows * col;
+		var skip_this = this.row_wise ? this.cols : 1;
+		
+		for (var i = 0; i < rows; i++) {
+			this_data[base_this] = mat_data[i];
+			base_this += skip_this;
+		}
+		return this;
+	};
+	
 	$M.vstack = function(mats, output) {
 		var rows = mats[0].rows;
 		var cols = mats[0].cols;
