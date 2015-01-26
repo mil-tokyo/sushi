@@ -494,10 +494,6 @@
 		return newM;
 	}
 	
-	$M.writeSubmat = function(mat, submat, offset_row, offset_col) {
-		throw new Error('not implemented');
-	};
-	
 	$P.toJSON = function() {
 		this.syncData();
 		var bytes = new Uint8Array(this.data.buffer);
@@ -1625,7 +1621,6 @@
 	$M.largeArgminEachCol = $M.argminEachCol;
 	$M.largeConvolve = $M.convolve;
 	$M.largeExtract = $M.extract;
-	$M.largeWriteSubmat = $M.writeSubmat;
 })();
 
 var nodejs = (typeof window === 'undefined');
