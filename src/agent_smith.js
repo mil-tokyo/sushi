@@ -1310,9 +1310,6 @@
 	}
 	
 	$M.svd = function(A) {
-		// https://github.com/sloisel/numeric/blob/master/src/svd.js
-		// copyright by Sébastien Loisel 
-		// MIT License : http://opensource.org/licenses/mit-license.php
 		var temp;
 		var prec = 0.001;
 		var tolerance = 1.e-16 / prec;
