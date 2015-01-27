@@ -167,7 +167,7 @@ if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined
 		}
 		
 		// device selector
-		if (webcl) {
+		if (nodejs) {
 			var device_index = 0;
 		} else {
 			var url_vars = function(){
