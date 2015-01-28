@@ -675,47 +675,6 @@
 					}
 				},
 				{
-					name : "checkWriteSubmatLarge",
-					test : function() {
-						var a = new $M.fromArray([
-							[ 1,  2,  3],
-							[ 4,  5,  6],
-							[ 7,  8,  9],
-							[10, 11, 12],
-							]);
-						var b = new $M.fromArray([
-							[-1, -2],
-							[-3, -4],
-							[-5, -6]
-							]);
-						return (
-							$M.largeWriteSubmat(a.clone(), b, 1, 1).equals($M.fromArray([
-								[ 1,  2,  3],
-								[ 4, -1, -2],
-								[ 7, -3, -4],
-								[10, -5, -6],
-							])) &&
-							$M.largeWriteSubmat(a.t().clone(), b, 0, 1).equals($M.fromArray([
-								[ 1, -1, -2, 10],
-								[ 2, -3, -4, 11],
-								[ 3, -5, -6, 12],
-							])) &&
-							$M.largeWriteSubmat(a.clone(), b.t(), 1, 0).equals($M.fromArray([
-								[ 1,  2,  3],
-								[-1, -3, -5],
-								[-2, -4, -6],
-								[10, 11, 12],
-							])) &&
-							$M.largeWriteSubmat(a.t().clone(), b.t(), 1, 1).equals($M.fromArray([
-								[ 1,  2,  3],
-								[ 4, -1, -2],
-								[ 7, -3, -4],
-								[10, -5, -6],
-							]).t())
-							);
-					}
-				},
-				{
 					name : "checkAddLarge",
 					test : function() {
 						var a = new $M(7, 9);
@@ -1270,8 +1229,8 @@
 				try {
 					var result = test[idx].test();
 				} catch (exception) {
-					console.log('exception catched');
-					console.error(exception);
+				console.log('exception catched');
+				console.error(exception);
 				} finally {
 					if (result === void 0) {
 						console.log('benchmark');
