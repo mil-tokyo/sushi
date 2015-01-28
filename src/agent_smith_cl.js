@@ -23,7 +23,7 @@
 	initWebCL(web_cl, env, $M);
 	initUtilityMethods($M.CL.program, $M.CL.queue, $M.CL, $M.prototype);
 	initMethods($M.CL, $M.prototype);
-	initAliases($M.CL, $M, $M.prototype);
+	initAliases($M, $M.CL, $M.prototype);
 
 	function getEnvironement() {
 		// check environment
@@ -47,6 +47,7 @@
 				var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
 				try {
 					web_cl = require(node_webcl_root + '/webcl');
+					("global", eval)("this").WebCL = web_cl;
 				} catch (e) {
 					web_cl = void 0;
 				}
@@ -182,7 +183,7 @@
 				break;
 		}
 		
-		// device selector
+		// device selector (experimental)
 		if (env === 'node') {
 			var device_index = 0;
 		} else {
@@ -1111,7 +1112,7 @@
 		}();
 	}
 	
-	function initAliases($CL, $M, $P) {
+	function initAliases($M, $CL, $P) {
 		// alter large matrix calculation
 		$P.largeAdd = function(mat) { $CL.addP(this, mat); return this; };
 		$P.largeSub = function(mat) { $CL.subP(this, mat); return this; };

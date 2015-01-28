@@ -1226,12 +1226,12 @@
 				var start_time = (new Date()).getTime();
 				var result = false;
 				console.log('-------- TEST CASE : ' + test[idx].name + ' --------');
-				// try {
+				try {
 					var result = test[idx].test();
-				// } catch (exception) {
-				//	console.log('exception catched');
-				//	console.error(exception);
-				// } finally {
+				} catch (exception) {
+				console.log('exception catched');
+				console.error(exception);
+				} finally {
 					if (result === void 0) {
 						console.log('benchmark');
 					} else if (result === null) {
@@ -1248,7 +1248,7 @@
 					if (result === true || result === false) {
 						all++;
 					}
-				// };
+				};
 				idx++;
 				setTimeout(test_each_test_case.bind(false, test, finished), 0);
 			}
