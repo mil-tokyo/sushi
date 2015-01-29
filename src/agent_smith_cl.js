@@ -1,10 +1,7 @@
 "use strict";
 
-(function() {
-	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-		var AgentSmith = require('./agent_smith');
-	}
-	if (typeof AgentSmith === 'undefined' || typeof AgentSmith.Matrix === 'undefined') {
+(function(AgentSmith) {
+	if (!AgentSmith || !AgentSmith.Matrix) {
 		throw new Error('AgentSmith.Matrix is not loaded');
 		return;
 	}
@@ -97,7 +94,25 @@
 			device_type = web_cl.DEVICE_TYPE_CPU;
 			$CL.devices = $CL.platform.getDevices(web_cl.DEVICE_TYPE_CPU);
 		}
-		$CL.device_info = $CL.devices[0].getInfo(web_cl.DEVICE_NAME);
+		// device selector (experimental)
+		if (env === 'node') {
+			var device_index = 0;
+		} else {
+			var url_vars = function(){
+			    var vars = {}; 
+			    var param = location.search.substring(1).split('&');
+			    for(var i = 0; i < param.length; i++) {
+			        var keySearch = param[i].search(/=/);
+			        var key = '';
+			        if(keySearch != -1) key = param[i].slice(0, keySearch);
+			        var val = param[i].slice(param[i].indexOf('=', 0) + 1);
+			        if(key != '') vars[key] = decodeURI(val);
+			    } 
+			    return vars; 
+			}();
+			var device_index = url_vars.device_index ? Math.min(url_vars.device_index, $CL.devices.length - 1) : 0;
+		}
+		$CL.device_info = $CL.devices[device_index].getInfo(web_cl.DEVICE_NAME);
 
 		// initialize methods dependent on implementation
 		switch(env) {
@@ -182,27 +197,7 @@
 				};
 				break;
 		}
-		
-		// device selector (experimental)
-		if (env === 'node') {
-			var device_index = 0;
-		} else {
-			var url_vars = function(){
-			    var vars = {}; 
-			    var param = location.search.substring(1).split('&');
-			    for(var i = 0; i < param.length; i++) {
-			        var keySearch = param[i].search(/=/);
-			        var key = '';
-			        if(keySearch != -1) key = param[i].slice(0, keySearch);
-			        var val = param[i].slice(param[i].indexOf('=', 0) + 1);
-			        if(key != '') vars[key] = decodeURI(val);
-			    } 
-			    return vars; 
-			}();
-			var device_index = url_vars.device_index ? Math.min(url_vars.device_index, $CL.devices.length - 1) : 0;
-		}
-		console.log('use device : ' + device_index);
-		
+	
 		switch(env) {
 			case 'node':
 			case 'ff':
@@ -1148,4 +1143,4 @@
 		$M.largeConvolve = $CL.convolve;
 		$M.largeExtract = $CL.extract;
 	}
-})();
+})(AgentSmith || ((typeof module !== 'undefined' && typeof module.exports !== 'undefined') ? require('./agent_smith') : null));
