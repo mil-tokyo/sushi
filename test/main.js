@@ -639,6 +639,25 @@
 						]).t());
 					}
 				},
+				{
+					name : "checkGetEach",
+					test : function() {
+						var a = $M.fromArray([
+							[ 1,  2,  3],
+							[ 4,  5,  6]
+							]);
+						var b = $M.fromArray([
+							[0, 1, 0]
+						]);
+						var c = $M.fromArray([
+							[1, 0]
+						]);
+						return $M.getEach(a, b).equals($M.fromArray([[1, 5, 3]])) &&
+							$M.getEach(a.t(), c).equals($M.fromArray([[2, 4]])) &&
+							$M.getEach(a, c.t()).equals($M.fromArray([[2, 4]]).t()) &&
+							$M.getEach(a.t(), b.t()).equals($M.fromArray([[1, 5, 3]]).t());
+					}
+				},
 			],
 		},
 		{

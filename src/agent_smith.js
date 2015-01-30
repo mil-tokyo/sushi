@@ -564,6 +564,64 @@ var AgentSmith = AgentSmith || { };
 			}
 		};
 		
+		$M.getEach = function(original, indexes) {
+			if (indexes.rows !== 1 && indexes.cols !== 1) {
+				throw new Error('indexes matrix must be row vector or col vector');
+			} else if (indexes.rows === 1) {
+				if (indexes.cols !== original.cols) {
+					throw new Error('shape does not match');
+				}
+				var cols = indexes.cols;
+				
+				original.syncData();
+				var original_data = original.data;
+				
+				indexes.syncData();
+				var indexes_data = indexes.data;
+				
+				var newM = new $M(1, cols);
+				newM.syncData();
+				var newM_data = newM.data;
+				if (original.row_wise) {
+					for (var i = 0; i < cols; i++) {
+						newM_data[i] = original_data[indexes_data[i] * cols + i];
+					}
+				} else {
+					var rows = original.rows;
+					for (var i = 0; i < cols; i++) {
+						newM_data[i] = original_data[indexes_data[i] + i * rows];
+					}					
+				}
+				return newM;
+			} else {
+				if (indexes.rows !== original.rows) {
+					throw new Error('shape does not match');
+				}
+				var rows = indexes.rows;
+				
+				original.syncData();
+				var original_data = original.data;
+				
+				indexes.syncData();
+				var indexes_data = indexes.data;
+				
+				var newM = new $M(rows, 1);
+				newM.syncData();
+				var newM_data = newM.data;
+				if (original.row_wise) {
+					var cols = original.cols;
+					for (var i = 0; i < rows; i++) {
+						newM_data[i] = original_data[i * cols + indexes_data[i]];
+					}
+				} else {
+					for (var i = 0; i < rows; i++) {
+						newM_data[i] = original_data[i + indexes_data[i] * rows];
+					}					
+				}
+				return newM;
+			}
+		};
+		
 		$P.set = function(row, col, datum) {
 			this.syncData();
 			if (row >= this.rows || col >= this.cols) {
