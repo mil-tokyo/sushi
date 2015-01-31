@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
   <!-- HEADER -->
   <div id="header_wrap" class="outer">
     <header class="inner">
@@ -20,11 +19,15 @@
     </header>
   </div>
 
-
   <!-- MAIN CONTENT -->
   <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
 <!-- constructor and variables -->
+<h1 id="title">Table of contents</h1>
+<ul>
+  <li><a href="#newMatOrReuseMat">AgentSmith.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</a></li>
+</ul>
+
 <h1 class="classname">AgentSmith.Matrix(int rows, int cols[, Float32Array array])</h1>
 <table class="datatable">
   <tr>
@@ -41,13 +44,13 @@
       <dt>AgentSmith Member variables:</dt>
     </td>
     <td class="data">
-	  <b>AgentSmith.Matrix.prototype.rows</b> : <i>int</i>
+	  <p class="variable"><b>AgentSmith.Matrix.prototype.rows</b> : <i>int</i></p>
 	     <p class="option"> The number of rows. </p>
-	  <b>AgentSmith.Matrix.prototype.cols</b> : <i>int</i>
+	  <p class="variable"><b>AgentSmith.Matrix.prototype.cols</b> : <i>int</i>
 	     <p class="option"> The number of cols. </p>
-	  <b>AgentSmith.Matrix.prototype.row_wise</b> : <i>bool</i>
+	  <p class="variable"><b>AgentSmith.Matrix.prototype.row_wise</b> : <i>bool</i>
 	     <p class="option"> Whether data is stored row-wise or not. </p>
-	  <b>AgentSmith.Matrix.prototype.data</b> : <i>float32Array</i>
+	  <p class="variable"><b>AgentSmith.Matrix.prototype.data</b> : <i>float32Array</i>
 	     <p class="option"> Values. Since this may occasionally be not allocated, it is necessary to call AgentSmith.Matrix.prototype.syncData beforehand. </p>
     </td>
   </tr>
@@ -56,12 +59,12 @@
       <dt>AgentSmith CL Member variables:</dt>
     </td>
     <td class="data">
-	  <b>AgentSmith.Matrix.CL.buffers</b> : <i>int</i>
+	  <p class="variable"><b>AgentSmith.Matrix.CL.buffers</b> : <i>int</i>
 	     <p class="option"> The number of buffers allocated by WebCL. </p>
-	  <b>AgentSmith.Matrix.CL.platform_info</b> : <i>String</i>
+	  <p class="variable"><b>AgentSmith.Matrix.CL.platform_info</b> : <i>String</i>
      	  <p class="option"> The platform information of WebCL.
-	  <b>AgentSmith.Matrix.CL.device_info</b> : <i>String</i>
-	     <p class="option"> The device information of WebCL. </p>
+	  <p class="variable"><b>AgentSmith.Matrix.CL.device_info</b> : <i>String</i>
+	  <p class="option"> The device information of WebCL. </p>
     </td>
   </tr>
 </table>
@@ -71,7 +74,7 @@
 
 <!-- AgentSmith function -->
 
-<h2 class="methodname">AgentSmith.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</h1>
+<h2 class="methodname" id="newMatOrReuseMat">AgentSmith.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -87,9 +90,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>rows</b> : <i>int</i>
-	  <b>cols</b> : <i>int</i>
-	  <b>optional mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>rows</b> : <i>int</i>
+	  <p class="variable"><b>cols</b> : <i>int</i>
+	  <p class="variable"><b>optional mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -117,7 +120,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -145,7 +148,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -173,7 +176,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -201,7 +204,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
+	  <p class="variable"><b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
     </td>
   </tr>
   <tr>
@@ -230,8 +233,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>size</b> : <i>int</i>
-	  <b>optional mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>size</b> : <i>int</i>
+	  <p class="variable"><b>optional mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -259,7 +262,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>diag</b> : <i>Matrix or Array</i>
+	  <p class="variable"><b>diag</b> : <i>Matrix or Array</i>
     </td>
   </tr>
   <tr>
@@ -288,12 +291,12 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>offset_row</b> : <i>int</i>
-	  <b>offset_col</b> : <i>int</i>
-	  <b>rows</b> : <i>int</i>
-	  <b>cols</b> : <i>int</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>offset_row</b> : <i>int</i>
+	  <p class="variable"><b>offset_col</b> : <i>int</i>
+	  <p class="variable"><b>rows</b> : <i>int</i>
+	  <p class="variable"><b>cols</b> : <i>int</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -322,9 +325,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>row</b> : <i>int</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>row</b> : <i>int</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -353,9 +356,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>col</b> : <i>int</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>col</b> : <i>int</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -384,8 +387,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -414,8 +417,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -443,7 +446,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>json</b> : <i>Object</i>
+	  <p class="variable"><b>json</b> : <i>Object</i>
     </td>
   </tr>
   <tr>
@@ -471,7 +474,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -499,7 +502,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -527,7 +530,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -535,8 +538,8 @@
       <dt>Returns:</dt>
     </td>
     <td class="data">
-	  <b>row</b> : <i>float</i>
-	  <b>col</b> : <i>float</i>
+	  <p class="variable"><b>row</b> : <i>float</i>
+	  <p class="variable"><b>col</b> : <i>float</i>
     </td>
   </tr>
 </table>
@@ -556,7 +559,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -585,8 +588,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -615,8 +618,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -645,8 +648,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -675,8 +678,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -705,8 +708,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -735,8 +738,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -765,8 +768,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -795,8 +798,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -825,9 +828,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -856,9 +859,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -887,9 +890,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -918,9 +921,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -948,8 +951,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -978,9 +981,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1009,13 +1012,13 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>mode</b> : <i>String</i>
-	     <p class="option"> <b>full</b> : The output is the full discrete linear convolution of the inputs. </p>
-	     <p class="option"> <b>valid</b> : The output consists only of those elements that do not rely on the zero-padding. </p>
-	     <p class="option"> <b>same</b> : The output is the same size as mat1, centered with respect to the <i>full</i> output. </p>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>mode</b> : <i>String</i>
+	     <p class="option"> <p class="variable"><b>full</b> : The output is the full discrete linear convolution of the inputs. </p>
+	     <p class="option"> <p class="variable"><b>valid</b> : The output consists only of those elements that do not rely on the zero-padding. </p>
+	     <p class="option"> <p class="variable"><b>same</b> : The output is the same size as mat1, centered with respect to the <i>full</i> output. </p>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1045,8 +1048,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>indexes</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>indexes</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1075,8 +1078,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1104,7 +1107,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1112,8 +1115,8 @@
       <dt>Returns:</dt>
     </td>
     <td class="data">
-	  <b>Q</b> : <i>Matrix</i>
-	  <b>R</b> : <i>Matrix</i>
+	  <p class="variable"><b>Q</b> : <i>Matrix</i>
+	  <p class="variable"><b>R</b> : <i>Matrix</i>
     </td>
   </tr>
 </table>
@@ -1134,7 +1137,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1142,8 +1145,8 @@
       <dt>Returns:</dt>
     </td>
     <td class="data">
-	  <b>Q</b> : <i>Matrix</i>
-	  <b>R</b> : <i>Matrix</i>
+	  <p class="variable"><b>Q</b> : <i>Matrix</i>
+	  <p class="variable"><b>R</b> : <i>Matrix</i>
     </td>
   </tr>
 </table>
@@ -1253,7 +1256,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1281,8 +1284,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional epsilon</b> : <i>float</i> default 0.01
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional epsilon</b> : <i>float</i> default 0.01
     </td>
   </tr>
   <tr>
@@ -1396,7 +1399,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1452,7 +1455,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>optional num</b> : <i>float</i> default 0.0
+	  <p class="variable"><b>optional num</b> : <i>float</i> default 0.0
     </td>
   </tr>
   <tr>
@@ -1481,8 +1484,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>min</b> : <i>float</i>
-	  <b>max</b> : <i>float</i>
+	  <p class="variable"><b>min</b> : <i>float</i>
+	  <p class="variable"><b>max</b> : <i>float</i>
     </td>
   </tr>
   <tr>
@@ -1511,8 +1514,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mu</b> : <i>float</i>
-	  <b>std</b> : <i>float</i>
+	  <p class="variable"><b>mu</b> : <i>float</i>
+	  <p class="variable"><b>std</b> : <i>float</i>
     </td>
   </tr>
   <tr>
@@ -1570,7 +1573,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>array</b> : <i>Array</i>
+	  <p class="variable"><b>array</b> : <i>Array</i>
     </td>
   </tr>
   <tr>
@@ -1599,8 +1602,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>row</b> : <i>int</i>
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>row</b> : <i>int</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1629,8 +1632,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>col</b> : <i>int</i>
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>col</b> : <i>int</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1686,8 +1689,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>row</b> : <i>int</i>
-	  <b>col</b> : <i>int</i>
+	  <p class="variable"><b>row</b> : <i>int</i>
+	  <p class="variable"><b>col</b> : <i>int</i>
     </td>
   </tr>
   <tr>
@@ -1716,9 +1719,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>row</b> : <i>int</i>
-	  <b>col</b> : <i>int</i>
-	  <b>datum</b> : <i>float</i>
+	  <p class="variable"><b>row</b> : <i>int</i>
+	  <p class="variable"><b>col</b> : <i>int</i>
+	  <p class="variable"><b>datum</b> : <i>float</i>
     </td>
   </tr>
   <tr>
@@ -1747,7 +1750,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>function</b> : <i>Object</i>
+	  <p class="variable"><b>function</b> : <i>Object</i>
     </td>
   </tr>
   <tr>
@@ -1776,7 +1779,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>function</b> : <i>Object</i>
+	  <p class="variable"><b>function</b> : <i>Object</i>
     </td>
   </tr>
   <tr>
@@ -1805,8 +1808,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>row</b> : <i>int</i>
-	  <b>col</b> : <i>int</i>
+	  <p class="variable"><b>row</b> : <i>int</i>
+	  <p class="variable"><b>col</b> : <i>int</i>
     </td>
   </tr>
   <tr>
@@ -1871,8 +1874,8 @@
       <dt>Returns:</dt>
     </td>
     <td class="data">
-	  <b>rows</b> : <i>int</i>
-	  <b>cols</b> : <i>int</i>
+	  <p class="variable"><b>rows</b> : <i>int</i>
+	  <p class="variable"><b>cols</b> : <i>int</i>
     </td>
   </tr>
 </table>
@@ -1893,7 +1896,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>num</b> : <i>float</i>
+	  <p class="variable"><b>num</b> : <i>float</i>
     </td>
   </tr>
   <tr>
@@ -1922,7 +1925,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1951,7 +1954,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -1980,7 +1983,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2009,7 +2012,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2037,7 +2040,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2065,8 +2068,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2152,9 +2155,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2183,9 +2186,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2214,9 +2217,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2245,9 +2248,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2276,7 +2279,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2305,8 +2308,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2335,8 +2338,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2365,8 +2368,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2395,8 +2398,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2425,8 +2428,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2455,8 +2458,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2485,8 +2488,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2515,8 +2518,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2545,13 +2548,13 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat1</b> : <i>Matrix</i>
-	  <b>mat2</b> : <i>Matrix</i>
-	  <b>mode</b> : <i>String</i>
-	     <p class="option"> <b>full</b> : The output is the full discrete linear convolution of the inputs. </p>
-	     <p class="option"> <b>valid</b> : The output consists only of those elements that do not rely on the zero-padding. </p>
-	     <p class="option"> <b>same</b> : The output is the same size as mat1, centered with respect to the <i>full</i> output. </p>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat1</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat2</b> : <i>Matrix</i>
+	  <p class="variable"><b>mode</b> : <i>String</i>
+	     <p class="option"> <p class="variable"><b>full</b> : The output is the full discrete linear convolution of the inputs. </p>
+	     <p class="option"> <p class="variable"><b>valid</b> : The output consists only of those elements that do not rely on the zero-padding. </p>
+	     <p class="option"> <p class="variable"><b>same</b> : The output is the same size as mat1, centered with respect to the <i>full</i> output. </p>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2580,12 +2583,12 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>offset_row</b> : <i>int</i>
-	  <b>offset_col</b> : <i>int</i>
-	  <b>rows</b> : <i>int</i>
-	  <b>cols</b> : <i>int</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>offset_row</b> : <i>int</i>
+	  <p class="variable"><b>offset_col</b> : <i>int</i>
+	  <p class="variable"><b>rows</b> : <i>int</i>
+	  <p class="variable"><b>cols</b> : <i>int</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2669,7 +2672,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>code</b> : <i>String</i>
+	  <p class="variable"><b>code</b> : <i>String</i>
     </td>
   </tr>
   <tr>
@@ -2691,8 +2694,8 @@
     <td class="data">
 	  Exeute <i>kernel</i> with input <i>params</i> as its arguments.
 	  As for each element of <i>params</i>,
-     	  <p class="option"> <b>The corresponding object is a Matrix</b> : the element should be given like {access:web_cl.MEM_WRITE_ONLY, datum:matrix_to_write_to} </p>
-	      <p class="option"> <b>The corresponding object is a primitive</b> : the element should be given like {datum:int_value, type:web_cl.type.UNIT} </p>
+     	  <p class="option"> <p class="variable"><b>The corresponding object is a Matrix</b> : the element should be given like {access:web_cl.MEM_WRITE_ONLY, datum:matrix_to_write_to} </p>
+	      <p class="option"> <p class="variable"><b>The corresponding object is a primitive</b> : the element should be given like {datum:int_value, type:web_cl.type.UNIT} </p>
     </td>
   </tr>
   <tr>
@@ -2700,9 +2703,9 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>kernel</b> : <i>KernelObject</i>
-	  <b>param1, param2, ...</b> : <i>sequence of Object</i>
-	  <b>parallelization</b> : <i>int</i>
+	  <p class="variable"><b>kernel</b> : <i>KernelObject</i>
+	  <p class="variable"><b>param1, param2, ...</b> : <i>sequence of Object</i>
+	  <p class="variable"><b>parallelization</b> : <i>int</i>
     </td>
   </tr>
   <tr>
@@ -2723,7 +2726,7 @@
     </td>
     <td class="data">
 	  First, generates a function that sets each element with a return value of function corresponds to OpenCL <i>code</i> which takes original element as its argument. Here, each original element is described as <i>'a[i]'</i>. Then, returns the generated funciton. Note that the function changes self.
-	  For example, if you want to generate a function which apply exponential to each matrix element, implement as <b>AgentSmith.Matrix.CL.mapGenerator('exp(a[i])');</b> .
+	  For example, if you want to generate a function which apply exponential to each matrix element, implement as <p class="variable"><b>AgentSmith.Matrix.CL.mapGenerator('exp(a[i])');</b> .
     </td>
   </tr>
   <tr>
@@ -2731,7 +2734,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>code</b> : <i>String</i>
+	  <p class="variable"><b>code</b> : <i>String</i>
     </td>
   </tr>
   <tr>
@@ -2739,7 +2742,7 @@
       <dt>Returns:</dt>
     </td>
     <td class="data">
-	  <b>function(Matrix mat) { return Matrix mat; }</b> : <i>Object</i>
+	  <p class="variable"><b>function(Matrix mat) { return Matrix mat; }</b> : <i>Object</i>
     </td>
   </tr>
 </table>
@@ -2763,7 +2766,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2792,7 +2795,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2821,7 +2824,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2850,7 +2853,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2879,8 +2882,8 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>mat</b> : <i>Matrix</i>
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>mat</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2909,7 +2912,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>num</b> : <i>float</i>
+	  <p class="variable"><b>num</b> : <i>float</i>
     </td>
   </tr>
   <tr>
@@ -2938,7 +2941,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>optional output</b> : <i>Matrix</i>
+	  <p class="variable"><b>optional output</b> : <i>Matrix</i>
     </td>
   </tr>
   <tr>
@@ -2967,7 +2970,7 @@
       <dt>Parameters:</dt>
     </td>
     <td class="data">
-	  <b>optional num</b> : <i>float</i> default 0.0
+	  <p class="variable"><b>optional num</b> : <i>float</i> default 0.0
     </td>
   </tr>
   <tr>

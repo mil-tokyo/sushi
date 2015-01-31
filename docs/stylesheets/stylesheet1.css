@@ -13,7 +13,8 @@ html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var, u, center,
+small, strike, strong, sub, sup, tt, var,
+u, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
@@ -34,9 +35,19 @@ footer, header, hgroup, menu, nav, section {
   display: block;
 }
 
+i {
+    font-style: oblique;
+}
+
+
 ol, ul {
   list-style: none;
 }
+
+dt {
+  font-weight: bold;
+}
+
 
 /* table { */
 /*   border-collapse: collapse; */
@@ -91,42 +102,18 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -1px;
 }
 
-h1 {
-  font-size: 36px;
-  font-weight: 700;
-}
+/* h1 { */
+/*   font-size: 36px; */
+/*   font-weight: 700; */
+/* } */
 
-h1.classname {
-  margin-left: -0.2in;
-  margin-right: 0.3in;
-  margin-top: 1in;
-  margin-bottom: 0in;
-  font-size: 16pt;
-  padding-bottom: 10px;
-  background: url('../images/bg_hr.png') repeat-x bottom;
-}
+/* h2 { */
+/*   padding-bottom: 10px; */
+/*   font-size: 32px; */
+/*   background: url('../images/bg_hr.png') repeat-x bottom; */
+/* } */
 
-h2 {
-  padding-bottom: 10px;
-  font-size: 25px;
-} 
-
-#title {
-    background: url('../images/bg_hr.png') repeat-x bottom;
-}
-
-h2.methodname {
-  margin-left: -0in;
-  margin-right: 0.3in;
-  margin-top: 0.3in;
-  margin-bottom: 0.2in;
-  font-size: 12pt;
-  padding-bottom: 0px;
-  background-color:#e0e0e0;
-}
-
-
-/* h3 {
+/* h3 { */
 /*   font-size: 24px; */
 /* } */
 
@@ -142,7 +129,22 @@ h2.methodname {
 /*   font-size: 16px; */
 /* } */
 
-
+h1.classname {
+  margin-left: -0.2in;
+  margin-right: 0.3in;
+  margin-top: 0.5in;
+  margin-bottom: 0.3in;
+  font-size: 14pt;
+  background-color:#ffcc99;
+}
+h2.methodname {
+  margin-left: -0in;
+  margin-right: 0.3in;
+  margin-top: 0.3in;
+  margin-bottom: 0.2in;
+  font-size: 12pt;
+  background-color:#e0e0e0;
+}
 h3 {
   margin-left: 0.1in;
   font-size: 11pt;
@@ -155,6 +157,19 @@ h4 {
 p {
   margin: 10px 0 15px 0;
 }
+
+p.variable {
+  margin: 0px 0 0px 0;
+}
+
+p.option {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0em;
+    text-indent: 0em;
+}
+
+
 
 footer p {
   color: #f2f2f2;
