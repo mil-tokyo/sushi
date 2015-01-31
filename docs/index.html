@@ -1,0 +1,2997 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="description" content="Mil-tokyo.GitHub.io : ">
+
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <title>AgentSmith document page</title>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div id="header_wrap" class="outer">
+    <header class="inner">
+      <a id="forkme_banner" href="https://github.com/mil-tokyo">View on GitHub</a>
+      <h1 id="project_title">AgentSmith</h1>
+      <h2 id="project_tagline">AgentSmith document page</h2>
+    </header>
+  </div>
+
+
+  <!-- MAIN CONTENT -->
+  <div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+<!-- constructor and variables -->
+<h1 class="classname">AgentSmith.Matrix(int rows, int cols[, Float32Array array])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>constructor:</dt>
+    </td>
+    <td class="data">
+	  Initialize a matrix with shape of (rows, cols).
+	  If <i>array</i> is given, set the member variable <i>data</i> with given <i>array</i>, otherwise <i>data</i> is not created untill <i>AgentSmith.Matrix.prototype.syncData is called.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>AgentSmith Member variables:</dt>
+    </td>
+    <td class="data">
+	  <b>AgentSmith.Matrix.prototype.rows</b> : <i>int</i>
+	     <p class="option"> The number of rows. </p>
+	  <b>AgentSmith.Matrix.prototype.cols</b> : <i>int</i>
+	     <p class="option"> The number of cols. </p>
+	  <b>AgentSmith.Matrix.prototype.row_wise</b> : <i>bool</i>
+	     <p class="option"> Whether data is stored row-wise or not. </p>
+	  <b>AgentSmith.Matrix.prototype.data</b> : <i>float32Array</i>
+	     <p class="option"> Values. Since this may occasionally be not allocated, it is necessary to call AgentSmith.Matrix.prototype.syncData beforehand. </p>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>AgentSmith CL Member variables:</dt>
+    </td>
+    <td class="data">
+	  <b>AgentSmith.Matrix.CL.buffers</b> : <i>int</i>
+	     <p class="option"> The number of buffers allocated by WebCL. </p>
+	  <b>AgentSmith.Matrix.CL.platform_info</b> : <i>String</i>
+     	  <p class="option"> The platform information of WebCL.
+	  <b>AgentSmith.Matrix.CL.device_info</b> : <i>String</i>
+	     <p class="option"> The device information of WebCL. </p>
+    </td>
+  </tr>
+</table>
+
+
+
+
+<!-- AgentSmith function -->
+
+<h2 class="methodname">AgentSmith.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  If <i>mat</i> is not given, new (<i>rows</i>, <i>cols</i>) array returns.
+	  If <i>mat</i> is given, check the size of <i>mat</i> at first, then if it is consistent with given parameters, the original <i>mat</i> returns, otherwise exception raises.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>rows</b> : <i>int</i>
+	  <b>cols</b> : <i>int</i>
+	  <b>optional mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.hasNaN(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Check if the <i>mat</i> has at least one NaN value or not.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>bool</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.toArray(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Convert <i>mat</i> to a two-dimensional jagged array.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Array</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.fromArray(Array array)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Convert two-dimensional jagged array to an instance of Matrix.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.fromColVectors([Matrix mat1, Matrix mat2, ...])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Join a sequence of column vectors (intances of Matrix) together.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.eye(int size(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct an instance of Matrix with ones on the diagonal and zeros elsewhere.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>size</b> : <i>int</i>
+	  <b>optional mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.diag((Matrix or Array) diag)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct an instance of Matrix with its diagonals are taken from <i>diag</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>diag</b> : <i>Matrix or Array</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.extract(Matrix mat, int offset_row, int offset_col, int rows, int cols(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct an instance of Matrix with shape [<i>rows, cols</i>] filled with a small part of <i>mat</i> where <i>offset_row and offset_col</i> are the starting indice.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>offset_row</b> : <i>int</i>
+	  <b>offset_col</b> : <i>int</i>
+	  <b>rows</b> : <i>int</i>
+	  <b>cols</b> : <i>int</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.getRow(Matrix mat, int row(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct an instance of Matrix with values extracted from specified <i>row</i> of <i>mat</i>
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>row</b> : <i>int</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.getCol(Matrix mat, int col(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct an instance of Matrix with values extracted from specified <i>col</i> of <i>mat</i>
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>col</b> : <i>int</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.vstack([Matrix mat1, Matrix mat2, ...](, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Stack a sequence of Matrixes vetrically(row wise) to make a single Matrix.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.hstack([Matrix mat1, Matrix mat2, ...](, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Stack a sequence of Matrixes horizontally(column wise) to make a single Matrix.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1, mat2, ...</b> : <i>sequence of Matrixes</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.fromJSON(Object json)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct an instance of Matrix from dumped JSON object.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>json</b> : <i>Object</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.max(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get the element-wise maximum of <i>mat</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.min(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get the element-wise minimum of <i>mat</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.argmax(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get index of the maximum values in <i>mat</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <b>row</b> : <i>float</i>
+	  <b>col</b> : <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.sum(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Sum of all elements in <i>mat</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.sumEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Sum of elements over each row.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.sumEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Sum of elements over each column.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.maxEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get the maximum values from each row.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.maxEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get the maximum values from each column.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.argmaxEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get column indices of the maximum value for each row.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.argmaxEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get row indices of the maximum value for each column.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.argminEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get column indices of the minimum value for each row.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.argminEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get row indices of the minimum value for each column.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.add(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Add arguments element-wise.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.sub(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Subtract arguments element-wise.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.mulEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Mutiply arguments element-wise.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.divEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Divide arguments element-wise.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.dot(Matrix mat1, Matrix mat2)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Dot product of inputs.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.mul(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Marix multiplication of inputs.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.convolve(Matrix mat1, Matrix mat2, String mode(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Convolve <i>mat1</i> and <i>mat2</i> with output size determined by mode.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>mode</b> : <i>String</i>
+	     <p class="option"> <b>full</b> : The output is the full discrete linear convolution of the inputs. </p>
+	     <p class="option"> <b>valid</b> : The output consists only of those elements that do not rely on the zero-padding. </p>
+	     <p class="option"> <b>same</b> : The output is the same size as mat1, centered with respect to the <i>full</i> output. </p>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.getEach(Matrix mat, Matrix indexes)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get a value from specified index by each row or column.
+	  If <i>indexes</i> is row-wise vector, construct row-wise vector where i-th element is set to mat[indexes[i], i].
+	  If <i>indexes</i> is column-wise vector, construct column-wise vector where i-th element is set to mat[i, indexes[i]].
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>indexes</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.upperTriangular(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Upper triangle of <i>mat</i>
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.qr(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Compute the qr factorization of <i>mat</i>, where one output <i>Q</i> is orthonormal and the other output <i>R</i> is upper-triangular.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <b>Q</b> : <i>Matrix</i>
+	  <b>R</b> : <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.svd(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Compute the singular value decomposition of <i>mat</i>.
+	  Factors <i>mat</i> as <i> U * diag(S) * V.T</i>, where <i>U</i> and <i>V</i> are unitary and <i>S</i> is <i>mat</i>'s singular values.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <b>Q</b> : <i>Matrix</i>
+	  <b>R</b> : <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+
+
+
+<!-- AgentSmith Method -->
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.syncData()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  If the member variable <i>data</i> is not allocated, prepare it.
+	  If WebCL is loaded, transport data from WebCL buffer to the member variable <i>data</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.destruct()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  If WebCL is loaded, discard WebCL buffer.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.copyPropertyFrom(Matrix original)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Copy properties but the member variable <i>data</i> from <i>original</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.equals(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Check whether all elements are completely equal to those of <i>mat</i> or not.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>bool</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.nearlyEquals(Matrix mat[, float epsilon = 0.01])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Check whether all element-wise absolute differences between stored values and <i>mat</i>'s values are within <i>epsilon</i> or not.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional epsilon</b> : <i>float</i> default 0.01
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>bool</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.print()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Display elements on console.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.print()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Create readable string of elements.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>String</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.toRowWise()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  If the member variable <i>row_wise</i> is false, transpose own elements in order to make <i>row_wise</i> true.
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.clone([Matrix output])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct a copy of self.
+	  If <i>output</i> is given, reuse it for output.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.alias()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Create an alias of matrix which shares the member variable <i>data</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.zeros([float num = 0.0])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Fill all elements with <i>num</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>optional num</b> : <i>float</i> default 0.0
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.random(float min, float max)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Fill all elements with random values between <i>min</i> and <i>max</i>.
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>min</b> : <i>float</i>
+	  <b>max</b> : <i>float</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.gaussRandom(float mu, float std)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Fill all elements with random values generated from gaussian ( mean:<i>mu</i>, standard deviation:<i>std</i> ).
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mu</b> : <i>float</i>
+	  <b>std</b> : <i>float</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.range()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Fill each element with its index number.
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.setArray(Array array)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Set elements with given two-dimensional jagged array.
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>array</b> : <i>Array</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.setRow(int row, Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Overwrite <i>row</i>'th row with row-wise vector <i>mat</i>.
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>row</b> : <i>int</i>
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.setCol(int col, Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Overwrite <i>col</i>'th column with column-wise vector <i>mat</i>.
+	  Returns self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>col</b> : <i>int</i>
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.toJSON()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Dump JSON and return it.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Object</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.get(int row, int col)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get the element of (<i>row</i>, <i>col</i>).
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>row</b> : <i>int</i>
+	  <b>col</b> : <i>int</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.set(int row, int col, falot datum)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Set <i>datum</i> to the element of (<i>row</i>, <i>col</i>).
+	  Return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>row</b> : <i>int</i>
+	  <b>col</b> : <i>int</i>
+	  <b>datum</b> : <i>float</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.map(function(original_datum) {return new_datum;})</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Set each element with a return value of callback function which takes original element as its argument.
+	  Return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>function</b> : <i>Object</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.setEach(function(row, col) {return new_datum;})</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Set each element with a return value of callback function which takes the number of row and column as its argument.
+	  Return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>function</b> : <i>Object</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.set(int row, int col, falot datum)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Give a new shape to self without changing its data.
+	  Return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>row</b> : <i>int</i>
+	  <b>col</b> : <i>int</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.t()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Transpose matrix.
+	  Create new alias which share the member variable <i>data</i> and invert the member variable <i>row_wise</i>.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.getShape()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Get the number of rows and the number of columns.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <b>rows</b> : <i>int</i>
+	  <b>cols</b> : <i>int</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.times(float num)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Multiply <i>num</i> times element-wise.
+	  Change self and return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>num</b> : <i>float</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.add(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Add <i>mat</i> to self.
+	  Change self and return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.sub(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Subtract <i>mat</i> from self.
+	  Change self and return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.mulEach(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Mutiply <i>mat</i> to self element-wise.
+	  Change self and return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.divEach(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Devide self with <i>mat</i>.
+	  Change self and return self.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.dot(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Dot product with <i>mat</i>
+	</td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.mul(Matrix mat[, Matrix output])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Marix multiplication with <i>mat</i>
+	  If <i>output</i> is given, reuse it for output.	</td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.det()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Determinant.
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.inverse()</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Construct inverse matrix.
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+
+<!-- AgentSmith CL function -->
+
+<h2 class="methodname">AgentSmith.Matrix.largeAdd(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.add .
+	  If WebCL is not loaded, AgentSmith.Matrix.add is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeSub(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.sub .
+	  If WebCL is not loaded, AgentSmith.Matrix.sub is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeMulEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.mulEach .
+	  If WebCL is not loaded, AgentSmith.Matrix.mulEach is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeDivEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.divEach .
+	  If WebCL is not loaded, AgentSmith.Matrix.divEach is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeSum(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.sum .
+	  If WebCL is not loaded, AgentSmith.Matrix.sum is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>float</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeSumEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.sumEachRow .
+	  If WebCL is not loaded, AgentSmith.Matrix.sumEachRow is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeSumEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.sumEachCol .
+	  If WebCL is not loaded, AgentSmith.Matrix.sumEachCol is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeMaxEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.maxEachRow .
+	  If WebCL is not loaded, AgentSmith.Matrix.maxEachRow is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeMaxEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.maxEachCol .
+	  If WebCL is not loaded, AgentSmith.Matrix.maxEachCol is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeArgmaxEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.argmaxEachRow .
+	  If WebCL is not loaded, AgentSmith.Matrix.argmaxEachRow is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeArgmaxEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.argmaxEachCol .
+	  If WebCL is not loaded, AgentSmith.Matrix.argmaxEachCol is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeArgminEachRow(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.argminEachRow .
+	  If WebCL is not loaded, AgentSmith.Matrix.argminEachRow is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeArgminEachCol(Matrix mat(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.argminEachCol .
+	  If WebCL is not loaded, AgentSmith.Matrix.argminEachCol is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeConvolve(Matrix mat1, Matrix mat2, String mode(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.convolve .
+	  If WebCL is not loaded, AgentSmith.Matrix.convolve is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat1</b> : <i>Matrix</i>
+	  <b>mat2</b> : <i>Matrix</i>
+	  <b>mode</b> : <i>String</i>
+	     <p class="option"> <b>full</b> : The output is the full discrete linear convolution of the inputs. </p>
+	     <p class="option"> <b>valid</b> : The output consists only of those elements that do not rely on the zero-padding. </p>
+	     <p class="option"> <b>same</b> : The output is the same size as mat1, centered with respect to the <i>full</i> output. </p>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.largeExtract(Matrix mat, int offset_row, int offset_col, int rows, int cols(, Matrix output))</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.extract .
+	  If WebCL is not loaded, AgentSmith.Matrix.extract is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>offset_row</b> : <i>int</i>
+	  <b>offset_col</b> : <i>int</i>
+	  <b>rows</b> : <i>int</i>
+	  <b>cols</b> : <i>int</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.CL.flush</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Call WebCL.flush .
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.CL.finish</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Call WebCL.finish .
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.CL.createKernel(String code)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Generate a kernel with input String <i>code</i> as its OpenCL code, and the name of kernel function is "kernel_func".
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>code</b> : <i>String</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>KernelObject</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.CL.executeKernel(KernelObject kernel, [Object param1, Object param2, ...], int parallelization)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  Exeute <i>kernel</i> with input <i>params</i> as its arguments.
+	  As for each element of <i>params</i>,
+     	  <p class="option"> <b>The corresponding object is a Matrix</b> : the element should be given like {access:web_cl.MEM_WRITE_ONLY, datum:matrix_to_write_to} </p>
+	      <p class="option"> <b>The corresponding object is a primitive</b> : the element should be given like {datum:int_value, type:web_cl.type.UNIT} </p>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>kernel</b> : <i>KernelObject</i>
+	  <b>param1, param2, ...</b> : <i>sequence of Object</i>
+	  <b>parallelization</b> : <i>int</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>N/A</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.CL.mapGenerator(String code)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  First, generates a function that sets each element with a return value of function corresponds to OpenCL <i>code</i> which takes original element as its argument. Here, each original element is described as <i>'a[i]'</i>. Then, returns the generated funciton. Note that the function changes self.
+	  For example, if you want to generate a function which apply exponential to each matrix element, implement as <b>AgentSmith.Matrix.CL.mapGenerator('exp(a[i])');</b> .
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>code</b> : <i>String</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <b>function(Matrix mat) { return Matrix mat; }</b> : <i>Object</i>
+    </td>
+  </tr>
+</table>
+
+
+<!-- AgentSmith CL method -->
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeAdd(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.add .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.add is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeSub(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.sub .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.sub is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeMulEach(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.mulEach .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.mulEach is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeDivEach(Matrix mat)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.divEach .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.divEach is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeMul(Matrix mat[, Matrix output])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.mul .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.mul is called instead.
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>mat</b> : <i>Matrix</i>
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeTimes(float num)</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.times .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.times is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>num</b> : <i>float</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeClone([Matrix output])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.clone .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.clone is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>optional output</b> : <i>Matrix</i>
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+<h2 class="methodname">AgentSmith.Matrix.prototype.largeZeros([float num = 0.0])</h1>
+<table class="datatable">
+  <tr>
+    <td class="title">
+      <dt>Description:</dt>
+    </td>
+    <td class="data">
+	  WebCL version of function AgentSmith.Matrix.prototype.zeros .
+	  If WebCL is not loaded, AgentSmith.Matrix.prototype.zeros is called instead.
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Parameters:</dt>
+    </td>
+    <td class="data">
+	  <b>optional num</b> : <i>float</i> default 0.0
+    </td>
+  </tr>
+  <tr>
+    <td class="title">
+      <dt>Returns:</dt>
+    </td>
+    <td class="data">
+	  <i>Matrix</i>
+    </td>
+  </tr>
+</table>
+
+</section>
+    </div>
+
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+</body>
+</html>
+
+
