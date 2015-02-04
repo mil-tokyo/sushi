@@ -1285,6 +1285,7 @@ var AgentSmith = AgentSmith || { };
 			
 			// normalization
 			var Q = new $M(n, n);
+			var rank = m;
 			Q.syncData();
 			for (var row = 0; row < n; row++) {
 				var offset = B.row_wise ? B.cols * row : row;
@@ -1300,16 +1301,20 @@ var AgentSmith = AgentSmith || { };
 					sum += Q.data[col + row * n] * Q.data[col + row * n]
 				}
 				sum = Math.sqrt(sum);
+				if (sum <= 0) {
+					rank = col;
+					break;
+				}
 				for (var row = 0; row < n; row++) {
 					Q.data[col + row * n] /= sum;
 				}
 				for (var i = 0; i < m; i++) {
 					X.data[i + col * m] *= sum;
-				}			
+				}
 			}
 			
 			// expansion
-			for (var i = m; i < n; i++) {
+			for (var i = rank; i < n; i++) {
 				Q.data[i + i * n] = 1;
 				for (var j = 0; j < i; j++) {
 					// calcXij
@@ -1334,7 +1339,7 @@ var AgentSmith = AgentSmith || { };
 			}
 			var R = new $M(n, m);
 			R.syncData();
-			for (var i = 0; i < X.length; i++) {
+			for (var i = 0; i < rank * m; i++) {
 				R.data[i] = X.data[i];
 			}
 			
