@@ -277,20 +277,6 @@ var AgentSmith = AgentSmith || { };
 			return this;
 		};
 		
-		$M.fromColVectors = function(original_vectors, output) {
-			if (!(original_vectors instanceof Array)) {
-				throw new Error('input must be an array');
-			}
-			if (original_vectors[0].cols !== 1) {
-				throw new Error('vectors must be col vectors');
-			}
-			var newM = $M.newMatOrReuseMat(original_vectors[0].length, original_vectors.length, output);
-			newM.setEach(function(row, col) {
-				return original_vectors[col].get(row, 0);
-			});
-			return newM;
-		};
-		
 		$M.eye = function(size, output) {
 			var newM = $M.newMatOrReuseMat(size, size, output);
 			newM.syncData();
@@ -1299,6 +1285,7 @@ var AgentSmith = AgentSmith || { };
 			
 			// normalization
 			var Q = new $M(n, n);
+			var rank = m;
 			Q.syncData();
 			for (var row = 0; row < n; row++) {
 				var offset = B.row_wise ? B.cols * row : row;
@@ -1314,16 +1301,20 @@ var AgentSmith = AgentSmith || { };
 					sum += Q.data[col + row * n] * Q.data[col + row * n]
 				}
 				sum = Math.sqrt(sum);
+				if (sum <= 0) {
+					rank = col;
+					break;
+				}
 				for (var row = 0; row < n; row++) {
 					Q.data[col + row * n] /= sum;
 				}
 				for (var i = 0; i < m; i++) {
 					X.data[i + col * m] *= sum;
-				}			
+				}
 			}
 			
 			// expansion
-			for (var i = m; i < n; i++) {
+			for (var i = rank; i < n; i++) {
 				Q.data[i + i * n] = 1;
 				for (var j = 0; j < i; j++) {
 					// calcXij
@@ -1348,7 +1339,7 @@ var AgentSmith = AgentSmith || { };
 			}
 			var R = new $M(n, m);
 			R.syncData();
-			for (var i = 0; i < X.length; i++) {
+			for (var i = 0; i < rank * m; i++) {
 				R.data[i] = X.data[i];
 			}
 			

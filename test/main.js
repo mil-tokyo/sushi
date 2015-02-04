@@ -332,24 +332,6 @@
 					}
 				},
 				{
-					name : "checkColVectors",
-					test : function() {
-						var vectors = [];
-						for (var i = 0; i < 5; i++) {
-							vectors.push((new $M(10, 1)).random());
-						}
-						var mat = $M.fromColVectors(vectors);
-						for (var i = 0; i < vectors.length; i++) {
-							for (var row = 0; row < vectors[i].rows; row++) {
-								if (vectors[i].get(row, 0) !== mat.get(row, i)) {
-									return false;
-								}
-							}
-						}
-						return true;
-					}
-				},
-				{
 					name : "checkSumEachRow",
 					test : function() {
 						var a = $M.fromArray([
@@ -1209,11 +1191,19 @@
 						var b = new $M(12, 10);
 						b.random();
 						var b_qr = $M.qr(b);
+						var c = $M.fromArray([
+							[1, 2],
+							[1, 2],
+							[1, 2],
+						]);
+						var c_qr = $M.qr(c);
 						return true &&
 							a_qr.Q.mul(a_qr.Q.t()).nearlyEquals($M.eye(10)) &&
 							b_qr.Q.mul(b_qr.Q.t()).nearlyEquals($M.eye(12)) &&
+							c_qr.Q.mul(c_qr.Q.t()).nearlyEquals($M.eye(3)) &&
 							a_qr.Q.mul(a_qr.R).nearlyEquals(a) &&
-							b_qr.Q.mul(b_qr.R).nearlyEquals(b);
+							b_qr.Q.mul(b_qr.R).nearlyEquals(b) &&
+							c_qr.Q.mul(c_qr.R).nearlyEquals(c);
 					}
 				},
 				{
