@@ -1,7 +1,9 @@
 "use strict";
 
-require('../src/agent_smith');
-require('../src/agent_smith_cl');
+if (typeof window === 'undefined') {
+	require('../src/agent_smith');
+	require('../src/agent_smith_cl');
+}
 
 (function(AgentSmith) {
 	var $M = AgentSmith.Matrix;
