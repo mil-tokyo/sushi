@@ -1668,5 +1668,6 @@ var AgentSmith = AgentSmith || { };
 	
 	function exportNodeJs() {
 		module.exports = AgentSmith;
+		("global", eval)("this").AgentSmith = AgentSmith;
 	}
 })(AgentSmith, typeof window === 'undefined');

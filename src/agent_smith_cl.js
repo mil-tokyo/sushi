@@ -1143,4 +1143,4 @@
 		$M.largeConvolve = $CL.convolve;
 		$M.largeExtract = $CL.extract;
 	}
-})(AgentSmith || ((typeof module !== 'undefined' && typeof module.exports !== 'undefined') ? require('./agent_smith') : null));
+})(AgentSmith);
