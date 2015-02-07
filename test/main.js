@@ -1,9 +1,9 @@
-(function() {
-	var nodejs = (typeof window === 'undefined');
-	if (nodejs) {
-		AgentSmith = require('../src/agent_smith');
-		require('../src/agent_smith_cl');
-	}
+"use strict";
+
+require('../src/agent_smith');
+require('../src/agent_smith_cl');
+
+(function(AgentSmith) {
 	var $M = AgentSmith.Matrix;
 	
 	if ($M.CL) {
@@ -1303,4 +1303,4 @@
 	};
 
 	start_tests(tests);
-})();
+})(AgentSmith);
