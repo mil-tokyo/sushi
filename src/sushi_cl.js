@@ -1,12 +1,12 @@
 "use strict";
 
-(function(AgentSmith) {
-	if (!AgentSmith || !AgentSmith.Matrix) {
-		throw new Error('AgentSmith.Matrix is not loaded');
+(function(Sushi) {
+	if (!Sushi || !Sushi.Matrix) {
+		throw new Error('Sushi.Matrix is not loaded');
 		return;
 	}
 	
-	var $M = AgentSmith.Matrix; 
+	var $M = Sushi.Matrix; 
 	if ($M.CL) {
 		return;
 	}
@@ -1143,4 +1143,4 @@
 		$M.largeConvolve = $CL.convolve;
 		$M.largeExtract = $CL.extract;
 	}
-})(AgentSmith);
+})(Sushi);
