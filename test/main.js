@@ -1,12 +1,12 @@
 "use strict";
 
 if (typeof window === 'undefined') {
-	require('../src/agent_smith');
-	require('../src/agent_smith_cl');
+	require('../src/sushi');
+	require('../src/sushi_cl');
 }
 
-(function(AgentSmith) {
-	var $M = AgentSmith.Matrix;
+(function(Sushi) {
+	var $M = Sushi.Matrix;
 	
 	if ($M.CL) {
 		console.log('using device : ' + $M.CL.device_info + ' (' + $M.CL.platform_info + ')');
@@ -1305,4 +1305,4 @@ if (typeof window === 'undefined') {
 	};
 
 	start_tests(tests);
-})(AgentSmith);
+})(Sushi);

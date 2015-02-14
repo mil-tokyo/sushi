@@ -1,21 +1,21 @@
 "use strict";
 
-var AgentSmith = AgentSmith || { };
+var Sushi = Sushi || { };
 
-(function(AgentSmith, nodejs) {
-	if (AgentSmith.Matrix) {
+(function(Sushi, nodejs) {
+	if (Sushi.Matrix) {
 		return;
 	}
 	
 	initConstructor();
-	initMethods(AgentSmith.Matrix, AgentSmith.Matrix.prototype);
-	initAliases(AgentSmith.Matrix, AgentSmith.Matrix.prototype);
+	initMethods(Sushi.Matrix, Sushi.Matrix.prototype);
+	initAliases(Sushi.Matrix, Sushi.Matrix.prototype);
 	if (nodejs) {
 		exportNodeJs();
 	}
 	
 	function initConstructor() {
-		AgentSmith.Matrix = function(rows, cols, data) {
+		Sushi.Matrix = function(rows, cols, data) {
 			this.rows = rows;
 			this.cols = cols;
 			this.length = rows * cols;
@@ -1667,7 +1667,7 @@ var AgentSmith = AgentSmith || { };
 	}
 	
 	function exportNodeJs() {
-		module.exports = AgentSmith;
-		("global", eval)("this").AgentSmith = AgentSmith;
+		module.exports = Sushi;
+		("global", eval)("this").Sushi = Sushi;
 	}
-})(AgentSmith, typeof window === 'undefined');
+})(Sushi, typeof window === 'undefined');
