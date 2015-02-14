@@ -1,7 +1,9 @@
-# AgentSmith
+# Sushi JavaScript Library
 The Fastest Matrix Library for JavaScript
 
-AgentSmith is being developed to be the fastest matrix library for JavaScript, which is named after one of the fastest characters in the movie Matrix.
+Sushi is being developed to be the fastest matrix library for JavaScript. Tempura and Soba go well with Sushi.
+- Tempura (Machine Learning Library) http://github.com/mil-tokyo/tempura
+- Soba (Visualization Library) http://github.com/mil-tokyo/soba
 
 ## Technical Features
 
