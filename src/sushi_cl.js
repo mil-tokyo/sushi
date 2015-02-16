@@ -130,13 +130,13 @@
 				$CL.kernelSetArg = function(kernel, idx, param, type) {
 					if (type !== void 0) {
 						switch (type) {
-							case web_cl.type.UINT:
+							case WebCL.type.UINT:
 								param = new Uint32Array([param]);
 								break;
-							case web_cl.type.INT:
+							case WebCL.type.INT:
 								param = new Int32Array([param]);
 								break;
-							case web_cl.type.FLOAT:
+							case WebCL.type.FLOAT:
 								param = new Float32Array([param]);
 								break;
 						}
@@ -154,13 +154,13 @@
 					$CL.kernelSetArg = function(kernel, idx, param, type) {
 					if (type !== void 0) {
 						switch (type) {
-							case web_cl.type.UINT:
+							case WebCL.type.UINT:
 								var type_tmp = web_cl.KERNEL_ARG_UINT;
 								break;
-							case web_cl.type.INT:
+							case WebCL.type.INT:
 								var type_tmp = web_cl.KERNEL_ARG_INT;
 								break;
-							case web_cl.type.FLOAT:
+							case WebCL.type.FLOAT:
 								var type_tmp = web_cl.KERNEL_ARG_FLOAT;
 								break;
 						}
@@ -174,7 +174,7 @@
 		switch(env) {
 			case 'ff':
 			case 'chromium':
-				web_cl.type = {
+				WebCL.type = {
 					CHAR: 0,
 					UCHAR: 1,
 					SHORT: 2,
@@ -383,15 +383,15 @@
 				var params = [
 					{ access : web_cl.MEM_READ_WRITE, datum : mat1 },
 					{ access : web_cl.MEM_READ_ONLY, datum : mat2 },
-					{ datum : mat1.length, type : web_cl.type.UINT }
+					{ datum : mat1.length, type : WebCL.type.UINT }
 				];
 				if (kernel_to_use === kernel1 || kernel_to_use === kernel2 || kernel_to_use === kernel3) {
-					params.push({ datum : mat1.rows, type : web_cl.type.UINT });
-					params.push({ datum : mat1.cols, type : web_cl.type.UINT });
+					params.push({ datum : mat1.rows, type : WebCL.type.UINT });
+					params.push({ datum : mat1.cols, type : WebCL.type.UINT });
 				} else if (kernel_to_use === kernel4) {
-					params.push({ datum : mat2.length, type : web_cl.type.UINT });
+					params.push({ datum : mat2.length, type : WebCL.type.UINT });
 				} else if (kernel_to_use === kernel5) {
-					params.push({ datum : mat1.length / mat2.length, type : web_cl.type.UINT });
+					params.push({ datum : mat1.length / mat2.length, type : WebCL.type.UINT });
 				}
 				
 				$CL.executeKernel(kernel_to_use, params, mat1.length);
@@ -487,15 +487,15 @@
 					{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 					{ access : web_cl.MEM_READ_WRITE, datum : mat1 },
 					{ access : web_cl.MEM_READ_ONLY, datum : mat2 },
-					{ datum : mat1.length, type : web_cl.type.UINT },
-					{ datum : mat1.rows, type : web_cl.type.UINT },
-					{ datum : mat1.cols, type : web_cl.type.UINT }
+					{ datum : mat1.length, type : WebCL.type.UINT },
+					{ datum : mat1.rows, type : WebCL.type.UINT },
+					{ datum : mat1.cols, type : WebCL.type.UINT }
 				];
 					
 				if (kernel_to_use === kernel5 || kernel_to_use === kernel6) {
-					params.push({ datum : mat2.length, type : web_cl.type.UINT });
+					params.push({ datum : mat2.length, type : WebCL.type.UINT });
 				} else if (kernel_to_use === kernel7 || kernel_to_use === kernel8) {
-					params.push({ datum : mat1.length / mat2.length, type : web_cl.type.UINT });
+					params.push({ datum : mat1.length / mat2.length, type : WebCL.type.UINT });
 				}
 				
 				$CL.executeKernel(kernel_to_use, params, mat1.length);
@@ -518,7 +518,7 @@
 			return function(mat) {
 				var params = [
 					{ access : web_cl.MEM_READ_WRITE, datum : mat },
-					{ datum : mat.length, type : web_cl.type.UINT }
+					{ datum : mat.length, type : WebCL.type.UINT }
 				];
 				$CL.executeKernel(kernel, params, mat.length);
 			};
@@ -585,10 +585,10 @@
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat2 },
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
-						{ datum : newM.length, type : web_cl.type.UINT},
-						{ datum : newM.rows, type : web_cl.type.UINT},
-						{ datum : newM.cols, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT }
+						{ datum : newM.length, type : WebCL.type.UINT},
+						{ datum : newM.rows, type : WebCL.type.UINT},
+						{ datum : newM.cols, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -666,14 +666,14 @@
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat2 },
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
-						{ datum : newM.cols, type : web_cl.type.UINT},
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : mat2.rows, type : web_cl.type.UINT},
-						{ datum : mat2.cols, type : web_cl.type.UINT},
-						{ datum : offset_row, type : web_cl.type.UINT},
-						{ datum : offset_col, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT}
+						{ datum : newM.cols, type : WebCL.type.UINT},
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : mat2.rows, type : WebCL.type.UINT},
+						{ datum : mat2.cols, type : WebCL.type.UINT},
+						{ datum : offset_row, type : WebCL.type.UINT},
+						{ datum : offset_col, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT}
 					],
 					newM.length
 				);
@@ -695,8 +695,8 @@
 					kernel_to_use,
 					[
 						{ access : web_cl.MEM_READ_WRITE, datum : mat1 },
-						{ datum : times, type : web_cl.type.FLOAT}, 
-						{ datum : mat1.length, type : web_cl.type.UINT }
+						{ datum : times, type : WebCL.type.FLOAT}, 
+						{ datum : mat1.length, type : WebCL.type.UINT }
 					],
 					mat1.length
 				);
@@ -719,8 +719,8 @@
 					kernel_to_use,
 					[
 						{ access : web_cl.MEM_READ_WRITE, datum : mat1 },
-						{ datum : num, type : web_cl.type.FLOAT}, 
-						{ datum : mat1.length, type : web_cl.type.UINT }
+						{ datum : num, type : WebCL.type.FLOAT}, 
+						{ datum : mat1.length, type : WebCL.type.UINT }
 					],
 					mat1.length
 				);
@@ -753,9 +753,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -788,9 +788,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -823,9 +823,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -863,9 +863,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -903,9 +903,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -938,9 +938,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -978,9 +978,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -1018,9 +1018,9 @@
 					[
 						{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 						{ access : web_cl.MEM_READ_ONLY, datum : mat1 },
-						{ datum : mat1.rows, type : web_cl.type.UINT},
-						{ datum : mat1.cols, type : web_cl.type.UINT},
-						{ datum : newM.length, type : web_cl.type.UINT }
+						{ datum : mat1.rows, type : WebCL.type.UINT},
+						{ datum : mat1.cols, type : WebCL.type.UINT},
+						{ datum : newM.length, type : WebCL.type.UINT }
 					],
 					newM.length
 				);
@@ -1053,7 +1053,7 @@
 						[
 							{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 							{ access : web_cl.MEM_READ_ONLY, datum : mat },
-							{ datum : newM.length, type : web_cl.type.UINT }
+							{ datum : newM.length, type : WebCL.type.UINT }
 						],
 						newM.length
 					);
@@ -1093,12 +1093,12 @@
 						[
 							{ access : web_cl.MEM_WRITE_ONLY, datum : newM },
 							{ access : web_cl.MEM_READ_ONLY, datum : mat },
-							{ datum : offset_row, type : web_cl.type.UINT },
-							{ datum : offset_col, type : web_cl.type.UINT },
-							{ datum : mat.rows, type : web_cl.type.UINT },
-							{ datum : mat.cols, type : web_cl.type.UINT },
-							{ datum : cols, type : web_cl.type.UINT },
-							{ datum : newM.length, type : web_cl.type.UINT }
+							{ datum : offset_row, type : WebCL.type.UINT },
+							{ datum : offset_col, type : WebCL.type.UINT },
+							{ datum : mat.rows, type : WebCL.type.UINT },
+							{ datum : mat.cols, type : WebCL.type.UINT },
+							{ datum : cols, type : WebCL.type.UINT },
+							{ datum : newM.length, type : WebCL.type.UINT }
 						],
 						newM.length
 					);
