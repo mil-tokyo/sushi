@@ -1,18 +1,15 @@
 "use strict";
 
-var Sushi = Sushi || { };
-
-(function(Sushi, nodejs) {
-	if (Sushi.Matrix) {
+(function(nodejs) {
+	if (Sushi && Sushi.Matrix) {
 		return;
 	}
+	var Sushi = { };
 	
 	initConstructor();
 	initMethods(Sushi.Matrix, Sushi.Matrix.prototype);
 	initAliases(Sushi.Matrix, Sushi.Matrix.prototype);
-	if (nodejs) {
-		exportNodeJs();
-	}
+	("global", eval)("this").Sushi = Sushi;
 	
 	function initConstructor() {
 		Sushi.Matrix = function(rows, cols, data) {
@@ -1665,9 +1662,4 @@ var Sushi = Sushi || { };
 		$M.largeConvolve = $M.convolve;
 		$M.largeExtract = $M.extract;
 	}
-	
-	function exportNodeJs() {
-		module.exports = Sushi;
-		("global", eval)("this").Sushi = Sushi;
-	}
-})(Sushi, typeof window === 'undefined');
+})(typeof window === 'undefined');
