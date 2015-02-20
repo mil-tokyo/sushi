@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Sushi : The Fastest Matrix Library for JavaScript">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Sushi</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mil-tokyo/sushi">View on GitHub</a>
+
+          <h1 id="project_title">Sushi</h1>
+          <h2 id="project_tagline">The Fastest Matrix Library for JavaScript</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mil-tokyo/sushi/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mil-tokyo/sushi/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+	<h1>Sushi</h1>
+	The Fastest Matrix Library for JavaScript
+
+	Sushi is being developed to be the fastest matrix library for JavaScript, which is named after one of the fastest characters in the movie Matrix.
+
+	<h2>Technical Features</h2>
+	<h3>Use of Typed Array</h3>
+	Faster than other matrix libraries which uses javascript array.
+
+	<h3>Support of WebCL</h3>
+	You can use WebCL and get at most 30 times faster calculation speed.
+	Three implementations
+	<ul id="getting started">
+	<li class="content list">Nokia WebCL for Firefox : <a href="http://webcl.nokiaresearch.com/">http://webcl.nokiaresearch.com/</a></li>
+	<li class="content list">Motorola-Mobility Node WebCL for node.js : <a href="https://github.com/mikeseven/node-webcl">https://github.com/mikeseven/node-webcl</a></li>
+	<li>Chromium-WebCL : <a href="https://github.com/amd/Chromium-WebCL">https://github.com/amd/Chromium-WebCL</a></li>
+	</ul>
+	are supported.
+
+	<h2>How to Try</h2>
+	<h3> node.js</h3>
+
+        <pre><code>
+	    $ cd test
+            $ node main
+	</code></pre>
+
+	If you want to use WebCL, install <a href="https://github.com/mikeseven/node-webcl">node-webcl</a>  and set the path in sushi_cl.js
+	<h3>browsers</h3>
+	open test/main.html with your browser. Chromium-WebCL supports WebCL without any plugins. Firefox requires Nokia WebCL ( <a href="http://webcl.nokiaresearch.com/">http://webcl.nokiaresearch.com/</a> ) to use WebCL with it.
+	
+	<h2><a href="http://mil-tokyo.github.io/sushi/docs/index.html">Documentation</a></h2>
+
+	<h3> Please Contribute the Fastest Matrix Library</h3>
+	Contact me miura@mi.t.u-tokyo.ac.jp
+
+
+	<h3>
+	  <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+      </section>
+    </div>
+    
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Sushi maintained by <a href="https://github.com/mil-tokyo">mil-tokyo</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
