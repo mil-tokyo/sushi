@@ -6,7 +6,7 @@
   <meta name="description" content="Mil-tokyo.GitHub.io : ">
 
   <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-  <title>AgentSmith document page</title>
+  <title>Sushi document page</title>
 </head>
 
 <body>
@@ -14,8 +14,8 @@
   <div id="header_wrap" class="outer">
     <header class="inner">
       <a id="forkme_banner" href="https://github.com/mil-tokyo">View on GitHub</a>
-      <h1 id="project_title">AgentSmith</h1>
-      <h2 id="project_tagline">AgentSmith document page</h2>
+      <h1 id="project_title">Sushi</h1>
+      <h2 id="project_tagline">Sushi document page</h2>
     </header>
   </div>
 
@@ -24,11 +24,11 @@
     <section id="main_content" class="inner">
 <h1 id="title">Table of contents</h1>
 <ul>
-  <li><a href="#newMatOrReuseMat">AgentSmith.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</a></li>
+  <li><a href="#newMatOrReuseMat">Sushi.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</a></li>
 </ul>
 
 <h2 id="title">constructor and variables</h2>
-<h1 class="classname">AgentSmith.Matrix(int rows, int cols[, Float32Array array])</h1>
+<h1 class="classname">Sushi.Matrix(int rows, int cols[, Float32Array array])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -36,42 +36,42 @@
     </td>
     <td class="data">
 	  Initialize a matrix with shape of (rows, cols).
-	  If <i>array</i> is given, set the member variable <i>data</i> with given <i>array</i>, otherwise <i>data</i> is not created untill <i>AgentSmith.Matrix.prototype.syncData is called.
+	  If <i>array</i> is given, set the member variable <i>data</i> with given <i>array</i>, otherwise <i>data</i> is not created untill <i>Sushi.Matrix.prototype.syncData is called.
     </td>
   </tr>
   <tr>
     <td class="title">
-      <dt>AgentSmith Member variables:</dt>
+      <dt>Sushi Member variables:</dt>
     </td>
     <td class="data">
-	  <p class="variable"><b>AgentSmith.Matrix.prototype.rows</b> : <i>int</i></p>
+	  <p class="variable"><b>Sushi.Matrix.prototype.rows</b> : <i>int</i></p>
 	     <p class="option"> The number of rows. </p>
-	  <p class="variable"><b>AgentSmith.Matrix.prototype.cols</b> : <i>int</i>
+	  <p class="variable"><b>Sushi.Matrix.prototype.cols</b> : <i>int</i>
 	     <p class="option"> The number of cols. </p>
-	  <p class="variable"><b>AgentSmith.Matrix.prototype.row_wise</b> : <i>bool</i>
+	  <p class="variable"><b>Sushi.Matrix.prototype.row_wise</b> : <i>bool</i>
 	     <p class="option"> Whether data is stored row-wise or not. </p>
-	  <p class="variable"><b>AgentSmith.Matrix.prototype.data</b> : <i>float32Array</i>
-	     <p class="option"> Values. Since this may occasionally be not allocated, it is necessary to call AgentSmith.Matrix.prototype.syncData beforehand. </p>
+	  <p class="variable"><b>Sushi.Matrix.prototype.data</b> : <i>float32Array</i>
+	     <p class="option"> Values. Since this may occasionally be not allocated, it is necessary to call Sushi.Matrix.prototype.syncData beforehand. </p>
     </td>
   </tr>
   <tr>
     <td class="title">
-      <dt>AgentSmith CL Member variables:</dt>
+      <dt>Sushi CL Member variables:</dt>
     </td>
     <td class="data">
-	  <p class="variable"><b>AgentSmith.Matrix.CL.buffers</b> : <i>int</i>
+	  <p class="variable"><b>Sushi.Matrix.CL.buffers</b> : <i>int</i>
 	     <p class="option"> The number of buffers allocated by WebCL. </p>
-	  <p class="variable"><b>AgentSmith.Matrix.CL.platform_info</b> : <i>String</i>
+	  <p class="variable"><b>Sushi.Matrix.CL.platform_info</b> : <i>String</i>
      	  <p class="option"> The platform information of WebCL.
-	  <p class="variable"><b>AgentSmith.Matrix.CL.device_info</b> : <i>String</i>
+	  <p class="variable"><b>Sushi.Matrix.CL.device_info</b> : <i>String</i>
 	  <p class="option"> The device information of WebCL. </p>
     </td>
   </tr>
 </table>
 
 
-<h2 id="title">AgentSmith function</h2>
-<h2 class="methodname" id="newMatOrReuseMat">AgentSmith.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</h1>
+<h2 id="title">Sushi function</h2>
+<h2 class="methodname" id="newMatOrReuseMat">Sushi.Matrix.newMatOrReuseMat(int rows, int cols(, Matrix mat))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -102,7 +102,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.hasNaN(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.hasNaN(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -130,7 +130,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.toArray(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.toArray(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -158,7 +158,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.fromArray(Array array)</h1>
+<h2 class="methodname">Sushi.Matrix.fromArray(Array array)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -187,7 +187,7 @@
 </table>
 
 
-<h2 class="methodname">AgentSmith.Matrix.eye(int size(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.eye(int size(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -217,7 +217,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.diag((Matrix or Array) diag)</h1>
+<h2 class="methodname">Sushi.Matrix.diag((Matrix or Array) diag)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -245,7 +245,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.extract(Matrix mat, int offset_row, int offset_col, int rows, int cols(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.extract(Matrix mat, int offset_row, int offset_col, int rows, int cols(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -279,7 +279,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.getRow(Matrix mat, int row(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.getRow(Matrix mat, int row(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -310,7 +310,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.getCol(Matrix mat, int col(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.getCol(Matrix mat, int col(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -341,7 +341,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.vstack([Matrix mat1, Matrix mat2, ...](, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.vstack([Matrix mat1, Matrix mat2, ...](, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -371,7 +371,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.hstack([Matrix mat1, Matrix mat2, ...](, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.hstack([Matrix mat1, Matrix mat2, ...](, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -401,7 +401,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.fromJSON(Object json)</h1>
+<h2 class="methodname">Sushi.Matrix.fromJSON(Object json)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -429,7 +429,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.max(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.max(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -457,7 +457,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.min(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.min(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -485,7 +485,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.argmax(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.argmax(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -514,7 +514,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.sum(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.sum(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -542,7 +542,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.sumEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.sumEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -572,7 +572,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.sumEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.sumEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -602,7 +602,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.maxEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.maxEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -632,7 +632,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.maxEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.maxEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -662,7 +662,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.argmaxEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.argmaxEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -692,7 +692,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.argmaxEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.argmaxEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -722,7 +722,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.argminEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.argminEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -752,7 +752,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.argminEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.argminEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -782,7 +782,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.add(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.add(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -813,7 +813,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.sub(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.sub(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -844,7 +844,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.mulEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.mulEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -875,7 +875,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.divEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.divEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -906,7 +906,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.dot(Matrix mat1, Matrix mat2)</h1>
+<h2 class="methodname">Sushi.Matrix.dot(Matrix mat1, Matrix mat2)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -935,7 +935,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.mul(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.mul(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -966,7 +966,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.convolve(Matrix mat1, Matrix mat2, String mode(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.convolve(Matrix mat1, Matrix mat2, String mode(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1001,7 +1001,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.getEach(Matrix mat, Matrix indexes)</h1>
+<h2 class="methodname">Sushi.Matrix.getEach(Matrix mat, Matrix indexes)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1032,7 +1032,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.upperTriangular(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.upperTriangular(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1062,7 +1062,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.qr(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.qr(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1091,7 +1091,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.svd(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.svd(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1125,8 +1125,8 @@
 
 
 
-<h2 id="title">AgentSmith Method</h2>
-<h2 class="methodname">AgentSmith.Matrix.prototype.syncData()</h1>
+<h2 id="title">Sushi Method</h2>
+<h2 class="methodname">Sushi.Matrix.prototype.syncData()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1155,7 +1155,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.destruct()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.destruct()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1183,7 +1183,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.copyPropertyFrom(Matrix original)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.copyPropertyFrom(Matrix original)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1211,7 +1211,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.equals(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.equals(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1239,7 +1239,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.nearlyEquals(Matrix mat[, float epsilon = 0.01])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.nearlyEquals(Matrix mat[, float epsilon = 0.01])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1268,7 +1268,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.print()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.print()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1296,7 +1296,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.print()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.print()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1324,7 +1324,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.toRowWise()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.toRowWise()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1353,7 +1353,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.clone([Matrix output])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.clone([Matrix output])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1382,7 +1382,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.alias()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.alias()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1410,7 +1410,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.zeros([float num = 0.0])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.zeros([float num = 0.0])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1438,7 +1438,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.random(float min, float max)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.random(float min, float max)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1468,7 +1468,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.gaussRandom(float mu, float std)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.gaussRandom(float mu, float std)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1498,7 +1498,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.range()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.range()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1527,7 +1527,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.setArray(Array array)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.setArray(Array array)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1556,7 +1556,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.setRow(int row, Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.setRow(int row, Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1586,7 +1586,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.setCol(int col, Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.setCol(int col, Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1616,7 +1616,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.toJSON()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.toJSON()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1644,7 +1644,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.get(int row, int col)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.get(int row, int col)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1673,7 +1673,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.set(int row, int col, falot datum)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.set(int row, int col, falot datum)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1704,7 +1704,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.map(function(original_datum) {return new_datum;})</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.map(function(original_datum) {return new_datum;})</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1733,7 +1733,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.setEach(function(row, col) {return new_datum;})</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.setEach(function(row, col) {return new_datum;})</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1762,7 +1762,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.set(int row, int col, falot datum)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.set(int row, int col, falot datum)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1792,7 +1792,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.t()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.t()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1821,7 +1821,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.getShape()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.getShape()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1850,7 +1850,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.times(float num)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.times(float num)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1879,7 +1879,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.add(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.add(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1908,7 +1908,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.sub(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.sub(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1937,7 +1937,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.mulEach(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.mulEach(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1966,7 +1966,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.divEach(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.divEach(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -1995,7 +1995,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.dot(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.dot(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2023,7 +2023,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.mul(Matrix mat[, Matrix output])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.mul(Matrix mat[, Matrix output])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2052,7 +2052,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.det()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.det()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2079,7 +2079,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.inverse()</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.inverse()</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2107,16 +2107,16 @@
 </table>
 
 
-<h2 id="title">AgentSmith CL function</h2>
-<h2 class="methodname">AgentSmith.Matrix.largeAdd(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 id="title">Sushi CL function</h2>
+<h2 class="methodname">Sushi.Matrix.largeAdd(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.add .
-	  If WebCL is not loaded, AgentSmith.Matrix.add is called instead.
+	  WebCL version of function Sushi.Matrix.add .
+	  If WebCL is not loaded, Sushi.Matrix.add is called instead.
     </td>
   </tr>
   <tr>
@@ -2139,15 +2139,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeSub(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeSub(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.sub .
-	  If WebCL is not loaded, AgentSmith.Matrix.sub is called instead.
+	  WebCL version of function Sushi.Matrix.sub .
+	  If WebCL is not loaded, Sushi.Matrix.sub is called instead.
     </td>
   </tr>
   <tr>
@@ -2170,15 +2170,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeMulEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeMulEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.mulEach .
-	  If WebCL is not loaded, AgentSmith.Matrix.mulEach is called instead.
+	  WebCL version of function Sushi.Matrix.mulEach .
+	  If WebCL is not loaded, Sushi.Matrix.mulEach is called instead.
     </td>
   </tr>
   <tr>
@@ -2201,15 +2201,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeDivEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeDivEach(Matrix mat1, Matrix mat2(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.divEach .
-	  If WebCL is not loaded, AgentSmith.Matrix.divEach is called instead.
+	  WebCL version of function Sushi.Matrix.divEach .
+	  If WebCL is not loaded, Sushi.Matrix.divEach is called instead.
     </td>
   </tr>
   <tr>
@@ -2232,15 +2232,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeSum(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.largeSum(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.sum .
-	  If WebCL is not loaded, AgentSmith.Matrix.sum is called instead.
+	  WebCL version of function Sushi.Matrix.sum .
+	  If WebCL is not loaded, Sushi.Matrix.sum is called instead.
     </td>
   </tr>
   <tr>
@@ -2261,15 +2261,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeSumEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeSumEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.sumEachRow .
-	  If WebCL is not loaded, AgentSmith.Matrix.sumEachRow is called instead.
+	  WebCL version of function Sushi.Matrix.sumEachRow .
+	  If WebCL is not loaded, Sushi.Matrix.sumEachRow is called instead.
     </td>
   </tr>
   <tr>
@@ -2291,15 +2291,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeSumEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeSumEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.sumEachCol .
-	  If WebCL is not loaded, AgentSmith.Matrix.sumEachCol is called instead.
+	  WebCL version of function Sushi.Matrix.sumEachCol .
+	  If WebCL is not loaded, Sushi.Matrix.sumEachCol is called instead.
     </td>
   </tr>
   <tr>
@@ -2321,15 +2321,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeMaxEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeMaxEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.maxEachRow .
-	  If WebCL is not loaded, AgentSmith.Matrix.maxEachRow is called instead.
+	  WebCL version of function Sushi.Matrix.maxEachRow .
+	  If WebCL is not loaded, Sushi.Matrix.maxEachRow is called instead.
     </td>
   </tr>
   <tr>
@@ -2351,15 +2351,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeMaxEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeMaxEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.maxEachCol .
-	  If WebCL is not loaded, AgentSmith.Matrix.maxEachCol is called instead.
+	  WebCL version of function Sushi.Matrix.maxEachCol .
+	  If WebCL is not loaded, Sushi.Matrix.maxEachCol is called instead.
     </td>
   </tr>
   <tr>
@@ -2381,15 +2381,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeArgmaxEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeArgmaxEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.argmaxEachRow .
-	  If WebCL is not loaded, AgentSmith.Matrix.argmaxEachRow is called instead.
+	  WebCL version of function Sushi.Matrix.argmaxEachRow .
+	  If WebCL is not loaded, Sushi.Matrix.argmaxEachRow is called instead.
     </td>
   </tr>
   <tr>
@@ -2411,15 +2411,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeArgmaxEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeArgmaxEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.argmaxEachCol .
-	  If WebCL is not loaded, AgentSmith.Matrix.argmaxEachCol is called instead.
+	  WebCL version of function Sushi.Matrix.argmaxEachCol .
+	  If WebCL is not loaded, Sushi.Matrix.argmaxEachCol is called instead.
     </td>
   </tr>
   <tr>
@@ -2441,15 +2441,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeArgminEachRow(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeArgminEachRow(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.argminEachRow .
-	  If WebCL is not loaded, AgentSmith.Matrix.argminEachRow is called instead.
+	  WebCL version of function Sushi.Matrix.argminEachRow .
+	  If WebCL is not loaded, Sushi.Matrix.argminEachRow is called instead.
     </td>
   </tr>
   <tr>
@@ -2471,15 +2471,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeArgminEachCol(Matrix mat(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeArgminEachCol(Matrix mat(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.argminEachCol .
-	  If WebCL is not loaded, AgentSmith.Matrix.argminEachCol is called instead.
+	  WebCL version of function Sushi.Matrix.argminEachCol .
+	  If WebCL is not loaded, Sushi.Matrix.argminEachCol is called instead.
     </td>
   </tr>
   <tr>
@@ -2501,15 +2501,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeConvolve(Matrix mat1, Matrix mat2, String mode(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeConvolve(Matrix mat1, Matrix mat2, String mode(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.convolve .
-	  If WebCL is not loaded, AgentSmith.Matrix.convolve is called instead.
+	  WebCL version of function Sushi.Matrix.convolve .
+	  If WebCL is not loaded, Sushi.Matrix.convolve is called instead.
     </td>
   </tr>
   <tr>
@@ -2536,15 +2536,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.largeExtract(Matrix mat, int offset_row, int offset_col, int rows, int cols(, Matrix output))</h1>
+<h2 class="methodname">Sushi.Matrix.largeExtract(Matrix mat, int offset_row, int offset_col, int rows, int cols(, Matrix output))</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.extract .
-	  If WebCL is not loaded, AgentSmith.Matrix.extract is called instead.
+	  WebCL version of function Sushi.Matrix.extract .
+	  If WebCL is not loaded, Sushi.Matrix.extract is called instead.
     </td>
   </tr>
   <tr>
@@ -2570,7 +2570,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.CL.flush</h1>
+<h2 class="methodname">Sushi.Matrix.CL.flush</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2598,7 +2598,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.CL.finish</h1>
+<h2 class="methodname">Sushi.Matrix.CL.finish</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2626,7 +2626,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.CL.createKernel(String code)</h1>
+<h2 class="methodname">Sushi.Matrix.CL.createKernel(String code)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2654,7 +2654,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.CL.executeKernel(KernelObject kernel, [Object param1, Object param2, ...], int parallelization)</h1>
+<h2 class="methodname">Sushi.Matrix.CL.executeKernel(KernelObject kernel, [Object param1, Object param2, ...], int parallelization)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2687,7 +2687,7 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.CL.mapGenerator(String code)</h1>
+<h2 class="methodname">Sushi.Matrix.CL.mapGenerator(String code)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
@@ -2695,7 +2695,7 @@
     </td>
     <td class="data">
 	  First, generates a function that sets each element with a return value of function corresponds to OpenCL <i>code</i> which takes original element as its argument. Here, each original element is described as <i>'a[i]'</i>. Then, returns the generated funciton. Note that the function changes self.
-	  For example, if you want to generate a function which apply exponential to each matrix element, implement as <p class="variable"><b>AgentSmith.Matrix.CL.mapGenerator('exp(a[i])');</b> .
+	  For example, if you want to generate a function which apply exponential to each matrix element, implement as <p class="variable"><b>Sushi.Matrix.CL.mapGenerator('exp(a[i])');</b> .
     </td>
   </tr>
   <tr>
@@ -2717,16 +2717,16 @@
 </table>
 
 
-<h2 id="title">AgentSmith CL method</h2>
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeAdd(Matrix mat)</h1>
+<h2 id="title">Sushi CL method</h2>
+<h2 class="methodname">Sushi.Matrix.prototype.largeAdd(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.add .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.add is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.add .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.add is called instead.
     </td>
   </tr>
   <tr>
@@ -2747,15 +2747,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeSub(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeSub(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.sub .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.sub is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.sub .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.sub is called instead.
     </td>
   </tr>
   <tr>
@@ -2776,15 +2776,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeMulEach(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeMulEach(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.mulEach .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.mulEach is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.mulEach .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.mulEach is called instead.
     </td>
   </tr>
   <tr>
@@ -2805,15 +2805,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeDivEach(Matrix mat)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeDivEach(Matrix mat)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.divEach .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.divEach is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.divEach .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.divEach is called instead.
     </td>
   </tr>
   <tr>
@@ -2835,15 +2835,15 @@
 </table>
 
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeMul(Matrix mat[, Matrix output])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeMul(Matrix mat[, Matrix output])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.mul .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.mul is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.mul .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.mul is called instead.
   </tr>
   <tr>
     <td class="title">
@@ -2864,15 +2864,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeTimes(float num)</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeTimes(float num)</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.times .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.times is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.times .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.times is called instead.
     </td>
   </tr>
   <tr>
@@ -2893,15 +2893,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeClone([Matrix output])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeClone([Matrix output])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.clone .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.clone is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.clone .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.clone is called instead.
     </td>
   </tr>
   <tr>
@@ -2922,15 +2922,15 @@
   </tr>
 </table>
 
-<h2 class="methodname">AgentSmith.Matrix.prototype.largeZeros([float num = 0.0])</h1>
+<h2 class="methodname">Sushi.Matrix.prototype.largeZeros([float num = 0.0])</h1>
 <table class="datatable">
   <tr>
     <td class="title">
       <dt>Description:</dt>
     </td>
     <td class="data">
-	  WebCL version of function AgentSmith.Matrix.prototype.zeros .
-	  If WebCL is not loaded, AgentSmith.Matrix.prototype.zeros is called instead.
+	  WebCL version of function Sushi.Matrix.prototype.zeros .
+	  If WebCL is not loaded, Sushi.Matrix.prototype.zeros is called instead.
     </td>
   </tr>
   <tr>
