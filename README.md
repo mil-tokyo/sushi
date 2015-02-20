@@ -5,6 +5,8 @@ Sushi is being developed to be the fastest matrix library for JavaScript. Tempur
 - Tempura (Machine Learning Library) http://github.com/mil-tokyo/tempura
 - Soba (Visualization Library) http://github.com/mil-tokyo/soba
 
+Related paper may be available ( http://mil-tokyo.github.io/miljs.html )
+
 ## Technical Features
 
 ### Use of Typed Array
