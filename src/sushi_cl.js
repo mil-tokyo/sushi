@@ -41,9 +41,8 @@
 		var web_cl;
 		switch (env) {
 			case 'node':
-				var node_webcl_root = '../../../../../node_modules/node-webcl'; // depends on the environment
 				try {
-					web_cl = require(node_webcl_root + '/webcl');
+					web_cl = require('node-webcl');
 					("global", eval)("this").WebCL = web_cl;
 				} catch (e) {
 					web_cl = void 0;
