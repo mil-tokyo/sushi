@@ -27,10 +27,12 @@ are supported.
 ### node.js
 	cd test
 	node main
-If you want to use WebCL, install node-webcl https://github.com/mikeseven/node-webcl and set the path in agent_smith_cl.js
+If you want to use WebCL, install node-webcl https://github.com/mikeseven/node-webcl
+Currently, WebCL is supported by node v0.10.29, node-webcl v0.8.3
+try npm install node-webcl@0.8.3
 
 ### browsers
 open test/main.html with your browser. Chromium-WebCL supports WebCL without any plugins. Firefox requires Nokia WebCL ( http://webcl.nokiaresearch.com/ ) to use WebCL with it.
 
 ## Please Contribute the Fastest Matrix Library
-Contact me miura@mi.t.u-tokyo.ac.jp
+Contact me miljs@mi.t.u-tokyo.ac.jp

@@ -1,6 +1,6 @@
 {
-  "name": "sushi",
-  "version": "0.0.2",
+  "name": "milsushi",
+  "version": "0.0.1",
   "description": "The Fastest Matrix Library for JavaScript",
   "main": "index.js",
   "directories": {
