@@ -583,10 +583,11 @@
           '    if(i >= iNumElements) return;                                           ',
           '    uint row = i / cols;                                                    ',
           '    uint col = i % cols;                                                    ',
-          '    c[i] = 0.0;                                                             ',
+            ' float tmp = 0.0;',
           '    for (uint j = 0; j < width; j++) {                                      ',
-          '        c[i] += a[A_ROW_COL_TO_IDX(row, j)] * b[B_ROW_COL_TO_IDX(j, col)];  ',
+          '        tmp += a[A_ROW_COL_TO_IDX(row, j)] * b[B_ROW_COL_TO_IDX(j, col)];  ',
           '    }                                                                       ',
+          '    c[i] = tmp;                                                             ',
           '}                                                                           '].join('\r\n')
         );
       };
@@ -603,10 +604,13 @@
         if (mat1.row_wise === true && mat2.row_wise === true) {
           kernel_to_use = kernel1;
         } else if (mat1.row_wise === true && mat2.row_wise === false) {
+            throw new Error('not implemented');
           kernel_to_use = kernel2;
         } else if (mat1.row_wise === false && mat2.row_wise === true) {
+            throw new Error('not implemented');
           kernel_to_use = kernel3;
         } else {
+            throw new Error('not implemented');
           kernel_to_use = kernel4;
         }
 
@@ -627,6 +631,63 @@
         return newM;
       };
     }();
+
+      // TODO: support column-wise matrix (for speedup evaluation, currently only row-wise is supported)
+    // $CL.mul = function() {
+    //   var createMulKernel = function(a_row_col_to_idx, b_row_col_to_idx) {
+    //     return $CL.createKernel([
+    //       '#define A_ROW_COL_TO_IDX(row, col) (' + a_row_col_to_idx + ')               ',
+    //       '#define B_ROW_COL_TO_IDX(row, col) (' + b_row_col_to_idx + ')               ',
+    //        '__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ',
+    //       '{                                                                           ',
+    //       '    size_t i =  get_global_id(0);                                           ',
+    //       '    if(i >= iNumElements) return;                                           ',
+    //       '    uint row = i / cols;                                                    ',
+    //       '    uint col = i % cols;                                                    ',
+    //       '    c[i] = 0.0;                                                             ',
+    //       '    for (uint j = 0; j < width; j++) {                                      ',
+    //       '        c[i] += a[A_ROW_COL_TO_IDX(row, j)] * b[B_ROW_COL_TO_IDX(j, col)];  ',
+    //       '    }                                                                       ',
+    //       '}                                                                           '].join('\r\n')
+    //     );
+    //   };
+    //   var kernel1 = createMulKernel('(row) * width + (col)', '(row) * cols + (col)');
+    //   var kernel2 = createMulKernel('(row) * width + (col)', '(row) + (col) * width');
+    //   var kernel3 = createMulKernel('(row) + (col) * rows', '(row) * cols + (col)');
+    //   var kernel4 = createMulKernel('(row) + (col) * rows', '(row) + (col) * width');
+
+    //   return function(mat1, mat2, output) {
+    //     if (mat1.cols !== mat2.rows) {
+    //       throw new Error('shape does not match');
+    //     }
+    //     var kernel_to_use;
+    //     if (mat1.row_wise === true && mat2.row_wise === true) {
+    //       kernel_to_use = kernel1;
+    //     } else if (mat1.row_wise === true && mat2.row_wise === false) {
+    //       kernel_to_use = kernel2;
+    //     } else if (mat1.row_wise === false && mat2.row_wise === true) {
+    //       kernel_to_use = kernel3;
+    //     } else {
+    //       kernel_to_use = kernel4;
+    //     }
+
+    //     var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);
+    //     $CL.executeKernel(
+    //       kernel_to_use,
+    //       [
+    //         { access: web_cl.MEM_READ_ONLY, datum: mat1 },
+    //         { access: web_cl.MEM_READ_ONLY, datum: mat2 },
+    //         { access: web_cl.MEM_WRITE_ONLY, datum: newM },
+    //         { datum: newM.length, type: WebCL.type.UINT},
+    //         { datum: newM.rows, type: WebCL.type.UINT},
+    //         { datum: newM.cols, type: WebCL.type.UINT},
+    //         { datum: mat1.cols, type: WebCL.type.UINT }
+    //       ],
+    //       newM.length
+    //     );
+    //     return newM;
+    //   };
+    // }();
 
     $CL.convolve = function() {
       var createConvolveKernel = function(mat1_row_col_to_idx, mat2_row_col_to_idx) {
