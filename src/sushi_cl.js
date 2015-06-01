@@ -274,10 +274,11 @@
       // Execute kernel
       switch (env) {
         case 'node':
+          var globalWS = [parallelization];//seems faster
           queue.enqueueNDRangeKernel(kernel,
                                      null,
                                      globalWS,
-                                     localWS);
+                                     null);
           break;
         case 'ff':
           queue.enqueueNDRangeKernel(kernel,
