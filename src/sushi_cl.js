@@ -126,14 +126,6 @@
     // initialize methods dependent on implementation
     switch (env) {
       case 'node':
-        $CL.context = web_cl.createContext({
-          deviceType: device_type,
-          platform: $CL.platform
-        });
-        $CL.kernelSetArg = function(kernel, idx, param, type) {
-          kernel.setArg(idx, param, type);
-        };
-        break;
       case 'ff':
         $CL.context = web_cl.createContext($CL.platform, device_type);
         $CL.kernelSetArg = function(kernel, idx, param, type) {
@@ -148,6 +140,8 @@
               case WebCL.type.FLOAT:
                 param = new Float32Array([param]);
                 break;
+              default:
+                throw new Error('Unsupported type');
             }
           }
           kernel.setArg(idx, param);
@@ -181,6 +175,7 @@
         break;
     }
     switch (env) {
+      case 'node':
       case 'ff':
       case 'chromium':
         WebCL.type = {
@@ -283,6 +278,7 @@
         case 'node':
           var globalWS = [parallelization];//seems faster
           queue.enqueueNDRangeKernel(kernel,
+                                     globalWS.length,
                                      null,
                                      globalWS,
                                      null);
