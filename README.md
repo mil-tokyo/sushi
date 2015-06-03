@@ -28,8 +28,10 @@ are supported.
 	cd test
 	node main
 If you want to use WebCL, install node-webcl https://github.com/mikeseven/node-webcl
-Currently, WebCL is supported by node v0.10.29, node-webcl v0.8.3
-try npm install node-webcl@0.8.3
+
+Currently, WebCL is supported by node v0.10.29, node-webcl v0.8.3 or v0.9.2
+
+try npm install node-webcl
 
 ### browsers
 open test/main.html with your browser. Chromium-WebCL supports WebCL without any plugins. Firefox requires Nokia WebCL ( http://webcl.nokiaresearch.com/ ) to use WebCL with it.
