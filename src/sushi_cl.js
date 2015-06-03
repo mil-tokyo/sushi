@@ -36,13 +36,18 @@
     return env;
   }
 
-  function createWebCLObject(env) {
+  function createWebCLObject(_env) {
     // create WebCL object
     var web_cl;
-    switch (env) {
+    switch (_env) {
       case 'node':
         try {
           web_cl = require('node-webcl');
+          if (web_cl.type !== void 0) {
+            // older version of node-webcl (0.8.3) have type object
+            // some method is different from 0.9.2, so treat as different platform
+            env = 'node083';
+          }
           ('global', eval)('this').WebCL = web_cl;
         } catch (e) {
           web_cl = void 0;
@@ -94,7 +99,7 @@
       $CL.devices = $CL.platform.getDevices(web_cl.DEVICE_TYPE_CPU);
     }
     // device selector (experimental)
-    if (env === 'node') {
+    if (env === 'node' || env === 'node083') {
       var device_index = 0;
       // Explicit setting by environment variable
       if ('WEBCL_DEVICE_INDEX' in process.env) {
@@ -125,6 +130,15 @@
 
     // initialize methods dependent on implementation
     switch (env) {
+      case 'node083':
+        $CL.context = web_cl.createContext({
+          deviceType: device_type,
+          platform: $CL.platform
+        });
+        $CL.kernelSetArg = function(kernel, idx, param, type) {
+          kernel.setArg(idx, param, type);
+        };
+        break;
       case 'node':
       case 'ff':
         $CL.context = web_cl.createContext($CL.platform, device_type);
@@ -204,6 +218,7 @@
 
     switch (env) {
       case 'node':
+      case 'node083':
       case 'ff':
         $CL.queue =
           $CL.context.createCommandQueue($CL.devices[device_index], 0);
@@ -216,6 +231,7 @@
 
     switch (env) {
       case 'node':
+      case 'node083':
       case 'ff':
         $CL.releaseBuffer = function(buffer) {
           buffer.release();
@@ -234,6 +250,7 @@
       var program = $CL.context.createProgram(code);
       switch (env) {
         case 'node':
+        case 'node083':
         case 'ff':
           program.build($CL.devices);
           break;
@@ -279,6 +296,13 @@
           var globalWS = [parallelization];//seems faster
           queue.enqueueNDRangeKernel(kernel,
                                      globalWS.length,
+                                     null,
+                                     globalWS,
+                                     null);
+          break;
+        case 'node083':
+          var globalWS = [parallelization];//seems faster
+          queue.enqueueNDRangeKernel(kernel,
                                      null,
                                      globalWS,
                                      null);
