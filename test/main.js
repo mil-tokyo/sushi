@@ -44,6 +44,52 @@ if (typeof window === 'undefined') {
 					}
 				},
 				{
+					name : "checktoCSV",
+					test :function() {
+						// Default conversion from Number to String is
+						// defined in ECMAScript Language Specification
+						// 'ToString Applied to the Number Type'
+						// Note that value is converted to Float32
+						var a = $M.fromArray([
+							[1.0, 0.25, 0.1],
+							[-1.0, 1e21, 1e-21],
+							[Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]
+						]);
+						var csv = a.toCSV();
+						var expected = '1,0.25,0.10000000149011612\r\n-1,1.0000000200408773e+21,9.999999682655225e-22\r\nNaN,Infinity,-Infinity\r\n';
+						if (csv !== expected) {
+							return false;
+						}
+						return true;
+					}
+				},
+				{
+					name : "checkfromCSV",
+					test :function() {
+						var csv = '1,0.25,0.10000000149011612\r\n-1,1.0000000200408773e+21,9.999999682655225e-22\r\n';
+						var actual = $M.fromCSV(csv);
+						var expected = $M.fromArray([
+							[1.0, 0.25, 0.1],
+							[-1.0, 1e21, 1e-21],
+						]);
+						if (!expected.equals(actual)) {
+							return false;
+						}
+						var csv = 'NaN,Infinity,-Infinity\r\n';
+						var actual = $M.fromCSV(csv);
+						if (!isNaN(actual.get(0, 0))) {
+							return false;
+						}
+						if (actual.get(0, 1) !== Number.POSITIVE_INFINITY) {
+							return false;
+						}
+						if (actual.get(0, 2) !== Number.NEGATIVE_INFINITY) {
+							return false;
+						}
+						return true;
+					}
+				},
+				{
 					name : "checkEye",
 					test :function() {
 						var eye_1 = $M.eye(10);

@@ -119,6 +119,7 @@
     };
 
     $P.toString = function() {
+      // TODO: fails when Nan / Infinity exists
       this.syncData();
       var formatWidth = function(str, width) {
         while (str.length < width) {
@@ -264,6 +265,15 @@
       return rows;
     };
 
+    $P.toCSV = function() {
+      // TODO: format option
+      var mat_array = $M.toArray(this);
+      var row_string_array = mat_array.map(
+              function(row) { return row.join(','); });
+      // Add last newline for easy concatenation
+      return row_string_array.join('\r\n') + '\r\n';
+    };
+
     $M.fromArray = function(original_array) {
       var newM = new $M(original_array.length, original_array[0].length, null);
       newM.setArray(original_array);
@@ -272,9 +282,44 @@
 
     $P.setArray = function(original_array) {
       this.syncData();
-      var flatten = Array.prototype.concat.apply([], original_array);
-      this.data = new this.datum_type(flatten);
+      this.data = new this.datum_type(this.length);
+      var i = 0;
+      for (var row = 0; row < original_array.length; row++) {
+        var row_array = original_array[row];
+        for (var col = 0; col < row_array.length; col++) {
+          this.data[i++] = row_array[col];
+        }
+      }
       return this;
+    };
+
+    $M.fromCSV = function(csv_string) {
+      var row_string_array = csv_string.split(/\r?\n/);
+      var nrow = row_string_array.length;
+      if (row_string_array[nrow - 1].length == 0) {
+        nrow--;
+      }
+      var newM = null;
+      var newM_data = null;
+      var i = 0;
+      for (var row = 0; row < nrow; row++) {
+        var col_string_array = row_string_array[row].split(/[,\t ]/);
+        if (row == 0) {
+          var ncol = col_string_array.length;
+          newM = new $M(nrow, ncol);
+          newM.syncData();
+          newM_data = newM.data;
+        }
+        if (col_string_array.length != ncol) {
+          throw new Error('Number of columns mismatch');
+        }
+
+        for (var col = 0; col < ncol; col++) {
+          newM_data[i++] = Number(col_string_array[col]);
+        }
+      }
+
+      return newM;
     };
 
     $M.eye = function(size, output) {
