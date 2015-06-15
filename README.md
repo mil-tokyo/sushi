@@ -37,7 +37,7 @@ try
 
 However, current nvidia driver only supports OpenCL 1.1, which is not compatible with node-webcl 0.9.0 or later.
 OpenCL 1.1 is supported by node-webcl v0.8.3, but unfortunately it have small bug.
-So we provide bugfix version here: https://github.com/mil-tokyo/node-webcl/tree/opencl11\_fix
+So we provide bugfix version here: https://github.com/mil-tokyo/node-webcl/tree/opencl11_fix
 
 Simple installation:
 
