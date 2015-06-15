@@ -864,12 +864,56 @@ if (typeof window === 'undefined') {
 						b3.random();
 						var b4 = new $M(4, 7);
 						b4.random();
-						return (
+						var smallok = (
 							$M.largeMul(a, b).nearlyEquals($M.mul(a, b)) &&
 							$M.largeMul(a.t(), b2).nearlyEquals($M.mul(a.t(), b2)) &&
 							$M.largeMul(a, b3.t()).nearlyEquals($M.mul(a, b3.t())) &&
 							$M.largeMul(a.t(), b4.t()).nearlyEquals($M.mul(a.t(), b4.t()))
 							);
+                                          if (!smallok) {
+                                            return false;
+                                          }
+                                          var largeok = (function() {
+                                            var failed = false;
+                                            var check = function(rows, cols, width, row_wise_a, row_wise_b) {
+                                              var x = new $M(rows, width);
+                                              x.row_wise = row_wise_a;
+                                              x.random();
+                                              var y = new $M(width, cols);
+                                              y.row_wise = row_wise_b;
+                                              y.random();
+                                              var gx = x.largeClone();
+                                              var gy = y.largeClone();
+                                              
+                                              var gmul = $M.largeMul(gx, gy);
+                                              var mul = $M.mul(x, y);
+                                              var equals = mul.nearlyEquals(gmul);
+                                              x.destruct();
+                                              y.destruct();
+                                              gx.destruct();
+                                              gy.destruct();
+                                              gmul.destruct();
+                                              mul.destruct();
+                                              return equals;
+                                            };
+
+                                            [1, 31, 32, 33, 127, 128, 129].forEach(function (rows) {
+                                              [1, 31, 32, 33, 127, 128, 129].forEach(function (cols) {
+                                                [1, 31, 32, 33, 127, 128, 129].forEach(function (width) {
+                                                  [true, false].forEach(function (row_wise_a) {
+                                                    [true, false].forEach(function (row_wise_b) {
+                                                      if (!check(rows, cols, width, row_wise_a, row_wise_b)) {
+                                                        failed = true;
+                                                      }
+                                                    });
+                                                  });
+                                                });
+                                              });
+                                            });
+                                            return !failed;
+                                          })();
+
+                                          return largeok;
 					}
 				},
 				{

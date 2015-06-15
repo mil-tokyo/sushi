@@ -126,7 +126,9 @@
             Math.min(url_vars.device_index, $CL.devices.length - 1) :
             0;
     }
-    $CL.device_info = $CL.devices[device_index].getInfo(web_cl.DEVICE_NAME);
+    $CL.selected_device = $CL.devices[device_index];
+    $CL.device_info = $CL.selected_device.getInfo(web_cl.DEVICE_NAME);
+    $CL.device_max_work_group_size = $CL.selected_device.getInfo(web_cl.DEVICE_MAX_WORK_GROUP_SIZE);
 
     // initialize methods dependent on implementation
     switch (env) {
@@ -221,7 +223,7 @@
       case 'node083':
       case 'ff':
         $CL.queue =
-          $CL.context.createCommandQueue($CL.devices[device_index], 0);
+          $CL.context.createCommandQueue($CL.selected_device, 0);
         break;
       case 'chromium':
         $CL.queue =
@@ -261,8 +263,7 @@
       return program.createKernel('kernel_func');
     };
 
-    var localWS = [64];
-    $CL.executeKernel = function(kernel, params, parallelization) {
+    $CL.executeKernel = function(kernel, params, parallelization, localWS) {
       for (var i = 0; i < params.length; i++) {
         if (params[i].type === void 0) {
           // matrix
@@ -289,23 +290,41 @@
         }
       }
 
-      var globalWS = [Math.ceil(parallelization / localWS) * localWS];
+      if (localWS == void 0) {
+        if (parallelization.length === undefined) {
+          //1-d parallelization
+          var localWS = [64];
+          var globalWS = [Math.ceil(parallelization / localWS) * localWS];
+        } else {
+          //n-d parallelization
+          var localWS_each = [64, 8, 4][parallelization.length];
+          var localWS = [];
+          var globalWS = [];
+          for (var i = 0; i < parallelization.length; i++) {
+            localWS.push(localWS_each);
+            globalWS.push(Math.ceil(parallelization[i] / localWS_each) * localWS_each);
+          }
+        }
+      } else {
+        var globalWS = [];
+        for (var i = 0; i < parallelization.length; i++) {
+          globalWS.push(Math.ceil(parallelization[i] / localWS[i]) * localWS[i]);
+        }
+      }
       // Execute kernel
       switch (env) {
         case 'node':
-          var globalWS = [parallelization];//seems faster
           queue.enqueueNDRangeKernel(kernel,
                                      globalWS.length,
                                      null,
                                      globalWS,
-                                     null);
+                                     localWS);
           break;
         case 'node083':
-          var globalWS = [parallelization];//seems faster
           queue.enqueueNDRangeKernel(kernel,
                                      null,
                                      globalWS,
-                                     null);
+                                     localWS);
           break;
         case 'ff':
           queue.enqueueNDRangeKernel(kernel,
@@ -319,7 +338,7 @@
           queue.enqueueNDRangeKernel(kernel,
                                      null,
                                      globalWS,
-                                     null);
+                                     localWS);
           queue.finish();
           break;
       }
@@ -600,28 +619,88 @@
     $CL.divEachM = $CL.eachOperationMGenerator('/');
 
     $CL.mul = function() {
-      var createMulKernel = function(a_row_col_to_idx, b_row_col_to_idx) {
+      var block_size = 1;
+      // simultanously compute NxN grid
+      if ($CL.device_max_work_group_size >= 1024) {
+        block_size = 32;
+      } else if ($CL.device_max_work_group_size >= 256) {
+        block_size = 16;
+      }
+
+      var createMulBlockKernel = function(a_row_col_to_idx, b_row_col_to_idx) {
         return $CL.createKernel([
           '#define A_ROW_COL_TO_IDX(row, col) (' + a_row_col_to_idx + ')               ',
           '#define B_ROW_COL_TO_IDX(row, col) (' + b_row_col_to_idx + ')               ',
-           '__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ',
+          '#define BLOCK_SIZE ' + block_size,
+          '__kernel void kernel_func(__global float *a, __global float *b, __global float *c, __local float* acache, __local float* bcache, uint rows, uint cols, uint width) ',
+          '{                                                                           ',
+          '    size_t row =  get_global_id(1);                                           ',
+          '    size_t col =  get_global_id(0);                                           ',
+          'uint lx = get_local_id(0);',
+          'uint ly = get_local_id(1);',
+          ' float tmp = 0.0F;',
+          'uint atop = get_group_id(1) * BLOCK_SIZE;',
+          'uint bleft = get_group_id(0) * BLOCK_SIZE;',
+          'uint block_count = width / BLOCK_SIZE;',//floor
+          'uint cache_local_idx = ly * BLOCK_SIZE + lx;',
+          'uint a_idx = A_ROW_COL_TO_IDX(atop + ly, lx);',
+          'uint a_stride = A_ROW_COL_TO_IDX(atop + ly, lx + BLOCK_SIZE) - a_idx;',
+          'uint b_idx = B_ROW_COL_TO_IDX(ly, bleft + lx);',
+          'uint b_stride = B_ROW_COL_TO_IDX(ly + BLOCK_SIZE, bleft + lx) - b_idx;',
+          'for (uint block = 0; block < block_count; block++) {',
+          'acache[cache_local_idx] = a[a_idx];',
+          'bcache[cache_local_idx] = b[b_idx];',
+          'a_idx += a_stride;',
+          'b_idx += b_stride;',
+          'barrier(CLK_LOCAL_MEM_FENCE);',
+          '#pragma unroll',
+          '    for (uint j = 0; j < BLOCK_SIZE; j++) {                                      ',
+          '        tmp += acache[ly * BLOCK_SIZE + j] * bcache[j * BLOCK_SIZE + lx];  ',
+          '    }                                                                       ',
+          'barrier(CLK_LOCAL_MEM_FENCE);',
+          '}',
+          '    c[row * cols + col] = tmp;                                                             ',
+          '}                                                                           '].join('\r\n')
+        );
+      };
+
+      var createMulRemainderKernel = function(a_row_col_to_idx, b_row_col_to_idx) {
+        return $CL.createKernel([
+          '#define A_ROW_COL_TO_IDX(row, col) (' + a_row_col_to_idx + ')               ',
+          '#define B_ROW_COL_TO_IDX(row, col) (' + b_row_col_to_idx + ')               ',
+          '#define BLOCK_SIZE ' + block_size,
+          '__kernel void kernel_func(__global float *a, __global float *b, __global float *c, uint iNumElements, uint rows, uint cols, uint width) ',
           '{                                                                           ',
           '    size_t i =  get_global_id(0);                                           ',
           '    if(i >= iNumElements) return;                                           ',
           '    uint row = i / cols;                                                    ',
           '    uint col = i % cols;                                                    ',
-            ' float tmp = 0.0;',
+          '    float tmp = 0.0F;',
+          '  if ((row >= rows / BLOCK_SIZE * BLOCK_SIZE) || (col >= cols / BLOCK_SIZE * BLOCK_SIZE) || (width < BLOCK_SIZE)) {',
           '    for (uint j = 0; j < width; j++) {                                      ',
           '        tmp += a[A_ROW_COL_TO_IDX(row, j)] * b[B_ROW_COL_TO_IDX(j, col)];  ',
           '    }                                                                       ',
           '    c[i] = tmp;                                                             ',
+          '  } else {',
+          '    for (uint j = (width / BLOCK_SIZE * BLOCK_SIZE); j < width; j++) {',
+          '        tmp += a[A_ROW_COL_TO_IDX(row, j)] * b[B_ROW_COL_TO_IDX(j, col)];  ',
+          '    }                                                                       ',
+          '    c[i] += tmp;                                                             ',
+          '  }',
           '}                                                                           '].join('\r\n')
         );
       };
-      var kernel1 = createMulKernel('(row) * width + (col)', '(row) * cols + (col)');
-      var kernel2 = createMulKernel('(row) * width + (col)', '(row) + (col) * width');
-      var kernel3 = createMulKernel('(row) + (col) * rows', '(row) * cols + (col)');
-      var kernel4 = createMulKernel('(row) + (col) * rows', '(row) + (col) * width');
+
+      var createMulKernels = function(a_row_col_to_idx, b_row_col_to_idx) {
+        return [createMulBlockKernel(a_row_col_to_idx, b_row_col_to_idx),
+                createMulRemainderKernel(a_row_col_to_idx, b_row_col_to_idx)];
+      };
+
+      var kernel1 = createMulKernels('(row) * width + (col)', '(row) * cols + (col)');
+      var kernel2 = createMulKernels('(row) * width + (col)', '(row) + (col) * width');
+      var kernel3 = createMulKernels('(row) + (col) * rows', '(row) * cols + (col)');
+      var kernel4 = createMulKernels('(row) + (col) * rows', '(row) + (col) * width');
+      var kernels = [kernel1, kernel2, kernel3, kernel4];
 
       return function(mat1, mat2, output) {
         if (mat1.cols !== mat2.rows) {
@@ -629,29 +708,56 @@
         }
         var kernel_to_use;
         if (mat1.row_wise === true && mat2.row_wise === true) {
-          kernel_to_use = kernel1;
+          kernel_to_use = kernels[0];
         } else if (mat1.row_wise === true && mat2.row_wise === false) {
-          kernel_to_use = kernel2;
+          kernel_to_use = kernels[1];
         } else if (mat1.row_wise === false && mat2.row_wise === true) {
-          kernel_to_use = kernel3;
+          kernel_to_use = kernels[2];
         } else {
-          kernel_to_use = kernel4;
+          kernel_to_use = kernels[3];
         }
 
         var newM = $M.newMatOrReuseMat(mat1.rows, mat2.cols, output);
-        $CL.executeKernel(
-          kernel_to_use,
-          [
-            { access: web_cl.MEM_READ_ONLY, datum: mat1 },
-            { access: web_cl.MEM_READ_ONLY, datum: mat2 },
-            { access: web_cl.MEM_WRITE_ONLY, datum: newM },
-            { datum: newM.length, type: WebCL.type.UINT},
-            { datum: newM.rows, type: WebCL.type.UINT},
-            { datum: newM.cols, type: WebCL.type.UINT},
-            { datum: mat1.cols, type: WebCL.type.UINT }
-          ],
-          newM.length
-        );
+        var rangerows = Math.floor(mat1.rows / block_size) * block_size;
+        var rangecols = Math.floor(mat2.cols / block_size) * block_size;
+        var rangewidth = Math.floor(mat1.cols / block_size) * block_size;
+
+        if (mat1.rows >= block_size && mat1.cols >= block_size && mat2.cols >= block_size) {
+          //process block
+          $CL.executeKernel(
+            kernel_to_use[0],
+            [
+              { access: web_cl.MEM_READ_ONLY, datum: mat1 },
+              { access: web_cl.MEM_READ_ONLY, datum: mat2 },
+              { access: web_cl.MEM_WRITE_ONLY, datum: newM },
+              { datum: block_size * block_size, type: WebCL.type.LOCAL_MEMORY_SIZE },//acache
+              { datum: block_size * block_size, type: WebCL.type.LOCAL_MEMORY_SIZE },//bcache
+              { datum: newM.rows, type: WebCL.type.UINT },
+              { datum: newM.cols, type: WebCL.type.UINT },
+              { datum: mat1.cols, type: WebCL.type.UINT },
+            ],
+            [rangecols, rangerows],
+            [block_size, block_size]
+          );
+        }
+
+        if (rangerows != mat1.rows || rangecols != mat2.cols || rangewidth != mat1.cols) {
+          //process remainder
+          $CL.executeKernel(
+            kernel_to_use[1],
+            [
+              { access: web_cl.MEM_READ_ONLY, datum: mat1 },
+              { access: web_cl.MEM_READ_ONLY, datum: mat2 },
+              { access: web_cl.MEM_READ_WRITE, datum: newM },
+              { datum: newM.length, type: WebCL.type.UINT},
+              { datum: newM.rows, type: WebCL.type.UINT},
+              { datum: newM.cols, type: WebCL.type.UINT},
+              { datum: mat1.cols, type: WebCL.type.UINT }
+            ],
+            newM.length
+          );
+        }
+
         return newM;
       };
     }();
