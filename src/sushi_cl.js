@@ -92,12 +92,18 @@
         $CL.platform_info = platform_info_tmp;
       }
     }
-    var device_type = web_cl.DEVICE_TYPE_GPU;
-    $CL.devices = $CL.platform.getDevices(web_cl.DEVICE_TYPE_GPU);
+
+    try {
+        var device_type = web_cl.DEVICE_TYPE_GPU;
+        $CL.devices = $CL.platform.getDevices(web_cl.DEVICE_TYPE_GPU);//causes exception on firefox + Intel OpenCL
+    } catch (ex) {
+        $CL.devices = [];
+    }
     if ($CL.devices.length === 0) {
       device_type = web_cl.DEVICE_TYPE_CPU;
       $CL.devices = $CL.platform.getDevices(web_cl.DEVICE_TYPE_CPU);
     }
+    
     // device selector (experimental)
     if (env === 'node' || env === 'node083') {
       var device_index = 0;
