@@ -5,7 +5,7 @@ Sushi is being developed to be the fastest matrix library for JavaScript. Tempur
 - Tempura (Machine Learning Library) http://github.com/mil-tokyo/tempura
 - Soba (Visualization Library) http://github.com/mil-tokyo/soba
 
-Related paper may be available ( http://mil-tokyo.github.io/miljs.html )
+Related papers may be available ( http://mil-tokyo.github.io/miljs.html ).
 
 ## Technical Features
 
@@ -27,10 +27,24 @@ are supported.
 ### node.js
 	cd test
 	node main
-If you want to use WebCL, install node-webcl https://github.com/mikeseven/node-webcl and set the path in agent_smith_cl.js
+If you want to use WebCL, install node-webcl https://github.com/mikeseven/node-webcl
+
+Currently, WebCL is supported by node v0.10.29, node-webcl v0.8.3 or v0.9.2
+
+try
+
+	npm install node-webcl
+
+However, current nvidia driver only supports OpenCL 1.1, which is not compatible with node-webcl 0.9.0 or later.
+OpenCL 1.1 is supported by node-webcl v0.8.3, but unfortunately it have small bug.
+So we provide bugfix version here: https://github.com/mil-tokyo/node-webcl/tree/opencl11_fix
+
+Simple installation:
+
+	npm install https://github.com/mil-tokyo/node-webcl/archive/opencl11_fix.tar.gz
 
 ### browsers
 open test/main.html with your browser. Chromium-WebCL supports WebCL without any plugins. Firefox requires Nokia WebCL ( http://webcl.nokiaresearch.com/ ) to use WebCL with it.
 
 ## Please Contribute the Fastest Matrix Library
-Contact me miura@mi.t.u-tokyo.ac.jp
+Contact me miljs@mi.t.u-tokyo.ac.jp

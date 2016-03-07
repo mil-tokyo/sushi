@@ -1,0 +1,25 @@
+{
+  "name": "milsushi",
+  "version": "0.0.1",
+  "description": "The Fastest Matrix Library for JavaScript",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mil-tokyo/sushi"
+  },
+  "keywords": [
+    "Matrix"
+  ],
+  "author": "Ken Miura, Masatoshi Hidaka, Tatsuya Harada",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mil-tokyo/sushi/issues"
+  },
+  "homepage": "https://github.com/mil-tokyo/sushi"
+}
