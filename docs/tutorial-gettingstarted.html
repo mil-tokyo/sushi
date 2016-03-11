@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Tutorial: Getting Started</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Tutorial: Getting Started</h1>
+
+    <section>
+
+<header>
+    
+
+    <h2>Getting Started</h2>
+</header>
+
+<article>
+    <p>Sushi is a matrix library designed to be fastest among JavaScript environment.</p>
+<p>Here is an example of how to use Sushi.</p>
+<h2>Setup</h2><p>Sushi runs on most modern web browsers which supports TypedArray.
+Also, it works with server-side node.js environment.</p>
+<p>To load Sushi in the html, simply put script tag as follows:</p>
+<pre class="prettyprint source"><code>&lt;script src=&quot;sushi.js&quot;>&lt;/script></code></pre><p><code>sushi.js</code> puts global object <code><a href="Sushi.html">Sushi</a></code>. Then, this is the &quot;hello world&quot; example:</p>
+<pre class="prettyprint source"><code>&lt;html>
+  &lt;head>
+    &lt;meta charset=&quot;utf-8&quot;>
+    &lt;title>Sushi example&lt;/title>
+    &lt;script src=&quot;../../src/sushi.js&quot;>&lt;/script>
+  &lt;/head>
+  &lt;body>
+    &lt;script>
+      var $M = Sushi.Matrix;
+      var x = $M.fromArray([[1,2],
+                            [3,4]]);//constructs matrix from JavaScript Array
+      var y = $M.eye(2);//2x2 identity matrix
+      var z = $M.add(x, y);//add two matrices
+      var disp = function (mat) {//helper function
+        var mat_str = mat.toString();
+        document.write(mat_str.replace(/\n/g, &quot;&lt;br>&quot;));
+      };
+      disp(x);
+      document.write(&quot;&lt;br>+&lt;br>&quot;);
+      disp(y);
+      document.write(&quot;&lt;br>=&lt;br>&quot;);
+      disp(z);
+    &lt;/script>
+  &lt;/body>
+&lt;/html></code></pre><p>By opening this html file by a web browser, the following text  will be displayed.</p>
+<pre class="prettyprint source"><code>-- Matrix (2 x 2) --
+1 2
+3 4
++
+-- Matrix (2 x 2) --
+1 0
+0 1
+=
+-- Matrix (2 x 2) --
+2 2
+3 5 </code></pre><p>This example shows how to construct and use matrices.</p>
+<pre class="prettyprint source"><code>var $M = Sushi.Matrix;</code></pre><p>The matrix class provided by Sushi can be accessed by <code><a href="Sushi.Matrix.html">Sushi.Matrix</a></code>. For keeping the code short, it is suggested to bind the variable to <code>$M</code>.</p>
+<pre class="prettyprint source"><code>var x = $M.fromArray([[1,2],
+                      [3,4]]);//constructs matrix from JavaScript Array</code></pre><p>One way to construct matrix. <code><a href="Sushi.Matrix.html#.fromArray">$M.fromArray</a></code> constructs a matrix from elements given as JavaScript Array (Array of Array of number).
+The shape of the matrix is determined by the length of Array. In this case, 2x2 matrix is constructed.
+In Sushi, the number of rows and columns can be arbitrary positive integer value.
+The elements are stored to Float32Array internally, which means elements are represented by 32bit floating-point value.</p>
+<pre class="prettyprint source"><code>var y = $M.eye(2);//2x2 identity matrix</code></pre><p>This is another way to construct matrix. <code><a href="Sushi.Matrix.html#.eye">$M.eye</a></code> gives identity matrix (e.g. diagonal elements are 1 and others are 0) of specified rows and columns.</p>
+<pre class="prettyprint source"><code>var z = $M.add(x, y);//add two matrices</code></pre><p><code><a href="Sushi.Matrix.html#.add">$M.add</a></code> adds two matrices and gives new matrix as the result.</p>
+<h2>Accessing elements of matrix</h2><p>Users can access to elements of matrix by various ways.</p>
+<p><code><a href="Sushi.Matrix.html#get">m.get(row, col)</a></code> is the simplest way of getting one element of matrix <code>m</code>. Please note that Sushi currently supports only two-dimensional matrices (e.g. no tensor support).
+<code><a href="Sushi.Matrix.html#.getRow">$M.getRow</a> <a href="Sushi.Matrix.html#.getCol">$M.getCol</a></code> extracts one row or column from an matrix.
+<code><a href="Sushi.Matrix.html#set">m.set</a></code>, <code><a href="Sushi.Matrix.html#setRow">m.setRow</a></code>, <code><a href="Sushi.Matrix.html#setCol">m.setCol</a></code> is the setter corresponding methods above.</p>
+<h2>Use of WebCL</h2><p>Users can gain much faster matrix calculation speed by using WebCL.
+WebCL is a wrapper for OpenCL framework to use GPU from JavaScript. (To be precise, multi core CPU with OpenCL driver can also be used.)
+Users may have to install OpenCL onto the operating system and WebCL onto the web browser.
+Currently WebCL is not installed on web browsers as default, but Firefox plugin is provided.
+Please visit https://github.com/toaarnio/webcl-firefox to install it.</p>
+<p>On WebCL-enabled web browser, loading <code>sushi_cl.js</code> in addition to <code>sushi.js</code> enables fast computation.</p>
+<pre class="prettyprint source"><code>&lt;script src=&quot;sushi.js&quot;>&lt;/script>
+&lt;script src=&quot;sushi_cl.js&quot;>&lt;/script></code></pre><p><code>sushi_cl.js</code> provides <code>largeX</code> (such as <a href="Sushi.Matrix.html#.largeAdd">Sushi.Matrix.largeAdd</a>, <a href="Sushi.Matrix.html#.largeMaxEachRow">Sushi.Matrix.largeMaxEachRow</a>) methods which works on GPU.
+On web browser which not supports WebCL, <code>sushi_cl.js</code> does nothing and methods of <code>largeX()</code> is an alias of <code>X()</code>.</p>
+<p>Hello world example is almost same as non-WebCL version.</p>
+<pre class="prettyprint source"><code>&lt;html>
+  &lt;head>
+    &lt;meta charset=&quot;utf-8&quot;>
+    &lt;title>Sushi example&lt;/title>
+    &lt;script src=&quot;sushi.js&quot;>&lt;/script>
+    &lt;script src=&quot;sushi_cl.js&quot;>&lt;/script>
+  &lt;/head>
+  &lt;body>
+    &lt;script>
+      var $M = Sushi.Matrix;
+      var x = $M.fromArray([[1,2],
+                            [3,4]]);//constructs matrix from JavaScript Array
+      var y = $M.eye(2);//2x2 identity matrix
+      var z = $M.largeAdd(x, y);//add two matrices on GPU
+      var disp = function (mat) {//helper function
+        var mat_str = mat.toString();
+        document.write(mat_str.replace(/\n/g, &quot;&lt;br>&quot;));
+      };
+      disp(x);
+      document.write(&quot;&lt;br>+&lt;br>&quot;);
+      disp(y);
+      document.write(&quot;&lt;br>=&lt;br>&quot;);
+      disp(z);
+      // User has to manually release GPU memory
+      x.destruct();
+      y.destruct();
+      z.destruct();
+    &lt;/script>
+  &lt;/body>
+&lt;/html></code></pre><p>By using <code>largeAdd</code> method, matrix addition is performed on GPU.
+The memory transfer between main memory and GPU memory is performed automatically.
+One thing should be noted is that allocated memory on GPU is not the target of garbage-collection (GC).
+User has to call destruct method manually to release memory.
+It is safe to call destruct method of a matrix whose elements are stored in main memory.</p>
+</article>
+
+</section>
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Sushi.Matrix.html">Matrix</a></li></ul><h3>Namespaces</h3><ul><li><a href="Sushi.html">Sushi</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-gettingstarted.html">Getting Started</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Mar 11 2016 18:23:01 GMT+0900 (JST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
