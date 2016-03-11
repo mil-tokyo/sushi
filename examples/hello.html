@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Sushi example</title>
+    <script src="../../src/sushi.js"></script>
+  </head>
+  <body>
+    <script>
+      var $M = Sushi.Matrix;
+      var x = $M.fromArray([[1,2],
+                            [3,4]]);//constructs matrix from JavaScript Array
+      var y = $M.eye(2);//2x2 identity matrix
+      var z = $M.add(x, y);//add two matrices
+      var disp = function (mat) {//helper function
+        var mat_str = mat.toString();
+        document.write(mat_str.replace(/\n/g, "<br>"));
+      };
+      disp(x);
+      document.write("<br>+<br>");
+      disp(y);
+      document.write("<br>=<br>");
+      disp(z);
+    </script>
+  </body>
+</html>
