@@ -1,9 +1,9 @@
-Sushi is a matrix library designed to be fastest among JavaScript environment.
+Sushi is a matrix library designed to be fastest in JavaScript environment.
 
 Here is an example of how to use Sushi.
 
 ## Setup
-Sushi runs on most modern web browsers which supports TypedArray.
+Sushi runs on most modern web browsers that support TypedArray.
 Also, it works with server-side node.js environment.
 
 To load Sushi in the html, simply put script tag as follows:
@@ -38,7 +38,7 @@ To load Sushi in the html, simply put script tag as follows:
       </body>
     </html>
 
-By opening this html file by a web browser, the following text  will be displayed.
+By opening this html file from a web browser, the following text will be displayed.
 
     -- Matrix (2 x 2) --
     1 2
@@ -56,12 +56,12 @@ This example shows how to construct and use matrices.
 
     var $M = Sushi.Matrix;
 
-The matrix class provided by Sushi can be accessed by `{@link Sushi.Matrix}`. For keeping the code short, it is suggested to bind the variable to `$M`.
+The matrix class provided by Sushi can be accessed by `{@link Sushi.Matrix}`. To keep the code short, it is suggested to bind the variable to `$M`.
 
     var x = $M.fromArray([[1,2],
                           [3,4]]);//constructs matrix from JavaScript Array
 
-One way to construct matrix. `{@link Sushi.Matrix.fromArray $M.fromArray}` constructs a matrix from elements given as JavaScript Array (Array of Array of number).
+Here is one way to construct matrix. `{@link Sushi.Matrix.fromArray $M.fromArray}` constructs a matrix from elements given as JavaScript Array (Array of Array of number).
 The shape of the matrix is determined by the length of Array. In this case, 2x2 matrix is constructed.
 In Sushi, the number of rows and columns can be arbitrary positive integer value.
 The elements are stored to Float32Array internally, which means elements are represented by 32bit floating-point value.
@@ -75,11 +75,11 @@ This is another way to construct matrix. `{@link Sushi.Matrix.eye $M.eye}` gives
 `{@link Sushi.Matrix.add $M.add}` adds two matrices and gives new matrix as the result.
 
 ## Accessing elements of matrix
-Users can access to elements of matrix by various ways.
+Users can access the elements of matrix by various ways.
 
 `{@link Sushi.Matrix#get m.get(row, col)}` is the simplest way of getting one element of matrix `m`. Please note that Sushi currently supports only two-dimensional matrices (e.g. no tensor support).
-`{@link Sushi.Matrix.getRow $M.getRow} {@link Sushi.Matrix.getCol $M.getCol}` extracts one row or column from an matrix.
-`{@link Sushi.Matrix#set m.set}`, `{@link Sushi.Matrix#setRow m.setRow}`, `{@link Sushi.Matrix#setCol m.setCol}` is the setter corresponding methods above.
+`{@link Sushi.Matrix.getRow $M.getRow} and {@link Sushi.Matrix.getCol $M.getCol}` extract one row or column from an matrix.
+`{@link Sushi.Matrix#set m.set}`, `{@link Sushi.Matrix#setRow m.setRow}` and `{@link Sushi.Matrix#setCol m.setCol}` are the setter corresponding methods above.
 
 ## Use of WebCL
 Users can gain much faster matrix calculation speed by using WebCL.
@@ -94,7 +94,7 @@ On WebCL-enabled web browser, loading `sushi_cl.js` in addition to `sushi.js` en
     <script src="sushi_cl.js"></script>
 
 `sushi_cl.js` provides `largeX` (such as {@link Sushi.Matrix.largeAdd}, {@link Sushi.Matrix.largeMaxEachRow}) methods which works on GPU.
-On web browser which not supports WebCL, `sushi_cl.js` does nothing and methods of `largeX()` is an alias of `X()`.
+On web browsers that do not support WebCL, `sushi_cl.js` does nothing and methods of `largeX()` is an alias of `X()`.
 
 Hello world example is almost same as non-WebCL version.
 
@@ -131,6 +131,6 @@ Hello world example is almost same as non-WebCL version.
 
 By using `largeAdd` method, matrix addition is performed on GPU.
 The memory transfer between main memory and GPU memory is performed automatically.
-One thing should be noted is that allocated memory on GPU is not the target of garbage-collection (GC).
+One thing that should be noted is that allocated memory on GPU is not the target of garbage-collection (GC).
 User has to call destruct method manually to release memory.
 It is safe to call destruct method of a matrix whose elements are stored in main memory.

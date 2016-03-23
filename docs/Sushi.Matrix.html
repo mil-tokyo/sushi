@@ -881,6 +881,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    mat1 + mat2
+</div>
+
 
 
 <dl>
@@ -2054,7 +2058,7 @@
 
 
 <div class="description">
-    Construct an instance of Matrix with its diagonals are taken from diag.
+    Construct an instance of Matrix with its diagonals being taken from diag.
 </div>
 
 
@@ -2389,6 +2393,10 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    mat1 / mat2 (element-wise)
+</div>
+
 
 
 <dl>
@@ -2586,7 +2594,7 @@
 
 
 <div class="description">
-    Construct an instance of Matrix with shape [rows, cols] filled with a small part of mat where offset_row and offset_col are the starting index.
+    Construct an instance of Matrix with shape [rows, cols] filled with a small part of mat where offset_row and offset_col are the starting indices.
 </div>
 
 
@@ -3727,7 +3735,7 @@
 
     
 
-    <h4 class="name" id=".getEach"><span class="type-signature">(static) </span>getEach<span class="signature">(original, indexes)</span><span class="type-signature"> &rarr; {<a href="Sushi.Matrix.html">Sushi.Matrix</a>}</span></h4>
+    <h4 class="name" id=".getEach"><span class="type-signature">(static) </span>getEach<span class="signature">(original, indices)</span><span class="type-signature"> &rarr; {<a href="Sushi.Matrix.html">Sushi.Matrix</a>}</span></h4>
 
     
 
@@ -3735,8 +3743,8 @@
 
 <div class="description">
     Get a value from specified index by each row or column.
-If indexes is row-wise vector, construct row-wise vector where i-th element is set to mat[indexes[i], i].
-If indexes is column-wise vector, construct column-wise vector where i-th element is set to mat[i, indexes[i]].
+If indices are row-wise vector, construct row-wise vector where i-th element is set to mat[indices[i], i].
+If indices are column-wise vector, construct column-wise vector where i-th element is set to mat[i, indices[i]].
 </div>
 
 
@@ -3795,7 +3803,7 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 
         <tr>
             
-                <td class="name"><code>indexes</code></td>
+                <td class="name"><code>indices</code></td>
             
 
             <td class="type">
@@ -4265,7 +4273,7 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 
 
 <div class="description">
-    Stack a sequence of Matrixes horizontally (column wise) to make a single Matrix.
+    Stack a sequence of Matrices horizontally (column wise) to make a single Matrix.
 </div>
 
 
@@ -8810,6 +8818,10 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    mat1 * mat2 (element-wise)
+</div>
+
 
 
 <dl>
@@ -8840,7 +8852,7 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 
 
 <div class="description">
-    If mat is not given, new (rows, cols) array returns. If mat is given, check the size of mat at first, then if it is consistent with given parameters, the original mat returns, otherwise exception raises.
+    If mat is not given, return new (rows, cols) array. If mat is given, check the size of mat at first, then if it is consistent with given parameters, the original mat returns, otherwise raise exception.
 </div>
 
 
@@ -9390,6 +9402,10 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    mat1 - mat2
+</div>
+
 
 
 <dl>
@@ -10413,7 +10429,7 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 
 
 <div class="description">
-    Stack a sequence of Matrixes vetrically (row wise) to make a single Matrix.
+    Stack a sequence of Matrices vetrically (row wise) to make a single Matrix.
 </div>
 
 
@@ -10600,7 +10616,7 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 
 
 <div class="description">
-    Add mat to self. Change self and return self.
+    Add mat to self. Update and return self.
 </div>
 
 
@@ -10995,7 +11011,7 @@ If indexes is column-wise vector, construct column-wise vector where i-th elemen
 
 
 <div class="description">
-    Copy properties but the member variable data from original
+    Copy properties from the original but not its member variable data.
 </div>
 
 
@@ -11294,7 +11310,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Divide self with mat element-wise. Change self and return self.
+    Divide self by mat element-wise. Update and return self.
 </div>
 
 
@@ -11870,7 +11886,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Fill all elements with random values generated from gaussian ( mean:mu, standard deviation:std ). Returns self.
+    Fill all elements with random values generated from gaussian ( mean:mu, standard deviation:std ). Return self.
 </div>
 
 
@@ -13932,7 +13948,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Mutiply mat to self element-wise. Change self and return self.
+    Mutiply mat to self element-wise. Update and return self.
 </div>
 
 
@@ -14352,7 +14368,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Fill all elements with random values between min and max. Returns self.
+    Fill all elements with random values between min and max. Return self.
 </div>
 
 
@@ -14555,7 +14571,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Fill each element with its index number. Returns self.
+    Fill each element with its index number. Return self.
 </div>
 
 
@@ -14989,7 +15005,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Set elements with given two-dimensional jagged array. Returns self.
+    Set elements with given two-dimensional jagged array. Return self.
 </div>
 
 
@@ -15133,7 +15149,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Overwrite col'th column with column-wise vector mat. Returns self.
+    Overwrite col'th column with column-wise vector mat. Return self.
 </div>
 
 
@@ -15444,7 +15460,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Overwrite row'th row with row-wise vector mat. Returns self.
+    Overwrite row'th row with row-wise vector mat. Return self.
 </div>
 
 
@@ -15611,7 +15627,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Subtract mat from self. Change self and return self.
+    Subtract mat from self. Update and return self.
 </div>
 
 
@@ -16261,7 +16277,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    If the member variable row_wise is false, transpose own elements in order to make row_wise true. Returns self.
+    If the member variable row_wise is false, transpose its own elements in order to make row_wise true. Return self.
 </div>
 
 
@@ -16451,7 +16467,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Fill all elements with num. Returns self.
+    Fill all elements with num. Return self.
 </div>
 
 
@@ -16759,7 +16775,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Result object of <a href="Sushi.Matrix.html#.qr">Sushi.Matrix.qr</a>.
+    Resulting object of <a href="Sushi.Matrix.html#.qr">Sushi.Matrix.qr</a>.
 </div>
 
 
@@ -17043,7 +17059,7 @@ Note: WebCL buffer is not garbage-collected.
 
 
 <div class="description">
-    Result object of <a href="Sushi.Matrix.html#.svd">Sushi.Matrix.svd</a>.
+    Resulting object of <a href="Sushi.Matrix.html#.svd">Sushi.Matrix.svd</a>.
 </div>
 
 
@@ -17676,7 +17692,7 @@ Note: WebCL buffer is not garbage-collected.
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Mar 11 2016 18:23:01 GMT+0900 (JST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Mar 23 2016 18:49:06 GMT+0900 (JST)
 </footer>
 
 <script> prettyPrint(); </script>

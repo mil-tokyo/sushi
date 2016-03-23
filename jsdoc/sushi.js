@@ -43,34 +43,34 @@ Sushi.Matrix = function (rows, cols, data) {
    */
   this.destruct = function () { };
   /**
-   * Copy properties but the member variable data from original
+   * Copy properties from the original but not its member variable data.
    * @param {Sushi.Matrix} original
    */
   this.copyPropertyFrom = function (original) { };
   /**
-   *  Check whether all elements are completely equal to those of mat or not.
+   * Check whether all elements are completely equal to those of mat or not.
    * @param {Sushi.Matrix} mat
    * @return {bool}
    */
   this.equals = function (mat) { };
   /**
-   *  Check whether all element-wise absolute differences between stored values and mat's values are within epsilon or not. 
+   * Check whether all element-wise absolute differences between stored values and mat's values are within epsilon or not. 
    * @param {Sushi.Matrix} mat
    * @param {float} [epsilon=0.01] Allowed absolute difference of each element
    * @return {bool}
    */
   this.nearlyEquals = function (mat, epsilon) { };
   /**
-   *  Display elements on console.
+   * Display elements on console.
    */
   this.print = function () { };
   /**
-   *  Create readable string of elements.
+   * Create readable string of elements.
    * @return {string}
    */
   this.toString = function () { };
   /**
-   * If the member variable row_wise is false, transpose own elements in order to make row_wise true. Returns self.
+   * If the member variable row_wise is false, transpose its own elements in order to make row_wise true. Return self.
    * @return {Sushi.Matrix}
    */
   this.toRowWise = function () { };
@@ -81,32 +81,32 @@ Sushi.Matrix = function (rows, cols, data) {
    */
   this.clone = function (output) { };
   /**
-   *  Create an alias of matrix which shares the member variable data.
+   * Create an alias of matrix which shares the member variable data.
    * @return {Sushi.Matrix}
    */
   this.alias = function () { };
   /**
-   * Fill all elements with num. Returns self.
+   * Fill all elements with num. Return self.
    * @param {float} [num=0.0]
    * @return {Sushi.Matrix}
    */
   this.zeros = function (num) { };
   /**
-   *  Fill all elements with random values between min and max. Returns self.
+   * Fill all elements with random values between min and max. Return self.
    * @param {float} [min=0.0]
    * @param {float} [max=1.0]
    * @return {Sushi.Matrix}
    */
   this.random = function (min, max) { };
   /**
-   * Fill all elements with random values generated from gaussian ( mean:mu, standard deviation:std ). Returns self.
+   * Fill all elements with random values generated from gaussian ( mean:mu, standard deviation:std ). Return self.
    * @param {float} mu
    * @param {float} std
    * @return {Sushi.Matrix}
    */
   this.gaussRandom = function (mu, std) { };
   /**
-   * Fill each element with its index number. Returns self.
+   * Fill each element with its index number. Return self.
    * @return {Sushi.Matrix}
    */
   this.range = function () { };
@@ -116,20 +116,20 @@ Sushi.Matrix = function (rows, cols, data) {
    */
   this.toCSV = function () { };
   /**
-   * Set elements with given two-dimensional jagged array. Returns self.
+   * Set elements with given two-dimensional jagged array. Return self.
    * @param {Array} original_array
    * @return {Sushi.Matrix}
    */
   this.setArray = function (original_array) { };
   /**
-   * Overwrite row'th row with row-wise vector mat. Returns self.
+   * Overwrite row'th row with row-wise vector mat. Return self.
    * @param {int} row
    * @param {Sushi.Matrix} mat
    * @return {Sushi.Matrix}
    */
   this.setRow = function (row, mat) { };
   /**
-   * Overwrite col'th column with column-wise vector mat. Returns self.
+   * Overwrite col'th column with column-wise vector mat. Return self.
    * @param {int} col
    * @param {Sushi.Matrix} mat
    * @return {Sushi.Matrix}
@@ -218,25 +218,25 @@ Sushi.Matrix = function (rows, cols, data) {
    */
   this.times = function (times) { };
   /**
-   * Add mat to self. Change self and return self.
+   * Add mat to self. Update and return self.
    * @param {Sushi.Matrix} mat
    * @return {Sushi.Matrix}
    */
   this.add = function (mat) { };
   /**
-   * Subtract mat from self. Change self and return self.
+   * Subtract mat from self. Update and return self.
    * @param {Sushi.Matrix} mat
    * @return {Sushi.Matrix}
    */
   this.sub = function (mat) { };
   /**
-   * Mutiply mat to self element-wise. Change self and return self.
+   * Mutiply mat to self element-wise. Update and return self.
    * @param {Sushi.Matrix} mat
    * @return {Sushi.Matrix}
    */
   this.mulEach = function (mat) { };
   /**
-   * Divide self with mat element-wise. Change self and return self.
+   * Divide self by mat element-wise. Update and return self.
    * @param {Sushi.Matrix} mat
    * @return {Sushi.Matrix}
    */
@@ -318,7 +318,7 @@ Sushi.Matrix = function (rows, cols, data) {
 };
 
 /**
- * If mat is not given, new (rows, cols) array returns. If mat is given, check the size of mat at first, then if it is consistent with given parameters, the original mat returns, otherwise exception raises.
+ * If mat is not given, return new (rows, cols) array. If mat is given, check the size of mat at first, then if it is consistent with given parameters, the original mat returns, otherwise raise exception.
  * @param {int} rows
  * @param {int} cols
  * @param {Sushi.Matrix} [mat]
@@ -357,13 +357,13 @@ Sushi.Matrix.fromCSV = function (csv_string) { };
  */
 Sushi.Matrix.eye = function (size, output) { };
 /**
- * Construct an instance of Matrix with its diagonals are taken from diag.
+ * Construct an instance of Matrix with its diagonals being taken from diag.
  * @param {Sushi.Matrix|Array.<float>} diag
  * @return {Sushi.Matrix}
  */
 Sushi.Matrix.diag = function (diag) { };
 /**
- * Construct an instance of Matrix with shape [rows, cols] filled with a small part of mat where offset_row and offset_col are the starting index.
+ * Construct an instance of Matrix with shape [rows, cols] filled with a small part of mat where offset_row and offset_col are the starting indices.
  * @param {Sushi.Matrix} mat
  * @param {int} offset_row
  * @param {int} offset_col
@@ -390,14 +390,14 @@ Sushi.Matrix.getRow = function (mat, row, output) { };
  */
 Sushi.Matrix.getCol = function (mat, col, output) { };
 /**
- * Stack a sequence of Matrixes vetrically (row wise) to make a single Matrix.
+ * Stack a sequence of Matrices vetrically (row wise) to make a single Matrix.
  * @param {Array.<Sushi.Matrix>} mats Array of matrices
  * @param {Sushi.Matrix} [output] If output is given, reuse it for output.
  * @return {Sushi.Matrix}
  */
 Sushi.Matrix.vstack = function (mats, output) { };
 /**
- * Stack a sequence of Matrixes horizontally (column wise) to make a single Matrix.
+ * Stack a sequence of Matrices horizontally (column wise) to make a single Matrix.
  * @param {Array.<Sushi.Matrix>} mats Array of matrices
  * @param {Sushi.Matrix} [output] If output is given, reuse it for output.
  * @return {Sushi.Matrix}
@@ -411,10 +411,10 @@ Sushi.Matrix.hstack = function (mats, output) { };
 Sushi.Matrix.fromJSON = function (data) { };
 /**
  * Get a value from specified index by each row or column.
- * If indexes is row-wise vector, construct row-wise vector where i-th element is set to mat[indexes[i], i].
- * If indexes is column-wise vector, construct column-wise vector where i-th element is set to mat[i, indexes[i]].
+ * If indices are row-wise vector, construct row-wise vector where i-th element is set to mat[indices[i], i].
+ * If indices are column-wise vector, construct column-wise vector where i-th element is set to mat[i, indices[i]].
  * @param {Sushi.Matrix} original
- * @param {Sushi.Matrix} indexes
+ * @param {Sushi.Matrix} indices
  * @return {Sushi.Matrix}
  */
 Sushi.Matrix.getEach = function (original, indexes) { };
@@ -509,7 +509,7 @@ Sushi.Matrix.argminEachCol = function (mat, output) { };
  * @param {Sushi.Matrix} mat1
  * @param {Sushi.Matrix} mat2
  * @param {Sushi.Matrix} [output] If output is given, reuse it for output.
- * @return {Sushi.Matrix}
+ * @return {Sushi.Matrix} mat1 + mat2
  */
 Sushi.Matrix.add = function (mat1, mat2, output) { };
 /**
@@ -517,7 +517,7 @@ Sushi.Matrix.add = function (mat1, mat2, output) { };
  * @param {Sushi.Matrix} mat1
  * @param {Sushi.Matrix} mat2
  * @param {Sushi.Matrix} [output] If output is given, reuse it for output.
- * @return {Sushi.Matrix}
+ * @return {Sushi.Matrix} mat1 - mat2
  */
 Sushi.Matrix.sub = function (mat1, mat2, output) { };
 /**
@@ -525,7 +525,7 @@ Sushi.Matrix.sub = function (mat1, mat2, output) { };
  * @param {Sushi.Matrix} mat1
  * @param {Sushi.Matrix} mat2
  * @param {Sushi.Matrix} [output] If output is given, reuse it for output.
- * @return {Sushi.Matrix}
+ * @return {Sushi.Matrix} mat1 * mat2 (element-wise)
  */
 Sushi.Matrix.mulEach = function (mat1, mat2, output) { };
 /**
@@ -533,7 +533,7 @@ Sushi.Matrix.mulEach = function (mat1, mat2, output) { };
  * @param {Sushi.Matrix} mat1
  * @param {Sushi.Matrix} mat2
  * @param {Sushi.Matrix} [output] If output is given, reuse it for output.
- * @return {Sushi.Matrix}
+ * @return {Sushi.Matrix} mat1 / mat2 (element-wise)
  */
 Sushi.Matrix.divEach = function (mat1, mat2, output) { };
 /**
@@ -576,7 +576,7 @@ Sushi.Matrix.upperTriangular = function (mat, output) { };
  */
 Sushi.Matrix.qr = function (A) { };
 /**
- * Result object of {@link Sushi.Matrix.qr}.
+ * Resulting object of {@link Sushi.Matrix.qr}.
  * @typedef {Object} Sushi.Matrix.QRResult
  * @prop {Sushi.Matrix} Q orthonormal
  * @prop {Sushi.Matrix} R upper-triangular
@@ -589,7 +589,7 @@ Sushi.Matrix.qr = function (A) { };
  */
 Sushi.Matrix.svd = function (A) { };
 /**
- * Result object of {@link Sushi.Matrix.svd}.
+ * Resulting object of {@link Sushi.Matrix.svd}.
  * @typedef {Object} Sushi.Matrix.SVDResult
  * @prop {Sushi.Matrix} U
  * @prop {Sushi.Matrix} S
